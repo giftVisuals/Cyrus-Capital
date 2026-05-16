@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyrus Capital | Referral Contest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #0a0a0f; color: white; margin: 0; }
+        .gold { color: #D4AF37; }
+        .gold-bg { background: #D4AF37; }
+        .gold-border { border-color: #D4AF37; }
+        .card { background: #111118; border: 1px solid #1e1e2e; border-radius: 24px; }
+        .hero-bg {
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1000 50%, #0a0a0f 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 60%);
+            animation: pulse 4s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+        }
+        .countdown-box {
+            background: linear-gradient(135deg, #1a1000, #111118);
+            border: 2px solid #D4AF37;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            min-width: 80px;
+        }
+        .countdown-number {
+            font-size: 48px;
+            font-weight: 900;
+            color: #D4AF37;
+            line-height: 1;
+        }
+        .countdown-label {
+            font-size: 10px;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-top: 8px;
+        }
+        .prize-card {
+            background: linear-gradient(135deg, #111118, #1a1000);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #1e1e2e;
+            transition: all 0.3s ease;
+        }
+        .prize-card:hover {
+            transform: translateY(-4px);
+            border-color: #D4AF37;
+            box-shadow: 0 20px 40px rgba(212,175,55,0.1);
+        }
+        .prize-card.first {
+            border: 2px solid #D4AF37;
+            background: linear-gradient(135deg, #1a1000, #2a1a00);
+            box-shadow: 0 0 40px rgba(212,175,55,0.15);
+        }
+        .leaderboard-row {
+            background: #111118;
+            border: 1px solid #1e1e2e;
+            border-radius: 16px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+        }
+        .leaderboard-row:hover {
+            border-color: #D4AF37;
+            background: #1a1000;
+        }
+        .leaderboard-row.current-user {
+            border: 2px solid #D4AF37;
+            background: linear-gradient(135deg, #1a1000, #2a1a00);
+        }
+        .rank-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 900;
+            flex-shrink: 0;
+        }
+        .rank-1 { background: linear-gradient(135deg, #D4AF37, #B8860B); color: #000; }
+        .rank-2 { background: linear-gradient(135deg, #94a3b8, #64748b); color: #000; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32, #a0522d); color: #fff; }
+        .rank-other { background: #1e1e2e; color: #64748b; }
+        .copy-btn {
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            color: #000;
+            border: none;
+            border-radius: 14px;
+            padding: 14px 24px;
+            font-weight: 900;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .copy-btn:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(212,175,55,0.3); }
+        .copy-btn:active { transform: scale(0.95); }
+        .ref-link-box {
+            background: #1e1e2e;
+            border: 1px solid #2e2e3e;
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #94a3b8;
+            word-break: break-all;
+            flex: 1;
+        }
+        .step-card {
+            background: #111118;
+            border: 1px solid #1e1e2e;
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #000;
+            flex-shrink: 0;
+        }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #D4AF37;
+            color: #000;
+            padding: 14px 24px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 13px;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .ended-banner {
+            background: linear-gradient(135deg, #1a0000, #2a0000);
+            border: 2px solid #ef4444;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .shimmer {
+            background: linear-gradient(90deg, #1e1e2e 25%, #2e2e3e 50%, #1e1e2e 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav style="background:#0d0d14; border-bottom:1px solid #1e1e2e;" class="px-6 py-4 sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <svg width="36" height="36" viewBox="0 0 100 100" fill="none">
+                <path d="M50 42L28 62V88L50 72L72 88V62L50 42Z" fill="#D4AF37"/>
+                <path d="M50 18L22 42L38 48L50 36L62 48L78 42L50 18Z" fill="#D4AF37"/>
+            </svg>
+            <div>
+                <p class="font-black text-white text-sm">CYRUS CAPITAL</p>
+                <p class="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">Referral Contest</p>
+            </div>
+        </div>
+        <a href="/app" class="px-4 py-2 gold-bg text-black rounded-xl font-black text-xs uppercase tracking-wider">
+            Join Now
+        </a>
+    </div>
+</nav>
+
+<!-- HERO SECTION -->
+<div class="hero-bg px-6 py-16 text-center relative">
+    <div class="max-w-4xl mx-auto relative z-10">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-500/30 bg-yellow-500/10 mb-6">
+            <div class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+            <span class="text-yellow-400 font-black text-xs uppercase tracking-widest">Live Contest</span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-black mb-4 leading-tight">
+            REFERRAL<br><span class="gold">CONTEST 🏆</span>
+        </h1>
+        <p class="text-slate-400 font-bold text-lg mb-4 max-w-xl mx-auto">
+            Refer the most active traders and win a share of the
+        </p>
+        <p class="text-5xl font-black gold mb-8">$1,000 Prize Pool</p>
+
+        <!-- COUNTDOWN -->
+        <p class="text-slate-400 font-bold text-sm mb-4 uppercase tracking-widest">Contest Ends In</p>
+        <div id="ended-banner" class="ended-banner hidden">
+            <i class="fa-solid fa-flag-checkered text-red-400 text-3xl mb-2"></i>
+            <p class="text-red-400 font-black text-xl">Contest Has Ended!</p>
+            <p class="text-slate-400 font-bold text-sm mt-1">Winners will be announced soon.</p>
+        </div>
+        <div id="countdown-container" class="flex justify-center gap-3 mb-8 flex-wrap">
+            <div class="countdown-box">
+                <div id="cd-days" class="countdown-number">00</div>
+                <div class="countdown-label">Days</div>
+            </div>
+            <div class="flex items-center text-yellow-400 text-3xl font-black pb-6">:</div>
+            <div class="countdown-box">
+                <div id="cd-hours" class="countdown-number">00</div>
+                <div class="countdown-label">Hours</div>
+            </div>
+            <div class="flex items-center text-yellow-400 text-3xl font-black pb-6">:</div>
+            <div class="countdown-box">
+                <div id="cd-minutes" class="countdown-number">00</div>
+                <div class="countdown-label">Minutes</div>
+            </div>
+            <div class="flex items-center text-yellow-400 text-3xl font-black pb-6">:</div>
+            <div class="countdown-box">
+                <div id="cd-seconds" class="countdown-number">00</div>
+                <div class="countdown-label">Seconds</div>
+            </div>
+        </div>
+
+        <a href="/app" class="inline-flex items-center gap-3 px-8 py-5 gold-bg text-black rounded-2xl font-black text-sm uppercase tracking-widest shadow-2xl hover:brightness-110 transition-all active:scale-95">
+            <i class="fa-solid fa-bolt"></i> Start Referring Now
+        </a>
+    </div>
+</div>
+
+<!-- PRIZE BREAKDOWN -->
+<div class="px-6 py-16 max-w-4xl mx-auto">
+    <div class="text-center mb-10">
+        <h2 class="text-3xl font-black mb-2">Prize <span class="gold">Breakdown</span></h2>
+        <p class="text-slate-400 font-bold text-sm">Top 10 referrers share the $1,000 pool</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- 1st -->
+        <div class="prize-card first">
+            <div class="text-5xl mb-3">🥇</div>
+            <p class="text-yellow-400 font-black text-xs uppercase tracking-widest mb-1">1st Place</p>
+            <p class="text-4xl font-black text-white">$500</p>
+            <p class="text-yellow-500 font-bold text-sm mt-1">Funded Account</p>
+        </div>
+        <!-- 2nd -->
+        <div class="prize-card">
+            <div class="text-5xl mb-3">🥈</div>
+            <p class="text-slate-400 font-black text-xs uppercase tracking-widest mb-1">2nd Place</p>
+            <p class="text-4xl font-black text-white">$200</p>
+            <p class="text-slate-400 font-bold text-sm mt-1">Funded Account</p>
+        </div>
+        <!-- 3rd -->
+        <div class="prize-card">
+            <div class="text-5xl mb-3">🥉</div>
+            <p class="text-orange-400 font-black text-xs uppercase tracking-widest mb-1">3rd Place</p>
+            <p class="text-4xl font-black text-white">$100</p>
+            <p class="text-orange-400 font-bold text-sm mt-1">Funded Account</p>
+        </div>
+    </div>
+    <!-- 4th-10th -->
+    <div class="card p-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="text-center p-4 bg-slate-900/50 rounded-xl">
+                <p class="text-2xl mb-1">🏅</p>
+                <p class="text-slate-400 font-black text-xs uppercase">4th - 6th</p>
+                <p class="text-2xl font-black text-white mt-1">$50</p>
+                <p class="text-slate-500 font-bold text-xs">each</p>
+            </div>
+            <div class="text-center p-4 bg-slate-900/50 rounded-xl">
+                <p class="text-2xl mb-1">🏅</p>
+                <p class="text-slate-400 font-black text-xs uppercase">7th - 10th</p>
+                <p class="text-2xl font-black text-white mt-1">$25</p>
+                <p class="text-slate-500 font-bold text-xs">each</p>
+            </div>
+            <div class="text-center p-4 bg-yellow-500/10 rounded-xl border border-yellow-500/20 col-span-2">
+                <p class="text-yellow-400 font-black text-xs uppercase tracking-widest mb-1">Total Prize Pool</p>
+                <p class="text-3xl font-black text-yellow-400">$1,000</p>
+                <p class="text-yellow-600 font-bold text-xs">In Funded Accounts</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- USER REFERRAL SECTION -->
+<div class="px-6 pb-10 max-w-4xl mx-auto">
+    <div class="card p-6 mb-6" id="user-ref-section">
+        <div id="logged-out-view" class="text-center py-8">
+            <i class="fa-solid fa-user-lock text-yellow-400 text-4xl mb-4"></i>
+            <h3 class="text-xl font-black mb-2">Login to See Your Rank</h3>
+            <p class="text-slate-400 font-bold text-sm mb-6">Sign in to get your referral link and track your position</p>
+            <a href="/app" class="inline-flex items-center gap-2 px-8 py-4 gold-bg text-black rounded-xl font-black text-xs uppercase tracking-widest">
+                <i class="fa-solid fa-right-to-bracket"></i> Login / Sign Up
+            </a>
+        </div>
+        <div id="logged-in-view" class="hidden">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 gold-bg rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-user text-black text-xl"></i>
+                </div>
+                <div>
+                    <p id="user-name-display" class="font-black text-white text-lg">Loading...</p>
+                    <p class="text-slate-400 font-bold text-xs uppercase tracking-wider">Your Contest Profile</p>
+                </div>
+            </div>
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <div class="bg-slate-900/50 rounded-xl p-4 text-center">
+                    <p id="user-rank-display" class="text-3xl font-black text-yellow-400">--</p>
+                    <p class="text-slate-400 font-bold text-xs uppercase mt-1">Your Rank</p>
+                </div>
+                <div class="bg-slate-900/50 rounded-xl p-4 text-center">
+                    <p id="user-refs-display" class="text-3xl font-black text-white">0</p>
+                    <p class="text-slate-400 font-bold text-xs uppercase mt-1">Qualified Refs</p>
+                </div>
+                <div class="bg-slate-900/50 rounded-xl p-4 text-center">
+                    <p id="user-prize-display" class="text-xl font-black text-green-400">--</p>
+                    <p class="text-slate-400 font-bold text-xs uppercase mt-1">Prize</p>
+                </div>
+            </div>
+            <!-- Referral Link -->
+            <p class="text-slate-400 font-black text-xs uppercase tracking-widest mb-3">Your Referral Link</p>
+            <div class="flex gap-3 items-center mb-3">
+                <div id="user-ref-link" class="ref-link-box">Loading your link...</div>
+                <button onclick="copyRefLink()" class="copy-btn flex-shrink-0">
+                    <i class="fa-solid fa-copy"></i> Copy
+                </button>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="shareRefLink()" class="flex-1 flex items-center justify-center gap-2 py-3 border border-yellow-500/30 text-yellow-400 rounded-xl font-black text-xs uppercase tracking-wider hover:bg-yellow-500/10 transition-all">
+                    <i class="fa-solid fa-share-nodes"></i> Share Link
+                </button>
+                <a href="https://t.me/share/url?url=" id="share-telegram" target="_blank" class="flex-1 flex items-center justify-center gap-2 py-3 border border-blue-500/30 text-blue-400 rounded-xl font-black text-xs uppercase tracking-wider hover:bg-blue-500/10 transition-all">
+                    <i class="fa-brands fa-telegram"></i> Share on Telegram
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="px-6 pb-16 max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-black mb-2">Live <span class="gold">Leaderboard</span></h2>
+        <p class="text-slate-400 font-bold text-sm">Rankings based on qualified referrals (bought $50+ funded account)</p>
+    </div>
+    <div id="leaderboard-container">
+        <!-- Loading shimmer -->
+        <div class="space-y-3">
+            <div class="shimmer h-16 rounded-2xl"></div>
+            <div class="shimmer h-16 rounded-2xl"></div>
+            <div class="shimmer h-16 rounded-2xl"></div>
+            <div class="shimmer h-16 rounded-2xl"></div>
+            <div class="shimmer h-16 rounded-2xl"></div>
+        </div>
+    </div>
+</div>
+
+<!-- HOW TO PARTICIPATE -->
+<div class="px-6 pb-16 max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-black mb-2">How To <span class="gold">Participate</span></h2>
+    </div>
+    <div class="space-y-4">
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <div>
+                <p class="font-black text-white mb-1">Sign Up / Login</p>
+                <p class="text-slate-400 font-bold text-sm">Create your free Cyrus Capital account at cyruscapital.vercel.app/app</p>
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <div>
+                <p class="font-black text-white mb-1">Get Your Referral Link</p>
+                <p class="text-slate-400 font-bold text-sm">Copy your unique referral link from your dashboard or from this page</p>
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <div>
+                <p class="font-black text-white mb-1">Share & Recruit</p>
+                <p class="text-slate-400 font-bold text-sm">Share your link on social media, Telegram, WhatsApp — everywhere!</p>
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-number">4</div>
+            <div>
+                <p class="font-black text-white mb-1">Referral Must Buy Funded Account</p>
+                <p class="text-slate-400 font-bold text-sm">Your referral counts ONLY when they purchase a funded account (minimum $50 account / $1 fee)</p>
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-number">5</div>
+            <div>
+                <p class="font-black text-white mb-1">Win Your Prize!</p>
+                <p class="text-slate-400 font-bold text-sm">Top 10 referrers on June 13, 2026 win funded accounts up to $500!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RULES -->
+<div class="px-6 pb-16 max-w-4xl mx-auto">
+    <div class="card p-6">
+        <h3 class="font-black text-white text-lg mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-scroll text-yellow-400"></i> Contest Rules
+        </h3>
+        <div class="space-y-3">
+            <div class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-yellow-400 mt-1 flex-shrink-0"></i>
+                <p class="text-slate-400 font-bold text-sm">Only referrals who purchase a funded account (minimum $50 / $1 fee) count towards your score</p>
+            </div>
+            <div class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-yellow-400 mt-1 flex-shrink-0"></i>
+                <p class="text-slate-400 font-bold text-sm">Self-referrals are not allowed and will result in disqualification</p>
+            </div>
+            <div class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-yellow-400 mt-1 flex-shrink-0"></i>
+                <p class="text-slate-400 font-bold text-sm">Contest ends June 13, 2026. Rankings are final at that time</p>
+            </div>
+            <div class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-yellow-400 mt-1 flex-shrink-0"></i>
+                <p class="text-slate-400 font-bold text-sm">Prizes are funded MT5 accounts credited within 24 hours after contest ends</p>
+            </div>
+            <div class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-yellow-400 mt-1 flex-shrink-0"></i>
+                <p class="text-slate-400 font-bold text-sm">Cyrus Capital reserves the right to disqualify any participant found violating rules</p>
+            </div>
+            <div class="flex items-start gap-3">
+                <i class="fa-solid fa-check text-yellow-400 mt-1 flex-shrink-0"></i>
+                <p class="text-slate-400 font-bold text-sm">In case of a tie, the participant who reached the count first wins</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:#0d0d14; border-top:1px solid #1e1e2e;" class="px-6 py-8 text-center">
+    <svg width="40" height="40" viewBox="0 0 100 100" fill="none" class="mx-auto mb-3">
+        <path d="M50 42L28 62V88L50 72L72 88V62L50 42Z" fill="#D4AF37"/>
+        <path d="M50 18L22 42L38 48L50 36L62 48L78 42L50 18Z" fill="#D4AF37"/>
+    </svg>
+    <p class="font-black text-white text-sm mb-1">CYRUS CAPITAL</p>
+    <p class="text-slate-500 font-bold text-xs mb-4">Proprietary Trading Firm</p>
+    <div class="flex justify-center gap-4">
+        <a href="/app" class="text-slate-400 font-bold text-xs hover:text-yellow-400 transition-colors">App</a>
+        <a href="https://t.me/Cyrus_Capital_bot" target="_blank" class="text-slate-400 font-bold text-xs hover:text-yellow-400 transition-colors">Telegram</a>
+        <a href="https://cyruschat.vercel.app" target="_blank" class="text-slate-400 font-bold text-xs hover:text-yellow-400 transition-colors">Support</a>
+        <a href="https://cyrusterms.vercel.app" target="_blank" class="text-slate-400 font-bold text-xs hover:text-yellow-400 transition-colors">Terms</a>
+    </div>
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+<script>
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyBrpzFcShlTEluT6McutQYyQk38kY63iIc",
+    authDomain: "cyrus-project-01.firebaseapp.com",
+    projectId: "cyrus-project-01",
+    storageBucket: "cyrus-project-01.firebasestorage.app",
+    messagingSenderId: "311717930259",
+    appId: "1:311717930259:web:740716507764d6b4bca6e6"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+// CONTEST END DATE — June 13, 2026
+const CONTEST_END = new Date('2026-06-13T23:59:59');
+
+// PRIZES
+const PRIZES = {
+    1: '$500 Funded Account',
+    2: '$200 Funded Account',
+    3: '$100 Funded Account',
+    4: '$50 Funded Account',
+    5: '$50 Funded Account',
+    6: '$50 Funded Account',
+    7: '$25 Funded Account',
+    8: '$25 Funded Account',
+    9: '$25 Funded Account',
+    10: '$25 Funded Account'
+};
+
+let currentUserUid = null;
+let currentUserRefLink = '';
+let leaderboardData = [];
+
+// ═══ COUNTDOWN ═══
+function updateCountdown() {
+    const now = new Date();
+    const diff = CONTEST_END - now;
+
+    if (diff <= 0) {
+        document.getElementById('countdown-container').classList.add('hidden');
+        document.getElementById('ended-banner').classList.remove('hidden');
+        return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    document.getElementById('cd-days').innerText = String(days).padStart(2, '0');
+    document.getElementById('cd-hours').innerText = String(hours).padStart(2, '0');
+    document.getElementById('cd-minutes').innerText = String(minutes).padStart(2, '0');
+    document.getElementById('cd-seconds').innerText = String(seconds).padStart(2, '0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ═══ AUTH STATE ═══
+auth.onAuthStateChanged(async user => {
+    if (user) {
+        currentUserUid = user.uid;
+        const userSnap = await db.collection('users').doc(user.uid).get();
+        if (userSnap.exists) {
+            const userData = userSnap.data();
+            currentUserRefLink = `https://cyruscapital.vercel.app/app?ref=${user.uid}`;
+            document.getElementById('user-name-display').innerText = (userData.firstName || '') + ' ' + (userData.lastName || '');
+            document.getElementById('user-ref-link').innerText = currentUserRefLink;
+            document.getElementById('share-telegram').href = `https://t.me/share/url?url=${encodeURIComponent(currentUserRefLink)}&text=${encodeURIComponent('Join Cyrus Capital and start trading with funded accounts! Use my referral link:')}`;
+            document.getElementById('logged-out-view').classList.add('hidden');
+            document.getElementById('logged-in-view').classList.remove('hidden');
+        }
+    } else {
+        document.getElementById('logged-out-view').classList.remove('hidden');
+        document.getElementById('logged-in-view').classList.add('hidden');
+    }
+    loadLeaderboard();
+});
+
+// ═══ LOAD LEADERBOARD ═══
+async function loadLeaderboard() {
+    try {
+        // Get all referrals where referral bought a funded account
+        const fundedSnap = await db.collection('fundedRequests')
+            .where('status', '==', 'approved')
+            .get();
+
+        // Count qualified referrals per referrer
+        const referralCounts = {};
+        const referralNames = {};
+
+        for (const doc of fundedSnap.docs) {
+            const data = doc.data();
+            const buyerUid = data.uid || data.userId;
+            if (!buyerUid) continue;
+
+            // Get buyer's referredBy
+            const buyerSnap = await db.collection('users').doc(buyerUid).get();
+            if (!buyerSnap.exists) continue;
+            const buyerData = buyerSnap.data();
+            const referrerId = buyerData.referredBy;
+            if (!referrerId) continue;
+
+            // Check fee is at least $1 (qualified)
+            const fee = data.amount || 0;
+            if (fee < 1) continue;
+
+            if (!referralCounts[referrerId]) {
+                referralCounts[referrerId] = 0;
+                // Get referrer name
+                try {
+                    const refSnap = await db.collection('users').doc(referrerId).get();
+                    if (refSnap.exists) {
+                        const refData = refSnap.data();
+                        referralNames[referrerId] = (refData.firstName || '') + ' ' + (refData.lastName || '');
+                    }
+                } catch(e) {}
+            }
+            referralCounts[referrerId]++;
+        }
+
+        // Sort by count
+        leaderboardData = Object.keys(referralCounts)
+            .map(uid => ({ uid, count: referralCounts[uid], name: referralNames[uid] || 'Cyrus Trader' }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10);
+
+        renderLeaderboard();
+        updateUserStats();
+
+    } catch(err) {
+        console.error('Leaderboard error:', err);
+        document.getElementById('leaderboard-container').innerHTML = `
+            <div class="text-center py-10">
+                <i class="fa-solid fa-trophy text-yellow-400/30 text-5xl mb-4"></i>
+                <p class="text-slate-400 font-bold">No qualified referrals yet.</p>
+                <p class="text-slate-500 font-bold text-sm mt-1">Be the first to refer someone!</p>
+            </div>`;
+    }
+}
+
+// ═══ RENDER LEADERBOARD ═══
+function renderLeaderboard() {
+    const container = document.getElementById('leaderboard-container');
+
+    if (leaderboardData.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-10 card p-8">
+                <i class="fa-solid fa-trophy text-yellow-400/30 text-5xl mb-4"></i>
+                <p class="text-white font-black text-lg mb-2">No Rankings Yet!</p>
+                <p class="text-slate-400 font-bold text-sm">Be the first to refer someone and claim the top spot! 🔥</p>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = leaderboardData.map((user, index) => {
+        const rank = index + 1;
+        const isCurrentUser = user.uid === currentUserUid;
+        const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+        const rankEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+        const prize = PRIZES[rank] || '';
+        const displayName = isCurrentUser ? 'You 👈' : maskName(user.name);
+
+        return `
+        <div class="leaderboard-row ${isCurrentUser ? 'current-user' : ''}">
+            <div class="rank-badge ${rankClass}">${rankEmoji}</div>
+            <div class="flex-1 min-w-0">
+                <p class="font-black text-white text-sm ${isCurrentUser ? 'text-yellow-400' : ''}">${displayName}</p>
+                <p class="text-slate-500 font-bold text-xs">${prize}</p>
+            </div>
+            <div class="text-right flex-shrink-0">
+                <p class="font-black text-white text-lg">${user.count}</p>
+                <p class="text-slate-500 font-bold text-xs">referrals</p>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ═══ MASK NAME FOR PRIVACY ═══
+function maskName(name) {
+    if (!name || name.trim() === '') return 'Cyrus Trader';
+    const parts = name.trim().split(' ');
+    return parts.map(p => p.charAt(0) + '***').join(' ');
+}
+
+// ═══ UPDATE USER STATS ═══
+function updateUserStats() {
+    if (!currentUserUid) return;
+    const userIndex = leaderboardData.findIndex(u => u.uid === currentUserUid);
+    if (userIndex !== -1) {
+        const rank = userIndex + 1;
+        document.getElementById('user-rank-display').innerText = '#' + rank;
+        document.getElementById('user-refs-display').innerText = leaderboardData[userIndex].count;
+        document.getElementById('user-prize-display').innerText = PRIZES[rank] || '--';
+    } else {
+        document.getElementById('user-rank-display').innerText = '--';
+        document.getElementById('user-refs-display').innerText = '0';
+        document.getElementById('user-prize-display').innerText = 'Keep referring!';
+    }
+}
+
+// ═══ COPY REF LINK ═══
+function copyRefLink() {
+    if (!currentUserRefLink) return;
+    navigator.clipboard.writeText(currentUserRefLink).then(() => {
+        showToast('Referral link copied! 🔗');
+    }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = currentUserRefLink;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Referral link copied! 🔗');
+    });
+}
+
+// ═══ SHARE ═══
+function shareRefLink() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Cyrus Capital Referral Contest',
+            text: '🏆 Join Cyrus Capital and start trading with funded accounts! Use my referral link to sign up:',
+            url: currentUserRefLink
+        });
+    } else {
+        copyRefLink();
+    }
+}
+
+// ═══ TOAST ═══
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+
+</body>
+</html>
