@@ -2531,60 +2531,6 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
     </div>
 </div>
 
-<!-- DEPOSIT PROOF SUBMISSION MODAL -->
-<div id="deposit-proof-modal" class="modal-overlay">
-    <div class="modal-card" style="max-height:90vh; overflow-y:auto;">
-        <button onclick="closeDepositProof()"
-        class="absolute top-5 right-5 text-slate-400 font-bold text-2xl z-10">✕</button>
-        <div class="p-6 pb-0">
-            <div class="w-14 h-14 bg-yellow-100 text-yellow-600 rounded-2xl flex items-center justify-center mb-4">
-                <i class="fa-solid fa-receipt text-2xl"></i>
-            </div>
-            <h3 class="text-2xl font-black text-slate-900 mb-1">Submit Deposit Proof</h3>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-5">Once deposit is confirmed
-            your balance will be updated instantly or  within 1-15 minutes, contact support if deposit verification takes longer</p>
-        </div>
-        <div class="px-6 pb-6 space-y-4">
-            <div>
-                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Payment
-                    ID <span class="text-red-400">*</span></label>
-                    <input type="text" id="proof-payment-id" placeholder="e.g. 5548635191abc..."
-                    class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-sm outline-none border-2 border-transparent focus:border-yellow-400 transition-colors">
-                    <p class="text-[9px] font-bold text-slate-400 ml-1 mt-1">Copy from NowPayments → More Details</p>
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Amount
-                        Paid (USD) <span class="text-red-400">*</span></label>
-                        <input type="number" id="proof-amount" placeholder="e.g. 10" min="1"
-                        class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-sm outline-none border-2 border-transparent focus:border-yellow-400 transition-colors">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Payment
-                        Screenshot (Optional)</label>
-                        <div id="proof-upload-zone" class="proof-upload-zone"
-                        onclick="document.getElementById('proof-screenshot-input').click()">
-                        <input type="file" id="proof-screenshot-input" class="hidden" accept="image/*"
-                        onchange="handleProofScreenshot(this)">
-                        <div id="proof-upload-ui">
-                            <div class="h-10 w-10 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
-                                <i class="fa-solid fa-camera text-yellow-500"></i>
-                            </div>
-                            <p class="text-[11px] font-black text-slate-600 uppercase">Tap to Upload Screenshot</p>
-                            <p class="text-[9px] font-bold text-slate-400 mt-1">JPG / PNG — helps speed up verification</p>
-                        </div>
-                    </div>
-                </div>
-                <button id="proof-submit-btn" onclick="submitDepositProof()"
-                class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-transform mt-2 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-paper-plane"></i> Submit for Verification
-            </button>
-            <p class="text-[9px] font-bold text-slate-400 text-center">Balance will be credited within 15 minutes after
-            payment verification. Contact support if deposit takes longer</p>
-        </div>
-        <div class="h-2 bg-yellow-400 w-full"></div>
-    </div>
-</div>
-
 <!-- ═══ HOME SECTION ═══ -->
 <section id="home" class="page-section active px-6 pt-8">
 <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; background:rgba(255,255,255,0.7); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(212,175,55,0.15); border-radius:24px; padding:14px 18px; box-shadow:0 4px 20px rgba(212,175,55,0.06);">
@@ -2824,26 +2770,6 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
             </button>
         </div>
     </div>
-    <div class="bg-slate-900 p-8 rounded-[2.5rem] shadow-xl relative text-white">
-        <h3 class="font-black text-yellow-400 mb-6 flex items-center gap-2"><i
-            class="fa-solid fa-money-bill-trend-up"></i> USD$ Crypto</h3>
-            <div class="space-y-4">
-                <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Wallet Address (TON)</p>
-                    <input type="text" id="crypto-address" placeholder="Enter your TON address"
-                    class="w-full p-4 bg-slate-800 border-0 rounded-2xl text-sm font-bold text-white focus:ring-2 focus:ring-yellow-400 outline-none">
-                </div>
-                <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Amount (USD)</p>
-                    <input type="number" id="crypto-amount" placeholder="Enter USD amount"
-                    class="w-full p-4 bg-slate-800 border-0 rounded-2xl text-sm font-bold text-white focus:ring-2 focus:ring-yellow-400 outline-none">
-                </div>
-                <button onclick="checkKycStatus(this)"
-                class="w-full py-5 bg-yellow-400 text-black rounded-2xl font-black text-xs uppercase tracking-widest mt-4 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-coins"></i> Withdraw USDT
-            </button>
-        </div>
-    </div>
 </div>
 </section>
 
@@ -2870,69 +2796,7 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
 <!-- ═══ PAYMENTS SECTION ═══ -->
 <section id="payments" class="page-section px-4 pt-6 h-full overflow-y-auto">
     <h2 class="text-xl font-black mb-4">Deposit Funds</h2>
-    <div class="flex gap-2 mb-5">
-        <button id="tab-usd" onclick="switchDepositTab('usd')" class="naira-tab-btn active">USD$ Crypto</button>
-        <button id="tab-naira" onclick="switchDepositTab('naira')" class="naira-tab-btn">NAIRA ₦</button>
-    </div>
-    <div id="deposit-usd-content">
-    <div id="crypto-loading-box" style="display:none; text-align:center; padding:40px 20px;">
-        <i class="fa-solid fa-spinner fa-spin" style="color:#D4AF37; font-size:32px; margin-bottom:16px; display:block;"></i>
-        <p style="font-weight:800; color:#0f172a; margin-bottom:4px;">Creating Payment...</p>
-        <p style="font-size:12px; color:#94a3b8; font-weight:600;">Please wait</p>
-    </div>
-    <div id="crypto-payment-box" style="display:none; background:white; border-radius:24px; padding:24px; border:2px solid #fbbf24; margin-bottom:20px;">
-        <div style="text-align:center; margin-bottom:16px;">
-            <p style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.2em; margin-bottom:4px;">Send exactly this amount</p>
-            <p id="crypto-pay-amount" style="font-size:28px; font-weight:900; color:#0f172a;"></p>
-            <p id="crypto-pay-currency" style="font-size:12px; font-weight:700; color:#D4AF37;"></p>
-        </div>
-        <div style="background:#f8fafc; border-radius:16px; padding:16px; margin-bottom:16px;">
-            <p style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px;">Wallet Address</p>
-            <p id="crypto-pay-address" style="font-size:11px; font-weight:700; color:#0f172a; word-break:break-all; font-family:monospace;"></p>
-            <button onclick="copyPayAddress()" style="margin-top:10px; width:100%; padding:10px; background:#D4AF37; color:#0f172a; border:none; border-radius:10px; font-size:11px; font-weight:900; text-transform:uppercase; cursor:pointer;">Copy Address</button>
-        </div>
-        <div style="background:#fef9c3; border-radius:12px; padding:12px; margin-bottom:16px;">
-            <p style="font-size:11px; font-weight:700; color:#854d0e; text-align:center; line-height:1.5;">⚠️ Send <strong>exactly</strong> the amount shown above. Balance credits automatically once confirmed!</p>
-        </div>
-        <p id="crypto-payment-id-display" style="font-size:10px; font-weight:600; color:#94a3b8; text-align:center;"></p>
-        <button onclick="closeCryptoBox()" style="width:100%; padding:12px; background:#f1f5f9; color:#64748b; border:none; border-radius:12px; font-size:11px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:8px;">Cancel</button>
-    </div>
-    <div id="crypto-buttons-box">
-        <div style="background:white; border-radius:20px; padding:16px; margin-bottom:16px; border:1px solid #f1f5f9;">
-    <p style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:12px;">Select Crypto Currency</p>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;" id="currency-selector">
-        <button onclick="selectCurrency('usdttrc20', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">USDT TRC20</button>
-        <button onclick="selectCurrency('usdtbsc', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">USDT BSC</button>
-        <button onclick="selectCurrency('trx', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">TRX</button>
-<button onclick="selectCurrency('sol', this)" style="padding:10px; background:#0f172a; color:white; border:none; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">SOL</button>
-        <button onclick="selectCurrency('btc', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">BTC</button>
-        <button onclick="selectCurrency('eth', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">ETH</button>
-        <button onclick="selectCurrency('bnbbsc', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">BNB</button>
-        <button onclick="selectCurrency('ton', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">TON</button>
-        <button onclick="selectCurrency('ltc', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">LTC</button>
-    </div>
-</div>
-        <div class="mb-4 p-3 bg-blue-50 rounded-2xl border border-blue-100 flex items-start gap-3">
-            <i class="fa-solid fa-circle-info text-blue-400 mt-0.5"></i>
-            <div>
-                <p class="text-xs font-black text-slate-700">Auto Deposit — No Manual Submission!</p>
-                <p class="text-[10px] font-bold text-slate-500">Click any amount. A unique crypto address will be generated for you. Send the exact amount and your balance credits automatically!</p>
-            </div>
-        </div>
-        <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm space-y-3 mb-8">
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$1</span><button onclick="createCryptoPayment(1)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $1</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$2</span><button onclick="createCryptoPayment(2)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $2</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$4</span><button onclick="createCryptoPayment(4)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $4</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$6</span><button onclick="createCryptoPayment(6)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $6</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$8</span><button onclick="createCryptoPayment(8)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $8</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$10</span><button onclick="createCryptoPayment(10)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $10</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$20</span><button onclick="createCryptoPayment(20)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $20</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$100</span><button onclick="createCryptoPayment(100)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $100</button></div>
-            <div class="flex items-center justify-between p-3"><span class="font-bold text-slate-700">$200</span><button onclick="createCryptoPayment(200)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $200</button></div>
-        </div>
-    </div>
-</div>
-<div id="deposit-naira-content" class="hidden">
+    <div id="deposit-naira-content">
     <div class="naira-premium-card">
         <div class="naira-premium-card-header">
             <div class="flex items-center gap-3">
@@ -2980,8 +2844,7 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
         <i class="fa-solid fa-shield-halved"></i>
         <div>
             <p class="naira-info-banner-title">Secure Bank Transfer</p>
-            <p class="naira-info-banner-text">Transfer to our verified corporate account. Funds credited instantly or within 1-15 
-            minutes after confirmation.</p>
+            <p class="naira-info-banner-text">Transfer to our verified corporate account, then tap "I Have Paid" and submit your details. Our team reviews and credits deposits manually, usually within 1-24 hours.</p>
         </div>
     </div>
 </div>
@@ -3321,7 +3184,7 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
             <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
         </button>
         <button onclick="switchTab('withdrawal'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:6px 4px; position:relative;">
-            <i class="fa-solid fa-money-bill-transfer" style="font-size:20px; color:#94a3b8;"></i>
+            <i class="fa-solid fa-money-bill-1-wave" style="font-size:20px; color:#94a3b8;"></i>
             <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">Withdraw</span>
             <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
         </button>
@@ -3544,25 +3407,25 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
                             <div class="naira-bank-detail-card">
                                 <div class="naira-bank-detail-info">
                                     <p class="naira-bank-detail-label">Bank Name</p>
-                                    <p class="naira-bank-detail-value">Palmpay Limited</p>
+                                    <p class="naira-bank-detail-value">Opay</p>
                                 </div>
-                                <button onclick="copyNairaDetail('Palmpay Limited')" class="naira-copy-btn"><i
+                                <button onclick="copyNairaDetail('Opay')" class="naira-copy-btn"><i
                                 class="fa-solid fa-copy"></i> Copy</button>
                             </div>
                             <div class="naira-bank-detail-card">
                                 <div class="naira-bank-detail-info">
                                     <p class="naira-bank-detail-label">Account Number</p>
-                                    <p id="naira-bank-acc-num" class="naira-bank-detail-value">6685215756</p>
+                                    <p id="naira-bank-acc-num" class="naira-bank-detail-value">8037912766</p>
                                 </div>
-                                <button onclick="copyNairaDetail('6685215756')" class="naira-copy-btn"><i
+                                <button onclick="copyNairaDetail('8037912766')" class="naira-copy-btn"><i
                                 class="fa-solid fa-copy"></i> Copy</button>
                             </div>
                             <div class="naira-bank-detail-card">
                                 <div class="naira-bank-detail-info">
                                     <p class="naira-bank-detail-label">Account Name</p>
-                                    <p class="naira-bank-detail-value">IDOWU AWE(VistaPay)</p>
+                                    <p class="naira-bank-detail-value">CHINEDU EMMANUEL</p>
                                 </div>
-                                <button onclick="copyNairaDetail('IDOWU AWE(VistaPay) Awe')" class="naira-copy-btn"><i
+                                <button onclick="copyNairaDetail('CHINEDU EMMANUEL')" class="naira-copy-btn"><i
                                 class="fa-solid fa-copy"></i> Copy</button>
                             </div>
                             <div class="naira-summary-box">
@@ -4528,8 +4391,6 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
                         `Hello, ${userData.firstName || 'User'}`;
                     const newBalance = userData.balance || 0;
 if (currentDepositBalance > 0 && newBalance > currentDepositBalance) {
-    document.getElementById('crypto-payment-box').style.display = 'none';
-    document.getElementById('crypto-buttons-box').style.display = 'block';
     showNairaToast('🎊 Payment Received! $' + (newBalance - currentDepositBalance).toFixed(2) + ' credited!');
     switchTab('home');
 }
@@ -5019,6 +4880,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             if (target) target.classList.add('active');
             window.location.hash = tabId;
             window.scrollTo(0, 0);
+            if (tabId === 'payments' && typeof syncNairaPendingList === 'function') syncNairaPendingList();
         }
 
         // ── AUTO LOAD TAB FROM URL HASH ──
@@ -5063,30 +4925,6 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         function goToKyc() { document.getElementById('kyc-lock-modal').style.display = 'none';
             switchTab('kyc'); }
 
-        function openDepositProof() {
-            proofScreenshotFile = null;
-            document.getElementById('proof-payment-id').value = '';
-            document.getElementById('proof-amount').value = '';
-            document.getElementById('proof-screenshot-input').value = '';
-            document.getElementById('proof-upload-ui').innerHTML =
-                `<div class="h-10 w-10 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm"><i class="fa-solid fa-camera text-yellow-500"></i></div><p class="text-[11px] font-black text-slate-600 uppercase">Tap to Upload Screenshot</p><p class="text-[9px] font-bold text-slate-400 mt-1">JPG / PNG — helps speed up verification</p>`;
-            document.getElementById('proof-upload-zone').classList.remove('file-selected');
-            document.getElementById('deposit-proof-modal').style.display = 'flex';
-        }
-
-        function closeDepositProof() { document.getElementById('deposit-proof-modal').style.display = 'none';
-            proofScreenshotFile = null; }
-
-        function handleProofScreenshot(input) {
-            if (input.files && input.files[0]) {
-                proofScreenshotFile = input.files[0];
-                const zone = document.getElementById('proof-upload-zone');
-                zone.classList.add('file-selected');
-                document.getElementById('proof-upload-ui').innerHTML =
-                    `<div class="h-10 w-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2"><i class="fa-solid fa-circle-check text-green-500"></i></div><p class="text-[11px] font-black text-green-700 uppercase">${input.files[0].name}</p><p class="text-[9px] font-bold text-green-500 mt-1">Screenshot ready to upload</p>`;
-            }
-        }
-
         function openDashboardSupportModal() { document.getElementById('dashboard-support-modal').style.display =
             'flex'; }
 
@@ -5115,78 +4953,6 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                 reader.onerror = () => reject(new Error('Failed to read image file.'));
                 reader.readAsDataURL(file);
             });
-        }
-
-        async function submitDepositProof() {
-            const paymentId = document.getElementById('proof-payment-id').value.trim();
-            const amount = parseFloat(document.getElementById('proof-amount').value);
-            const btn = document.getElementById('proof-submit-btn');
-            if (!paymentId) { alert("Please enter your Payment ID."); return; }
-            if (!amount || amount <= 0) { alert("Please enter a valid amount."); return; }
-            if (!currentUser) { alert("Not logged in."); return; }
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Submitting...`;
-            btn.disabled = true;
-            try {
-                let imageUrl = null;
-                if (proofScreenshotFile) {
-                    try {
-                        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Uploading image...`;
-                        imageUrl = await uploadToImgBB(proofScreenshotFile);
-                    } catch (uploadErr) {
-                        const proceed = confirm("Image upload failed: " + uploadErr.message +
-                            "\n\nContinue submitting proof without the screenshot?");
-                        if (!proceed) { btn.innerHTML = originalHTML;
-                            btn.disabled = false; return; }
-                    }
-                }
-                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Saving...`;
-                await db.collection("depositProofs").add({
-                    uid: currentUser.uid,
-                    userEmail: currentUser.email || "",
-                    firstName: userData.firstName || "User",
-                    paymentId: paymentId,
-                    amount: amount,
-                    imageUrl: imageUrl,
-                    screenshotUrl: imageUrl,
-                    status: "pending",
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                // Telegram notification
-                fetch(`https://api.telegram.org/bot8305268349:AAFugGOJ0mAVxYuB1LFoP4WwC_MHNS6j99c/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        chat_id: "-1003903750289",
-                        text: `💰 <b>New Deposit Proof</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🆔 Payment ID: ${paymentId || "N/A"}\n⏰ Time: ${new Date().toLocaleString()}`,
-                        parse_mode: "HTML"
-                    })
-                }).catch(() => {});
-                // Telegram notification
-                fetch(`https://api.telegram.org/bot8305268349:AAFugGOJ0mAVxYuB1LFoP4WwC_MHNS6j99c/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        chat_id: "-1003903750289",
-                        text: `💰 <b>New Deposit Proof</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🆔 Payment ID: ${paymentId || "N/A"}\n⏰ Time: ${new Date().toLocaleString()}`,
-                        parse_mode: "HTML"
-                    })
-                }).catch(() => {});
-                await db.collection("transactions").add({
-                    uid: currentUser.uid,
-                    type: 'Deposit Proof',
-                    amount: amount,
-                    status: 'pending',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    metadata: { paymentId: paymentId, userEmail: currentUser.email || "", imageUrl: imageUrl,
-                        screenshotUrl: imageUrl }
-                });
-                closeDepositProof();
-                alert("Deposit proof submitted! Verification takes up to 15 minutes.");
-                switchTab('history');
-            } catch (err) { alert("Submission failed: " + err.message); } finally { btn.innerHTML =
-            originalHTML;
-                btn.disabled = false; }
         }
 
         function copyRef() { const c = document.getElementById("ref-link");
@@ -5355,9 +5121,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         }
 
         function checkKycStatus(btn) {
-            const isCrypto = btn.innerText.includes('USDT');
-            const amountVal = isCrypto ? document.getElementById('crypto-amount').value : document.getElementById(
-                'withdraw-input-ngn').value;
+            const amountVal = document.getElementById('withdraw-input-ngn').value;
             const amount = parseFloat(amountVal);
             if (!amount || amount <= 0) { alert("Please enter a valid amount."); return; }
             if (amount > currentProfitBalance) { alert(
@@ -5385,9 +5149,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
 
         async function triggerProcessWithdraw(btn) {
             const originalHTML = btn.innerHTML;
-            const isCrypto = btn.innerText.includes('USDT');
-            const amountInput = isCrypto ? document.getElementById('crypto-amount').value : document.getElementById(
-                'withdraw-input-ngn').value;
+            const amountInput = document.getElementById('withdraw-input-ngn').value;
             const amount = parseFloat(amountInput);
             btn.innerText = "processing....";
             btn.classList.add('processing-blink');
@@ -5408,12 +5170,12 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                     amount: amount,
                     status: 'processing',
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    metadata: { method: isCrypto ? 'Crypto (TON)' : 'Bank Transfer (NGN)', username: userData
+                    metadata: { method: 'Bank Transfer (NGN)', username: userData
                             .firstName || "User", userEmail: currentUser.email || "", bankDetails: document
                             .getElementById('bank-input').value || "", accountNumber: document.getElementById(
                                 'ngn-acc-num').value || "", accountName: document.getElementById('ngn-acc-name')
-                            .value || "", walletAddress: document.getElementById('crypto-address').value || "",
-                        nairaAmount: isCrypto ? null : `N${(amount * 1350).toLocaleString()}` }
+                            .value || "",
+                        nairaAmount: `N${(amount * 1350).toLocaleString()}` }
                 };
                 await db.collection("transactions").add(txData);
                 await db.collection("requests").add({ ...txData, userId: currentUser.uid, method: txData.metadata
@@ -5426,7 +5188,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         chat_id: "-1003903750289",
-                        text: `🏦 <b>New Withdrawal Request</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🔄 Method: ${isCrypto ? "Crypto (TON)" : "Bank Transfer (NGN)"}\n⏰ Time: ${new Date().toLocaleString()}`,
+                        text: `🏦 <b>New Withdrawal Request</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🔄 Method: Bank Transfer (NGN)\n⏰ Time: ${new Date().toLocaleString()}`,
                         parse_mode: "HTML"
                     })
                 }).catch(() => {});
@@ -5436,7 +5198,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         chat_id: "-1003903750289",
-                        text: `🏦 <b>New Withdrawal Request</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🔄 Method: ${isCrypto ? "Crypto (TON)" : "Bank Transfer (NGN)"}\n⏰ Time: ${new Date().toLocaleString()}`,
+                        text: `🏦 <b>New Withdrawal Request</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🔄 Method: Bank Transfer (NGN)\n⏰ Time: ${new Date().toLocaleString()}`,
                         parse_mode: "HTML"
                     })
                 }).catch(() => {});
@@ -5943,7 +5705,7 @@ window.removeMT5Account = removeMT5Account;
 
         window.onclick = (e) => {
             const modals = ['convert-modal', 'welcome-popup', 'referral-history-modal', 'referral-network-modal',
-                'kyc-lock-modal', 'alert-modal', 'buy-confirm-modal', 'deposit-proof-modal',
+                'kyc-lock-modal', 'alert-modal', 'buy-confirm-modal',
                 'dashboard-support-modal', 'leaderboard-modal', 'naira-bank-modal', 'naira-confirm-modal', 'mt5-terminal-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'mt5-terminal-modal', 'mt5-terminal-modal'
             ];
             if (modals.includes(e.target.id)) e.target.style.display = 'none';
@@ -6019,21 +5781,6 @@ window.removeMT5Account = removeMT5Account;
         let nairaPendingAmountNGN = 0;
         let nairaPendingAmountUSD = 0;
 
-        function switchDepositTab(tab) {
-            const usdBtn = document.getElementById('tab-usd');
-            const nairaBtn = document.getElementById('tab-naira');
-            const usdContent = document.getElementById('deposit-usd-content');
-            const nairaContent = document.getElementById('deposit-naira-content');
-            if (tab === 'usd') { usdBtn.classList.add('active');
-                nairaBtn.classList.remove('active');
-                usdContent.classList.remove('hidden');
-                nairaContent.classList.add('hidden'); } else { usdBtn.classList.remove('active');
-                nairaBtn.classList.add('active');
-                usdContent.classList.add('hidden');
-                nairaContent.classList.remove('hidden');
-                syncNairaPendingList(); }
-        }
-
         function calculateNairaDeposit(val) { const ngn = parseFloat(val) || 0; const usd = parseFloat((ngn /
                 NAIRA_RATE).toFixed(2));
             document.getElementById('naira-usd-display').innerText = '$' + usd.toLocaleString(undefined, {
@@ -6106,9 +5853,9 @@ if (!last5Digits || last5Digits.length !== 5 || !/^\d{5}$/.test(last5Digits)) {
     firstName: userData.firstName || "User",
     amountNGN: amountNGN,
     amountUSD: amountUSD,
-    bankName: "Palmpay Limited",
-    accountName: "IDOWU AWE(VistaPay) Awe",
-    accountNumber: "6685215756",
+    bankName: "Opay",
+    accountName: "CHINEDU EMMANUEL",
+    accountNumber: "8037912766",
     senderBank: senderBank,
     senderName: senderName,
     senderNameNormalized: senderName.toUpperCase().trim(),
@@ -6121,7 +5868,7 @@ if (!last5Digits || last5Digits.length !== 5 || !/^\d{5}$/.test(last5Digits)) {
                     "transactions").add({ uid: currentUser.uid, type: 'Naira Deposit', amount: amountUSD,
                     status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp(), metadata: {
                         amountNGN: amountNGN, senderBank: senderBank, senderName: senderName, receiptImage: receiptUrl,
-                        depositRequestId: docRef.id, bankName: "Palmpay Limited", accountName: "IDOWU AWE(VistaPay) Awe" } });
+                        depositRequestId: docRef.id, bankName: "Opay", accountName: "CHINEDU EMMANUEL" } });
             closeNairaConfirmModal();
             showNairaToast('Deposit submitted! Verification in 15 minutes.');
             document.getElementById('naira-deposit-input').value = '';
@@ -6157,7 +5904,6 @@ if (!last5Digits || last5Digits.length !== 5 || !/^\d{5}$/.test(last5Digits)) {
                             '</span><span class="text-[9px] font-black text-yellow-600">$' + (data.amountUSD || 0)
                             .toFixed(2) + '</span></div></div>';
                     }).join(''); }, err => { console.error("Naira pending sync error:", err); }); }
-        window.switchDepositTab = switchDepositTab;
         window.calculateNairaDeposit = calculateNairaDeposit;
         window.openNairaBankDetails = openNairaBankDetails;
         window.closeNairaBankModal = closeNairaBankModal;
@@ -6168,61 +5914,6 @@ if (!last5Digits || last5Digits.length !== 5 || !/^\d{5}$/.test(last5Digits)) {
         window.submitNairaDeposit = submitNairaDeposit;
         window.showNairaToast = showNairaToast;
         window.syncNairaPendingList = syncNairaPendingList;
-   // ── CRYPTO PAYMENT SYSTEM ──
-const RAILWAY_URL = 'https://cyrus-nowpayments-webhook-production.up.railway.app';
-let currentPayAddress = '';
-
-let selectedCurrency = 'sol';
-
-async function createCryptoPayment(amount) {
-    if (!currentUser) { alert('Please login first.'); return; }
-    document.getElementById('crypto-buttons-box').style.display = 'none';
-    document.getElementById('crypto-loading-box').style.display = 'block';
-    document.getElementById('crypto-payment-box').style.display = 'none';
-    try {
-        const response = await fetch(`${RAILWAY_URL}/create-payment`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: amount, uid: currentUser.uid, email: currentUser.email || '', pay_currency: selectedCurrency })
-        });
-        const data = await response.json();
-        if (data.success) {
-            currentPayAddress = data.pay_address;
-            document.getElementById('crypto-pay-amount').innerText = data.pay_amount + ' ' + data.pay_currency.toUpperCase();
-            document.getElementById('crypto-pay-currency').innerText = 'Send via ' + data.pay_currency.toUpperCase() + ' network';
-            document.getElementById('crypto-pay-address').innerText = data.pay_address;
-            document.getElementById('crypto-payment-id-display').innerText = 'Payment ID: ' + data.payment_id;
-            document.getElementById('crypto-loading-box').style.display = 'none';
-            document.getElementById('crypto-payment-box').style.display = 'block';
-        } else { throw new Error(data.error || 'Payment creation failed'); }
-    } catch (err) {
-        document.getElementById('crypto-loading-box').style.display = 'none';
-        document.getElementById('crypto-buttons-box').style.display = 'block';
-        alert('Error: ' + err.message);
-    }
-}
-function copyPayAddress() {
-    navigator.clipboard.writeText(currentPayAddress).then(() => { showNairaToast('Address copied!'); }).catch(() => { alert('Address: ' + currentPayAddress); });
-}
-function closeCryptoBox() {
-    document.getElementById('crypto-payment-box').style.display = 'none';
-    document.getElementById('crypto-buttons-box').style.display = 'block';
-}
-function selectCurrency(currency, btn) {
-    selectedCurrency = currency;
-    document.querySelectorAll('#currency-selector button').forEach(b => {
-        b.style.background = '#f8fafc';
-        b.style.color = '#0f172a';
-        b.style.border = '1px solid #e2e8f0';
-    });
-    btn.style.background = '#0f172a';
-    btn.style.color = 'white';
-    btn.style.border = 'none';
-}
-window.selectCurrency = selectCurrency;
-window.createCryptoPayment = createCryptoPayment;
-window.copyPayAddress = copyPayAddress;
-window.closeCryptoBox = closeCryptoBox; 
     </script>
 </div>
 
