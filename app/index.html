@@ -548,46 +548,9 @@
         </div>
     </div>
 </div>
-<div id="duplicate-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.85); backdrop-filter:blur(8px); z-index:99999; justify-content:center; align-items:center; padding:20px;">
-    <div style="background:white; border-radius:32px; width:100%; max-width:380px; padding:32px; text-align:center; border:4px solid #fbbf24;">
-        <div style="width:64px; height:64px; background:#fee2e2; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
-            <i class="fa-solid fa-user-slash" style="color:#ef4444; font-size:24px;"></i>
-        </div>
-        <h2 style="font-size:20px; font-weight:900; color:#0f172a; margin-bottom:8px;">Account Already Exists</h2>
-        <p id="duplicate-msg" style="color:#64748b; font-size:12px; font-weight:700; margin-bottom:24px; line-height:1.6;"></p>
-        <button onclick="toggleAuth(); document.getElementById('duplicate-modal').style.display='none';"
-            style="width:100%; padding:16px; background:#0f172a; color:white; border:none; border-radius:16px; font-weight:900; font-size:11px; text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; cursor:pointer;">
-            Login Instead
-        </button>
-        <a href="https://cyruschat.vercel.app" target="_blank"
-            style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:16px; background:#D4AF37; color:#0f172a; border-radius:16px; font-weight:900; font-size:11px; text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; text-decoration:none;">
-            <i class="fa-solid fa-comments"></i> Live Chat
-        </a>
-        <a href="https://t.me/Cyrus_Capital_bot" target="_blank"
-            style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:16px; background:#0088cc; color:white; border-radius:16px; font-weight:900; font-size:11px; text-transform:uppercase; letter-spacing:2px; text-decoration:none;">
-            <i class="fa-brands fa-telegram"></i> Telegram Support
-        </a>
-    </div>
-</div>
-<div id="verify-modal"
-class="hidden fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-8 text-center">
-<div class="w-20 h-20 bg-[#D4AF37]/10 rounded-full flex items-center justify-center mb-6">
-    <svg class="w-10 h-10 text-[#D4AF37]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-    </path>
-</svg>
-</div>
-<h2 class="text-2xl font-bold text-gray-900 mb-2">Check Your Email</h2>
-<p class="text-gray-500 max-w-sm mb-6">A <strong>verification link</strong> has been sent. Please click it to activate
-your enrollment, check your spam folder if you can't find it in your inbox</p>
-<button onclick="toggleAuth(); document.getElementById('verify-modal').classList.add('hidden')"
-class="text-[#D4AF37] font-bold uppercase tracking-widest text-xs">Continue to Login</button>
-</div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification,
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
         GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, query, where, limit, getDocs, updateDoc, serverTimestamp,
@@ -763,33 +726,6 @@ class="text-[#D4AF37] font-bold uppercase tracking-widest text-xs">Continue to L
         const btn = document.getElementById('submit-btn');
 
 // ── DUPLICATE CHECK ──
-function showDuplicateModal(msg) {
-    document.getElementById('duplicate-msg').innerText = msg;
-    document.getElementById('duplicate-modal').style.display = 'flex';
-}
-
-const savedAccount = localStorage.getItem('cyrus_registered_account');
-if (savedAccount) {
-    const parsed = JSON.parse(savedAccount);
-    showDuplicateModal(`You already have an account with email: ${parsed.email}. Please login instead or contact support.`);
-    return;
-}
-
-let userIP = null;
-try {
-    const ipRes = await fetch('https://api.ipapi.is/?q=&fields=ip');
-    const ipData = await ipRes.json();
-    userIP = ipData.ip || null;
-} catch(e) { console.warn('IP fetch failed:', e); }
-
-if (userIP) {
-    const ipCheck = localStorage.getItem('cyrus_registered_ip');
-    if (ipCheck && ipCheck === userIP) {
-        const ipEmail = localStorage.getItem('cyrus_ip_email') || 'a previous email';
-        showDuplicateModal(`An account already exists from this device (${ipEmail}). Please login or contact support if this is a mistake.`);
-        return;
-    }
-}
 
 const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -847,13 +783,6 @@ try {
         to_email: email
     });
 } catch(emailErr) { console.warn("Welcome email failed:", emailErr); }
-            await sendEmailVerification(user);
-            // ── SAVE ACCOUNT TO LOCALSTORAGE ──
-localStorage.setItem('cyrus_registered_account', JSON.stringify({ email: email, uid: user.uid }));
-if (userIP) {
-    localStorage.setItem('cyrus_registered_ip', userIP);
-    localStorage.setItem('cyrus_ip_email', email);
-}
             if (referredBy) {
                 try {
                     await setDoc(doc(db, "referrals", `ref_${referredBy}_${user.uid}`), {
@@ -867,7 +796,7 @@ if (userIP) {
                     });
                 } catch (refErr) { console.error("Referral doc creation error:", refErr); }
             }
-            document.getElementById('verify-modal').classList.remove('hidden');
+            window.showDashboard();
         } catch (error) {
             alert(error.message);
             btn.innerText = "REGISTER";
@@ -888,11 +817,6 @@ if (userIP) {
                 btn.innerText = "SIGN IN";
                 return;
             }
-            if (!userCredential.user.emailVerified) {
-                alert("Institutional Access Denied: Please verify your email first.");
-                btn.innerText = "SIGN IN";
-                return;
-            }
             window.showDashboard();
         } catch (error) {
             alert("Login Error: " + error.message);
@@ -905,22 +829,6 @@ if (userIP) {
             const result = await signInWithPopup(auth, provider);
             const userRef = doc(db, "users", result.user.uid);
             const userSnap = await getDoc(userRef);
-            // ── GOOGLE IP DUPLICATE CHECK ──
-let gUserIP = null;
-try {
-    const ipRes = await fetch('https://api.ipapi.is/?q=&fields=ip');
-    const ipData = await ipRes.json();
-    gUserIP = ipData.ip || null;
-} catch(e) {}
-if (gUserIP) {
-    const ipCheck = localStorage.getItem('cyrus_registered_ip');
-    if (ipCheck && ipCheck === gUserIP) {
-        const ipEmail = localStorage.getItem('cyrus_ip_email') || 'a previous email';
-        document.getElementById('duplicate-msg').innerText = `An account already exists from this device (${ipEmail}). Please login or contact support.`;
-        document.getElementById('duplicate-modal').style.display = 'flex';
-        return;
-    }
-}
             if (!userSnap.exists()) {
                 const params = new URLSearchParams(window.location.search);
                 let refInput = params.get('ref');
@@ -957,15 +865,6 @@ try {
     });
 } catch(emailErr) { console.warn("Welcome email failed:", emailErr); } 
                 await assignMT5(result.user.uid);
-                // ── SAVE GOOGLE ACCOUNT TO LOCALSTORAGE ──
-if (gUserIP) {
-    localStorage.setItem('cyrus_registered_ip', gUserIP);
-    localStorage.setItem('cyrus_ip_email', result.user.email);
-}
-localStorage.setItem('cyrus_registered_account', JSON.stringify({ 
-    email: result.user.email, 
-    uid: result.user.uid 
-}));
                 if (referredBy) {
                     try {
                         await setDoc(doc(db, "referrals", `ref_${referredBy}_${result.user.uid}`), {
@@ -6505,6 +6404,7 @@ if (!last5Digits || last5Digits.length !== 5 || !/^\d{5}$/.test(last5Digits)) {
     };
 
     // ── AUTO LOGIN ON REFRESH ──
+    // Only a ban keeps a signed-in user out; there is no email verification step.
     auth.onAuthStateChanged(function(user) {
         if (user) {
             const userRef = db.collection("users").doc(user.uid);
@@ -6513,55 +6413,7 @@ if (!last5Digits || last5Digits.length !== 5 || !/^\d{5}$/.test(last5Digits)) {
                     document.getElementById('loginPage').style.display = 'flex';
                     return;
                 }
-                if (user.emailVerified) {
-                    window.showDashboard();
-                } else {
-                    document.getElementById('loginPage').style.display = 'flex';
-                }
-            }).catch(() => {
-                document.getElementById('loginPage').style.display = 'flex';
-            });
-        } else {
-            document.getElementById('loginPage').style.display = 'flex';
-        }
-    });
-
-    // ── AUTO LOGIN ON REFRESH ──
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            const userRef = db.collection("users").doc(user.uid);
-            userRef.get().then(snap => {
-                if (snap.exists && snap.data().status === 'banned') {
-                    document.getElementById('loginPage').style.display = 'flex';
-                    return;
-                }
-                if (user.emailVerified) {
-                    window.showDashboard();
-                } else {
-                    document.getElementById('loginPage').style.display = 'flex';
-                }
-            }).catch(() => {
-                document.getElementById('loginPage').style.display = 'flex';
-            });
-        } else {
-            document.getElementById('loginPage').style.display = 'flex';
-        }
-    });
-
-    // ── AUTO LOGIN ON REFRESH ──
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            const userRef = db.collection("users").doc(user.uid);
-            userRef.get().then(snap => {
-                if (snap.exists && snap.data().status === 'banned') {
-                    document.getElementById('loginPage').style.display = 'flex';
-                    return;
-                }
-                if (user.emailVerified) {
-                    window.showDashboard();
-                } else {
-                    document.getElementById('loginPage').style.display = 'flex';
-                }
+                window.showDashboard();
             }).catch(() => {
                 document.getElementById('loginPage').style.display = 'flex';
             });
