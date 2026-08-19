@@ -3699,8 +3699,40 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
         <button onclick="filterJournal('sell', this)" id="jfilter-sell" style="padding:8px 16px; border-radius:20px; font-size:10px; font-weight:800; border:2px solid #e2e8f0; background:white; color:#94a3b8; cursor:pointer; white-space:nowrap; transition:all 0.2s;">Sell 📉</button>
     </div>
 
-    <!-- Trades List -->
-    <div id="journal-trades-list" style="flex:1; overflow-y:auto; padding:16px 20px; -webkit-overflow-scrolling:touch;">
+    <!-- Live Trading Terminal -->
+    <div id="live-trade-section" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+        <!-- Pair Selector -->
+        <div style="padding:16px 20px; border-bottom:1px solid #f1f5f9; background:white;">
+            <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px;">
+                <button onclick="selectLivePair('EUR/USD')" class="pair-btn-live" style="padding:8px 14px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; flex-shrink:0;">EURUSD</button>
+                <button onclick="selectLivePair('GBP/USD')" class="pair-btn-live" style="padding:8px 14px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; flex-shrink:0;">GBPUSD</button>
+                <button onclick="selectLivePair('USD/JPY')" class="pair-btn-live" style="padding:8px 14px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; flex-shrink:0;">USDJPY</button>
+                <button onclick="selectLivePair('USD/CHF')" class="pair-btn-live" style="padding:8px 14px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; flex-shrink:0;">USDCHF</button>
+                <button onclick="selectLivePair('XAU/USD')" class="pair-btn-live" style="padding:8px 14px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; flex-shrink:0;">XAUUSD</button>
+            </div>
+        </div>
+
+        <!-- Chart Area -->
+        <div id="chart-container" style="flex:1; background:#fafaf8; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; position:relative;">
+            <div id="chart-error-state" style="text-align:center; padding:40px 20px;">
+                <p style="font-size:14px; color:#94a3b8; font-weight:600;">Price not available, try again in a moment.</p>
+            </div>
+            <canvas id="live-chart" style="display:none; width:100%; height:100%;"></canvas>
+        </div>
+
+        <!-- Buy/Sell & Lot Controls -->
+        <div style="padding:20px; background:white; border-top:1px solid #f1f5f9; display:flex; gap:12px; align-items:center;">
+            <button id="live-sell-btn" onclick="executeLiveTrade('SELL')" style="flex:1; padding:16px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:14px; font-size:13px; font-weight:900; cursor:pointer; text-transform:uppercase; color:#ef4444;">SELL</button>
+            <div style="text-align:center; padding:0 16px;">
+                <p style="font-size:9px; color:#94a3b8; font-weight:700; text-transform:uppercase; margin-bottom:4px;">LOTS</p>
+                <p style="font-size:16px; font-weight:900; color:#0f172a;" id="lot-size">0.01</p>
+            </div>
+            <button id="live-buy-btn" onclick="executeLiveTrade('BUY')" style="flex:1; padding:16px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:14px; font-size:13px; font-weight:900; cursor:pointer; text-transform:uppercase; color:#0f172a;">BUY</button>
+        </div>
+    </div>
+
+    <!-- Trades List (Journal) -->
+    <div id="journal-trades-list" style="flex:1; overflow-y:auto; padding:16px 20px; -webkit-overflow-scrolling:touch; display:none;">
         <div style="text-align:center; padding:60px 20px;">
             <div style="width:72px; height:72px; background:#f1f5f9; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
                 <i class="fa-solid fa-book-open" style="color:#cbd5e1; font-size:28px;"></i>
@@ -5019,6 +5051,13 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             if (target) target.classList.add('active');
             window.location.hash = tabId;
             window.scrollTo(0, 0);
+
+            if (tabId === 'trade') {
+                if (!liveQuoteInterval) startLiveQuotePolling();
+            } else {
+                if (liveQuoteInterval) clearInterval(liveQuoteInterval);
+                liveQuoteInterval = null;
+            }
         }
 
         // ── AUTO LOAD TAB FROM URL HASH ──
@@ -7534,6 +7573,71 @@ function openImageFullscreen(url) {
     document.getElementById('image-modal') && (document.getElementById('image-modal').style.display = 'flex');
 }
 
+// ════════════════════════════════════════════════════════
+// LIVE TRADING TERMINAL
+// ════════════════════════════════════════════════════════
+let currentLivePair = 'EUR/USD';
+let liveQuoteInterval = null;
+
+function selectLivePair(pair) {
+    currentLivePair = pair;
+    const pairNoSlash = pair.replace('/', '');
+    document.querySelectorAll('.pair-btn-live').forEach(b => {
+        if (b.innerText === pairNoSlash) {
+            b.style.background = '#0f172a';
+            b.style.color = 'white';
+            b.style.borderColor = '#0f172a';
+        } else {
+            b.style.background = '#f8fafc';
+            b.style.color = '#0f172a';
+            b.style.borderColor = '#e2e8f0';
+        }
+    });
+    fetchLiveQuote();
+}
+
+async function fetchLiveQuote() {
+    try {
+        const symbol = currentLivePair.replace('/', '/');
+        const res = await fetch(`/api/quotes?symbols=${encodeURIComponent(symbol)}`);
+        const data = await res.json();
+
+        if (data && data.price) {
+            document.getElementById('chart-error-state').style.display = 'none';
+            const priceEl = document.createElement('div');
+            priceEl.style.cssText = 'padding:20px; text-align:center; font-size:32px; font-weight:900; color:#0f172a;';
+            priceEl.innerText = data.price.toFixed(4);
+            const errorState = document.getElementById('chart-error-state');
+            errorState.parentElement.replaceChild(priceEl, errorState);
+
+            updateBuyBtnColor(data);
+        }
+    } catch (err) {
+        console.log('Quote fetch error:', err);
+    }
+}
+
+function updateBuyBtnColor(quoteData) {
+    const buyBtn = document.getElementById('live-buy-btn');
+    const sellBtn = document.getElementById('live-sell-btn');
+
+    if (quoteData.bid && quoteData.ask) {
+        const mid = (parseFloat(quoteData.bid) + parseFloat(quoteData.ask)) / 2;
+        buyBtn.style.color = '#22c55e';
+        sellBtn.style.color = '#ef4444';
+    }
+}
+
+function executeLiveTrade(direction) {
+    const lotSize = document.getElementById('lot-size').innerText;
+    showNairaToast(`${direction} order placed: ${lotSize} lots on ${currentLivePair}`);
+}
+
+function startLiveQuotePolling() {
+    selectLivePair('EUR/USD');
+    liveQuoteInterval = setInterval(fetchLiveQuote, 5000);
+}
+
 window.openJournal = openJournal;
 window.closeJournal = closeJournal;
 window.openAddTrade = openAddTrade;
@@ -7548,6 +7652,9 @@ window.loadJournalTrades = loadJournalTrades;
 window.filterJournal = filterJournal;
 window.viewTrade = viewTrade;
 window.openImageFullscreen = openImageFullscreen;
+window.selectLivePair = selectLivePair;
+window.executeLiveTrade = executeLiveTrade;
+window.startLiveQuotePolling = startLiveQuotePolling;
     window.openMT5PassGuide = openMT5PassGuide;
     window.closeMT5PassGuide = closeMT5PassGuide;
     window.mt5GuideNav = mt5GuideNav;
