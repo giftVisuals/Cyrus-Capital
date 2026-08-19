@@ -1853,6 +1853,45 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
         .mt-close-btn { margin-top:6px; padding:6px 14px; background:#0f172a; border:none; color:#fff; border-radius:100px; font-size:10px; font-weight:800; text-transform:uppercase; cursor:pointer; }
         .mt-empty { text-align:center; color:#94a3b8; font-size:12px; font-weight:700; padding:60px 20px; }
 
+        /* ── OPEN POSITIONS ON HOME ── */
+        .mt-home-section-label { padding:22px 20px 6px; font-size:10px; font-weight:900; color:#94a3b8; text-transform:uppercase; letter-spacing:0.14em; display:flex; justify-content:space-between; align-items:center; }
+        .mt-home-total { font-size:12px; font-weight:900; font-variant-numeric:tabular-nums; letter-spacing:0; }
+
+        /* ── TIMEFRAME BAR ── */
+        .mt-tf-bar { display:flex; gap:2px; padding:8px 16px; overflow-x:auto; scrollbar-width:none; border-bottom:1px solid #f1f5f9; }
+        .mt-tf-bar::-webkit-scrollbar { display:none; }
+        .mt-tf-btn { flex:0 0 auto; padding:6px 12px; background:none; border:none; border-radius:8px; font-size:11px; font-weight:800; color:#94a3b8; cursor:pointer; }
+        .mt-tf-btn.active { background:#0f172a; color:#fff; }
+
+        /* ── ORDER TYPE TABS + PENDING / SLTP FIELDS ── */
+        .mt-otype-bar { display:flex; gap:6px; padding:10px 16px 0; overflow-x:auto; scrollbar-width:none; }
+        .mt-otype-bar::-webkit-scrollbar { display:none; }
+        .mt-otype-btn { flex:0 0 auto; padding:7px 12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:100px; font-size:10px; font-weight:800; color:#64748b; cursor:pointer; text-transform:uppercase; letter-spacing:0.04em; white-space:nowrap; }
+        .mt-otype-btn.active { background:#0f172a; border-color:#0f172a; color:#fff; }
+        /* Flex, not grid: the price field is hidden for market orders and the
+           remaining fields should close up rather than leave a hole. */
+        .mt-field-grid { display:flex; gap:8px; padding:10px 16px 0; }
+        .mt-field { flex:1; min-width:0; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:8px 10px; }
+        .mt-field label { display:block; font-size:8px; font-weight:900; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:2px; }
+        .mt-field input { width:100%; background:none; border:none; outline:none; font-size:13px; font-weight:800; color:#0f172a; font-variant-numeric:tabular-nums; }
+        .mt-field input::placeholder { color:#cbd5e1; font-weight:700; }
+        .mt-field.sl { border-color:#fecaca; background:#fef2f2; }
+        .mt-field.tp { border-color:#bbf7d0; background:#f0fdf4; }
+        .mt-field-hint { padding:4px 16px 0; font-size:10px; font-weight:700; color:#94a3b8; }
+
+        /* ── POSITION MANAGE SHEET ── */
+        .mt-sheet-backdrop { position:fixed; inset:0; background:rgba(15,23,42,0.4); z-index:9992; opacity:0; pointer-events:none; transition:opacity 0.25s; }
+        .mt-sheet-backdrop.show { opacity:1; pointer-events:auto; }
+        .mt-sheet { position:fixed; left:0; right:0; bottom:0; background:#fff; border-radius:24px 24px 0 0; box-shadow:0 -10px 40px rgba(0,0,0,0.15); z-index:9993; padding:10px 20px 28px; transform:translateY(100%); transition:transform 0.3s ease; max-height:88vh; overflow-y:auto; }
+        .mt-sheet.show { transform:translateY(0); }
+        .mt-sheet-title { font-size:16px; font-weight:900; color:#0f172a; margin-bottom:2px; }
+        .mt-sheet-sub { font-size:11px; font-weight:700; color:#94a3b8; margin-bottom:16px; }
+        .mt-sheet-btn { width:100%; padding:15px; border-radius:14px; font-weight:900; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; border:none; cursor:pointer; margin-top:10px; }
+        .mt-sheet-btn.primary { background:#0f172a; color:#fff; }
+        .mt-sheet-btn.ghost { background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; }
+        .mt-vol-chips { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+        .mt-vol-chip { padding:7px 12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:100px; font-size:11px; font-weight:800; color:#0f172a; cursor:pointer; }
+
         /* ── WALLET BOTTOM SHEET ── */
         .wallet-sheet-backdrop { position:fixed; inset:0; background:rgba(15,23,42,0.4); z-index:9990; opacity:0; pointer-events:none; transition:opacity 0.25s; }
         .wallet-sheet-backdrop.show { opacity:1; pointer-events:auto; }
@@ -2629,6 +2668,17 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
         <span id="mt-home-margin" class="mt-balance-value">$0.00</span>
     </div>
 </div>
+
+<div class="mt-home-section-label">
+    <span>Open positions <span id="mt-home-pos-count" class="mt-badge hidden">0</span></span>
+    <span id="mt-home-pos-total" class="mt-home-total"></span>
+</div>
+<div id="mt-home-positions"><p class="mt-empty" style="padding:26px 20px;">No open positions.</p></div>
+
+<div class="mt-home-section-label" id="mt-home-pending-label" style="display:none;">
+    <span>Pending orders <span id="mt-home-pend-count" class="mt-badge">0</span></span>
+</div>
+<div id="mt-home-pending"></div>
 </section>
 
 <div id="wallet-sheet-backdrop" class="wallet-sheet-backdrop" onclick="closeWalletSheet()"></div>
@@ -2636,6 +2686,35 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
     <div class="wallet-sheet-handle"></div>
     <button onclick="closeWalletSheet(); switchTab('payments'); switchPaymentsView('deposit');" class="wallet-sheet-btn deposit"><i class="fa-solid fa-arrow-down"></i> Deposit</button>
     <button onclick="closeWalletSheet(); switchTab('payments'); switchPaymentsView('withdraw');" class="wallet-sheet-btn withdraw"><i class="fa-solid fa-arrow-up"></i> Withdraw</button>
+</div>
+
+<!-- ═══ POSITION MANAGE SHEET — partial close, stop loss, take profit ═══ -->
+<div id="mt-pos-backdrop" class="mt-sheet-backdrop" onclick="closePositionSheet()"></div>
+<div id="mt-pos-sheet" class="mt-sheet">
+    <div class="wallet-sheet-handle"></div>
+    <p class="mt-sheet-title" id="mt-pos-title">Position</p>
+    <p class="mt-sheet-sub" id="mt-pos-sub"></p>
+
+    <div class="mt-field" style="background:#fff;">
+        <label>Volume to close</label>
+        <input type="number" id="mt-pos-vol" step="0.01" min="0.01">
+    </div>
+    <div class="mt-vol-chips" id="mt-pos-vol-chips"></div>
+    <button class="mt-sheet-btn primary" onclick="confirmClosePosition()" id="mt-pos-close-btn">Close</button>
+
+    <div class="mt-field-grid" style="padding:18px 0 0; grid-template-columns:1fr 1fr;">
+        <div class="mt-field sl">
+            <label>Stop loss</label>
+            <input type="number" id="mt-pos-sl" step="0.00001" placeholder="none">
+        </div>
+        <div class="mt-field tp">
+            <label>Take profit</label>
+            <input type="number" id="mt-pos-tp" step="0.00001" placeholder="none">
+        </div>
+    </div>
+    <p class="mt-field-hint" id="mt-pos-sltp-hint" style="padding-left:0;"></p>
+    <button class="mt-sheet-btn ghost" onclick="savePositionSLTP()">Save stop loss / take profit</button>
+    <button class="mt-sheet-btn ghost" onclick="cancelPendingOrder()" id="mt-pos-cancel-btn" style="display:none; color:#ef4444;">Cancel this order</button>
 </div>
 
 <!-- ═══ HISTORY SECTION ═══ -->
@@ -2656,7 +2735,7 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
 </div>
 
 <div id="mt-view-orders" class="mt-view hidden">
-    <p class="mt-empty">No pending orders.</p>
+    <div id="mt-orders-list"><p class="mt-empty">No pending orders.</p></div>
 </div>
 
 <div id="mt-view-deals" class="mt-view hidden">
@@ -2793,6 +2872,8 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
 
 <div class="mt-symbol-scroller" id="mt-symbol-scroller"></div>
 
+<div class="mt-tf-bar" id="mt-tf-bar"></div>
+
 <div class="mt-price-header">
     <p class="sym" id="mt-trade-sym">EURUSD</p>
     <p class="name" id="mt-trade-name">Euro vs US Dollar</p>
@@ -2802,9 +2883,33 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
     <div id="mt-trade-chart" style="height:280px;"></div>
 </div>
 
+<div class="mt-otype-bar" id="mt-otype-bar">
+    <button class="mt-otype-btn active" onclick="selectOrderType('market', this)">Execution</button>
+    <button class="mt-otype-btn" onclick="selectOrderType('buy_limit', this)">Buy Limit</button>
+    <button class="mt-otype-btn" onclick="selectOrderType('sell_limit', this)">Sell Limit</button>
+    <button class="mt-otype-btn" onclick="selectOrderType('buy_stop', this)">Buy Stop</button>
+    <button class="mt-otype-btn" onclick="selectOrderType('sell_stop', this)">Sell Stop</button>
+</div>
+
+<div class="mt-field-grid">
+    <div class="mt-field" id="mt-field-limit" style="display:none;">
+        <label>Price</label>
+        <input type="number" id="mt-order-price" step="0.00001" placeholder="0.00000">
+    </div>
+    <div class="mt-field sl">
+        <label>Stop loss</label>
+        <input type="number" id="mt-order-sl" step="0.00001" placeholder="none">
+    </div>
+    <div class="mt-field tp">
+        <label>Take profit</label>
+        <input type="number" id="mt-order-tp" step="0.00001" placeholder="none">
+    </div>
+</div>
+<p class="mt-field-hint" id="mt-order-hint">Leave stop loss and take profit blank to trade without them.</p>
+
 <div class="mt-order-bar">
     <button class="mt-sell-btn" onclick="placeTrade('sell')">
-        <span class="lbl">Sell</span>
+        <span class="lbl" id="mt-sell-label">Sell</span>
         <span class="px" id="mt-trade-sell-price">--</span>
     </button>
     <div class="mt-lots-box">
@@ -2812,7 +2917,7 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
         <input type="number" id="mt-trade-lots" value="0.01" step="0.01" min="0.01">
     </div>
     <button class="mt-buy-btn" onclick="placeTrade('buy')">
-        <span class="lbl">Buy</span>
+        <span class="lbl" id="mt-buy-label">Buy</span>
         <span class="px" id="mt-trade-buy-price">--</span>
     </button>
 </div>
@@ -4705,11 +4810,20 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         const TRADE_SYMBOLS = [
             { sym: 'EURUSD', api: 'EUR/USD', name: 'Euro vs US Dollar' },
             { sym: 'GBPUSD', api: 'GBP/USD', name: 'British Pound vs US Dollar' },
-            { sym: 'USDJPY', api: 'USD/JPY', name: 'US Dollar vs Japanese Yen' },
             { sym: 'USDCHF', api: 'USD/CHF', name: 'US Dollar vs Swiss Franc' },
-            { sym: 'AUDUSD', api: 'AUD/USD', name: 'Australian Dollar vs US Dollar' },
+            { sym: 'USDJPY', api: 'USD/JPY', name: 'US Dollar vs Japanese Yen' },
             { sym: 'USDCAD', api: 'USD/CAD', name: 'US Dollar vs Canadian Dollar' },
+            { sym: 'AUDUSD', api: 'AUD/USD', name: 'Australian Dollar vs US Dollar' },
+            { sym: 'AUDNZD', api: 'AUD/NZD', name: 'Australian Dollar vs New Zealand Dollar' },
+            { sym: 'AUDCAD', api: 'AUD/CAD', name: 'Australian Dollar vs Canadian Dollar' },
+            { sym: 'AUDCHF', api: 'AUD/CHF', name: 'Australian Dollar vs Swiss Franc' },
+            { sym: 'AUDJPY', api: 'AUD/JPY', name: 'Australian Dollar vs Japanese Yen' },
             { sym: 'XAUUSD', api: 'XAU/USD', name: 'Gold vs US Dollar' }
+        ];
+        const TIMEFRAMES = [
+            { label: 'M1', api: '1min' }, { label: 'M5', api: '5min' }, { label: 'M15', api: '15min' },
+            { label: 'M30', api: '30min' }, { label: 'H1', api: '1h' }, { label: 'H4', api: '4h' },
+            { label: 'D1', api: '1day' }, { label: 'W1', api: '1week' }, { label: 'MN', api: '1month' }
         ];
         const TRADE_SPREAD_PCT = 0.0002;
         const TRADE_CONTRACT_SIZE = 100000;
@@ -4719,16 +4833,35 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         let tickDirection = {};
         let openPositions = [];
         let closedPositions = [];
+        let pendingOrders = [];
         let currentTradeSymbol = 'EURUSD';
+        let currentTimeframe = '15min';
+        let currentOrderType = 'market';
         let tmChart = null, tmSeries = null;
-        let positionsUnsub = null, closedUnsub = null;
+        let positionsUnsub = null, closedUnsub = null, pendingUnsub = null;
+        let sheetPositionId = null;
 
         function priceDecimals(price) { return price < 20 ? 5 : 2; }
+        function symbolMeta(sym) { return TRADE_SYMBOLS.find(s => s.sym === sym) || TRADE_SYMBOLS[0]; }
+
+        // Every symbol costs an upstream request, so only ask for the ones on
+        // screen or carrying money: the chart's symbol, anything with an open
+        // position or a pending order, and the full list only while the Quote
+        // tab — which shows them all — is actually visible.
+        function symbolsToQuote() {
+            const quoteTabOpen = document.getElementById('quote') &&
+                document.getElementById('quote').classList.contains('active');
+            if (quoteTabOpen) return TRADE_SYMBOLS.map(s => s.api);
+            const needed = new Set([symbolMeta(currentTradeSymbol).api]);
+            openPositions.forEach(p => needed.add(symbolMeta(p.symbol).api));
+            pendingOrders.forEach(o => needed.add(symbolMeta(o.symbol).api));
+            return [...needed];
+        }
 
         async function fetchQuotes() {
             try {
-                const symbols = TRADE_SYMBOLS.map(s => s.api).join(',');
-                const res = await fetch('/api/quotes?symbols=' + encodeURIComponent(symbols));
+                const wanted = symbolsToQuote();
+                const res = await fetch('/api/quotes?symbols=' + encodeURIComponent(wanted.join(',')));
                 const data = await res.json();
                 TRADE_SYMBOLS.forEach(s => {
                     if (data[s.api] && !data[s.api].code) {
@@ -4744,7 +4877,18 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                 updateTradePrices();
                 recomputeOpenPositionsPnL();
                 updateHomeBalances();
+                triggerPendingOrders();
+                enforceStopsAndTargets();
             } catch (e) { console.error('Quote fetch failed', e); }
+        }
+
+        // Bid is what a sell fills at, ask what a buy fills at.
+        function bidAsk(sym) {
+            const q = liveQuotes[sym];
+            if (!q || !q.close) return null;
+            const price = parseFloat(q.close);
+            const half = price * TRADE_SPREAD_PCT / 2;
+            return { price, bid: price - half, ask: price + half };
         }
 
         function renderQuoteTab() {
@@ -4779,10 +4923,56 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             switchTab('trade');
         }
 
+        function renderTimeframeBar() {
+            const box = document.getElementById('mt-tf-bar');
+            if (!box) return;
+            box.innerHTML = TIMEFRAMES.map(t =>
+                '<button class="mt-tf-btn' + (t.api === currentTimeframe ? ' active' : '') +
+                '" onclick="selectTimeframe(\'' + t.api + '\')">' + t.label + '</button>'
+            ).join('');
+        }
+
+        async function selectTimeframe(tf) {
+            currentTimeframe = tf;
+            renderTimeframeBar();
+            await loadTradeChart(symbolMeta(currentTradeSymbol).api);
+        }
+
+        function selectOrderType(type, btn) {
+            currentOrderType = type;
+            document.querySelectorAll('#mt-otype-bar .mt-otype-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            const pending = type !== 'market';
+            document.getElementById('mt-field-limit').style.display = pending ? '' : 'none';
+            // A pending order already carries its side in its name, so only one
+            // of the two buttons can place it.
+            const side = pending ? (type.startsWith('buy') ? 'buy' : 'sell') : null;
+            const sellBtn = document.querySelector('.mt-sell-btn');
+            const buyBtn = document.querySelector('.mt-buy-btn');
+            sellBtn.style.opacity = (side === 'buy') ? '0.35' : '1';
+            buyBtn.style.opacity = (side === 'sell') ? '0.35' : '1';
+            sellBtn.style.pointerEvents = (side === 'buy') ? 'none' : '';
+            buyBtn.style.pointerEvents = (side === 'sell') ? 'none' : '';
+            document.getElementById('mt-sell-label').innerText = pending && side === 'sell' ? 'Place' : 'Sell';
+            document.getElementById('mt-buy-label').innerText = pending && side === 'buy' ? 'Place' : 'Buy';
+            document.getElementById('mt-order-hint').innerText = pending
+                ? 'Enter the price to trigger at, then tap ' + (side === 'buy' ? 'Buy' : 'Sell') + ' to place the order.'
+                : 'Leave stop loss and take profit blank to trade without them.';
+            if (pending) prefillLimitPrice();
+        }
+
+        function prefillLimitPrice() {
+            const el = document.getElementById('mt-order-price');
+            if (!el || el.value) return;
+            const q = bidAsk(currentTradeSymbol);
+            if (q) el.value = q.price.toFixed(priceDecimals(q.price));
+        }
+
         async function renderTradeTab() {
-            const meta = TRADE_SYMBOLS.find(s => s.sym === currentTradeSymbol) || TRADE_SYMBOLS[0];
+            const meta = symbolMeta(currentTradeSymbol);
             currentTradeSymbol = meta.sym;
             renderSymbolScroller();
+            renderTimeframeBar();
             document.getElementById('mt-trade-sym').innerText = meta.sym;
             document.getElementById('mt-trade-name').innerText = meta.name;
             updateTradePrices();
@@ -4818,7 +5008,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             });
             tmSeries = tmChart.addCandlestickSeries({ upColor: '#3b82f6', downColor: '#ef4444', borderVisible: false, wickUpColor: '#3b82f6', wickDownColor: '#ef4444' });
             try {
-                const res = await fetch('/api/candles?symbol=' + encodeURIComponent(apiSym) + '&interval=5min');
+                const res = await fetch('/api/candles?symbol=' + encodeURIComponent(apiSym) + '&interval=' + encodeURIComponent(currentTimeframe));
                 const data = await res.json();
                 if (data.values) {
                     const candles = data.values.slice().reverse().map(v => ({
@@ -4830,25 +5020,143 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             } catch (e) { console.error('Chart load failed', e); }
         }
 
+        // A stop loss has to sit on the losing side of entry and a take profit on
+        // the winning side, or it would fire the instant it was set.
+        function validateStops(side, entry, sl, tp) {
+            if (sl != null) {
+                if (side === 'buy' && sl >= entry) return 'For a buy, the stop loss must be below ' + entry.toFixed(5) + '.';
+                if (side === 'sell' && sl <= entry) return 'For a sell, the stop loss must be above ' + entry.toFixed(5) + '.';
+            }
+            if (tp != null) {
+                if (side === 'buy' && tp <= entry) return 'For a buy, the take profit must be above ' + entry.toFixed(5) + '.';
+                if (side === 'sell' && tp >= entry) return 'For a sell, the take profit must be below ' + entry.toFixed(5) + '.';
+            }
+            return null;
+        }
+
+        function readOptionalPrice(id) {
+            const raw = (document.getElementById(id).value || '').trim();
+            if (!raw) return null;
+            const n = parseFloat(raw);
+            return isNaN(n) ? null : n;
+        }
+
         async function placeTrade(side) {
             if (!currentUser) { alert('Please login first.'); return; }
             const lots = parseFloat(document.getElementById('mt-trade-lots').value) || 0.01;
-            const q = liveQuotes[currentTradeSymbol];
-            if (!q || !q.close) { alert('Price not available, try again in a moment.'); return; }
-            const price = parseFloat(q.close);
-            const spread = price * TRADE_SPREAD_PCT;
-            const execPrice = side === 'buy' ? price + spread / 2 : price - spread / 2;
+            if (lots < 0.01) { alert('Minimum volume is 0.01 lots.'); return; }
+            const q = bidAsk(currentTradeSymbol);
+            if (!q) { alert('Price not available, try again in a moment.'); return; }
+
+            const pending = currentOrderType !== 'market';
+            const sl = readOptionalPrice('mt-order-sl');
+            const tp = readOptionalPrice('mt-order-tp');
+
+            let entry;
+            if (pending) {
+                entry = readOptionalPrice('mt-order-price');
+                if (entry == null) { alert('Enter the price this order should trigger at.'); return; }
+                const err = validatePendingPrice(currentOrderType, entry, q);
+                if (err) { alert(err); return; }
+            } else {
+                entry = side === 'buy' ? q.ask : q.bid;
+            }
+
+            const stopErr = validateStops(side, entry, sl, tp);
+            if (stopErr) { alert(stopErr); return; }
+
             const marginRequired = lots * TRADE_MARGIN_PER_LOT;
             const balance = (userData && userData.balance) || 0;
             if (marginRequired > balance) { alert('Insufficient balance for this position size.'); return; }
+
             try {
-                await db.collection('positions').add({
+                const doc = {
                     uid: currentUser.uid, symbol: currentTradeSymbol, side: side, lots: lots,
-                    openPrice: execPrice, openTime: firebase.firestore.FieldValue.serverTimestamp(),
-                    status: 'open'
-                });
-                showNairaToast(side.toUpperCase() + ' ' + lots + ' ' + currentTradeSymbol + ' opened at ' + execPrice.toFixed(5));
-            } catch (e) { alert('Failed to open position: ' + e.message); }
+                    sl: sl, tp: tp, orderType: currentOrderType
+                };
+                if (pending) {
+                    doc.status = 'pending';
+                    doc.triggerPrice = entry;
+                    doc.placedTime = firebase.firestore.FieldValue.serverTimestamp();
+                } else {
+                    doc.status = 'open';
+                    doc.openPrice = entry;
+                    doc.openTime = firebase.firestore.FieldValue.serverTimestamp();
+                }
+                await db.collection('positions').add(doc);
+                const dec = priceDecimals(entry);
+                showNairaToast(pending
+                    ? currentOrderType.replace('_', ' ').toUpperCase() + ' ' + lots + ' ' + currentTradeSymbol + ' set at ' + entry.toFixed(dec)
+                    : side.toUpperCase() + ' ' + lots + ' ' + currentTradeSymbol + ' opened at ' + entry.toFixed(dec));
+                document.getElementById('mt-order-sl').value = '';
+                document.getElementById('mt-order-tp').value = '';
+                document.getElementById('mt-order-price').value = '';
+            } catch (e) { alert('Failed to place order: ' + e.message); }
+        }
+
+        // Limits wait for a better price than now, stops for a worse one. Placing
+        // one on the wrong side of the market would fill immediately.
+        function validatePendingPrice(type, entry, q) {
+            const dec = priceDecimals(q.price);
+            if (type === 'buy_limit' && entry >= q.ask) return 'A buy limit must be below the current ask of ' + q.ask.toFixed(dec) + '.';
+            if (type === 'sell_limit' && entry <= q.bid) return 'A sell limit must be above the current bid of ' + q.bid.toFixed(dec) + '.';
+            if (type === 'buy_stop' && entry <= q.ask) return 'A buy stop must be above the current ask of ' + q.ask.toFixed(dec) + '.';
+            if (type === 'sell_stop' && entry >= q.bid) return 'A sell stop must be below the current bid of ' + q.bid.toFixed(dec) + '.';
+            return null;
+        }
+
+        function pendingShouldTrigger(order, q) {
+            if (order.orderType === 'buy_limit') return q.ask <= order.triggerPrice;
+            if (order.orderType === 'sell_limit') return q.bid >= order.triggerPrice;
+            if (order.orderType === 'buy_stop') return q.ask >= order.triggerPrice;
+            if (order.orderType === 'sell_stop') return q.bid <= order.triggerPrice;
+            return false;
+        }
+
+        let triggerInFlight = new Set();
+        async function triggerPendingOrders() {
+            for (const order of pendingOrders) {
+                if (triggerInFlight.has(order.id)) continue;
+                const q = bidAsk(order.symbol);
+                if (!q || !pendingShouldTrigger(order, q)) continue;
+                triggerInFlight.add(order.id);
+                try {
+                    await db.collection('positions').doc(order.id).update({
+                        status: 'open',
+                        openPrice: order.triggerPrice,
+                        openTime: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    showNairaToast(order.symbol + ' ' + order.orderType.replace('_', ' ') + ' triggered at ' + order.triggerPrice.toFixed(priceDecimals(order.triggerPrice)));
+                } catch (e) { console.error('Trigger failed', e); }
+                finally { triggerInFlight.delete(order.id); }
+            }
+        }
+
+        // Close anything whose stop loss or take profit the market has reached.
+        // This runs in the browser, so it only fires while the app is open.
+        let stopInFlight = new Set();
+        async function enforceStopsAndTargets() {
+            for (const pos of openPositions) {
+                if (stopInFlight.has(pos.id)) continue;
+                if (pos.sl == null && pos.tp == null) continue;
+                const q = bidAsk(pos.symbol);
+                if (!q) continue;
+                const exit = pos.side === 'buy' ? q.bid : q.ask;
+                let reason = null;
+                if (pos.side === 'buy') {
+                    if (pos.sl != null && exit <= pos.sl) reason = 'Stop loss';
+                    else if (pos.tp != null && exit >= pos.tp) reason = 'Take profit';
+                } else {
+                    if (pos.sl != null && exit >= pos.sl) reason = 'Stop loss';
+                    else if (pos.tp != null && exit <= pos.tp) reason = 'Take profit';
+                }
+                if (!reason) continue;
+                stopInFlight.add(pos.id);
+                try {
+                    await settleClose(pos, pos.lots, reason);
+                } catch (e) { console.error('Auto-close failed', e); }
+                finally { stopInFlight.delete(pos.id); }
+            }
         }
 
         function listenPositions() {
@@ -4866,60 +5174,220 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                 closedPositions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderDeals();
             });
+            if (pendingUnsub) pendingUnsub();
+            pendingUnsub = db.collection('positions').where('uid', '==', currentUser.uid).where('status', '==', 'pending').onSnapshot(snap => {
+                pendingOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderPendingOrders();
+                triggerPendingOrders();
+            });
         }
 
-        function calcPnl(pos) {
-            const q = liveQuotes[pos.symbol];
-            if (!q || !q.close) return 0;
-            const price = parseFloat(q.close);
-            const spread = price * TRADE_SPREAD_PCT;
-            const closePrice = pos.side === 'buy' ? price - spread / 2 : price + spread / 2;
+        function calcPnl(pos, lots) {
+            const q = bidAsk(pos.symbol);
+            if (!q) return 0;
+            const closePrice = pos.side === 'buy' ? q.bid : q.ask;
             const diff = pos.side === 'buy' ? (closePrice - pos.openPrice) : (pos.openPrice - closePrice);
-            return diff * pos.lots * TRADE_CONTRACT_SIZE;
+            return diff * (lots == null ? pos.lots : lots) * TRADE_CONTRACT_SIZE;
         }
 
         function recomputeOpenPositionsPnL() {
             openPositions.forEach(p => { p.pnl = calcPnl(p); });
             const activeView = document.getElementById('mt-view-positions');
             if (activeView && !activeView.classList.contains('hidden')) renderPositions();
+            renderHomePositions();
+        }
+
+        function positionRowHtml(p, opts) {
+            const pnl = p.pnl || 0;
+            const cls = pnl >= 0 ? 'mt-up' : 'mt-down';
+            const sideColor = p.side === 'buy' ? '#3b82f6' : '#ef4444';
+            const dec = priceDecimals(Number(p.openPrice) || 1);
+            const stops = [];
+            if (p.sl != null) stops.push('SL ' + Number(p.sl).toFixed(dec));
+            if (p.tp != null) stops.push('TP ' + Number(p.tp).toFixed(dec));
+            const stopLine = stops.length ? '<br><span style="color:#cbd5e1;">' + stops.join(' &middot; ') + '</span>' : '';
+            return '<div class="mt-row" onclick="openPositionSheet(\'' + p.id + '\')">' +
+                '<div><p class="mt-row-sym">' + p.symbol + ' <span style="color:' + sideColor + ';font-size:10px;text-transform:uppercase;">' + p.side + ' ' + p.lots + '</span></p>' +
+                '<p class="mt-row-name">Opened at ' + Number(p.openPrice).toFixed(dec) + stopLine + '</p></div>' +
+                '<div class="mt-row-right"><p class="mt-row-price ' + cls + '">' + (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(2) + '</p>' +
+                (opts && opts.compact ? '' : '<button class="mt-close-btn">Manage</button>') + '</div></div>';
         }
 
         function renderPositions() {
             const box = document.getElementById('mt-positions-list');
             if (!box) return;
             if (openPositions.length === 0) { box.innerHTML = '<p class="mt-empty">No open positions.</p>'; return; }
-            box.innerHTML = openPositions.map(p => {
-                const pnl = p.pnl || 0;
-                const cls = pnl >= 0 ? 'mt-up' : 'mt-down';
-                const sideColor = p.side === 'buy' ? '#3b82f6' : '#ef4444';
-                return '<div class="mt-row" style="cursor:default;">' +
-                    '<div><p class="mt-row-sym">' + p.symbol + ' <span style="color:' + sideColor + ';font-size:10px;text-transform:uppercase;">' + p.side + ' ' + p.lots + '</span></p>' +
-                    '<p class="mt-row-name">Opened at ' + Number(p.openPrice).toFixed(5) + '</p></div>' +
-                    '<div class="mt-row-right"><p class="mt-row-price ' + cls + '">' + (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(2) + '</p>' +
-                    '<button onclick="closePosition(\'' + p.id + '\')" class="mt-close-btn">Close</button></div></div>';
-            }).join('');
+            box.innerHTML = openPositions.map(p => positionRowHtml(p)).join('');
         }
 
-        async function closePosition(id) {
-            const pos = openPositions.find(p => p.id === id);
-            if (!pos) return;
-            const pnl = calcPnl(pos);
-            const q = liveQuotes[pos.symbol];
-            const spread = q.close * TRADE_SPREAD_PCT;
-            const closePrice = pos.side === 'buy' ? q.close - spread / 2 : q.close + spread / 2;
-            try {
-                await db.runTransaction(async t => {
-                    const userRef = db.collection('users').doc(currentUser.uid);
-                    const snap = await t.get(userRef);
-                    const newBalance = Math.max(0, (snap.data().balance || 0) + pnl);
-                    t.update(userRef, { balance: newBalance });
-                    t.update(db.collection('positions').doc(id), {
-                        status: 'closed', closePrice: closePrice,
-                        closeTime: firebase.firestore.FieldValue.serverTimestamp(), pnl: pnl
+        function renderHomePositions() {
+            const box = document.getElementById('mt-home-positions');
+            if (!box) return;
+            const count = document.getElementById('mt-home-pos-count');
+            const total = document.getElementById('mt-home-pos-total');
+            if (count) { count.innerText = openPositions.length; count.classList.toggle('hidden', openPositions.length === 0); }
+            const floating = openPositions.reduce((s, p) => s + (p.pnl || 0), 0);
+            if (total) {
+                total.innerText = openPositions.length ? (floating >= 0 ? '+' : '') + '$' + floating.toFixed(2) : '';
+                total.className = 'mt-home-total ' + (floating >= 0 ? 'mt-up' : 'mt-down');
+            }
+            box.innerHTML = openPositions.length
+                ? openPositions.map(p => positionRowHtml(p, { compact: true })).join('')
+                : '<p class="mt-empty" style="padding:26px 20px;">No open positions.</p>';
+        }
+
+        function renderPendingOrders() {
+            const rows = pendingOrders.map(o => {
+                const dec = priceDecimals(Number(o.triggerPrice) || 1);
+                const sideColor = o.side === 'buy' ? '#3b82f6' : '#ef4444';
+                const stops = [];
+                if (o.sl != null) stops.push('SL ' + Number(o.sl).toFixed(dec));
+                if (o.tp != null) stops.push('TP ' + Number(o.tp).toFixed(dec));
+                const stopLine = stops.length ? '<br><span style="color:#cbd5e1;">' + stops.join(' &middot; ') + '</span>' : '';
+                return '<div class="mt-row" onclick="openPositionSheet(\'' + o.id + '\')">' +
+                    '<div><p class="mt-row-sym">' + o.symbol + ' <span style="color:' + sideColor + ';font-size:10px;text-transform:uppercase;">' + (o.orderType || '').replace('_', ' ') + ' ' + o.lots + '</span></p>' +
+                    '<p class="mt-row-name">Waiting for ' + Number(o.triggerPrice).toFixed(dec) + stopLine + '</p></div>' +
+                    '<div class="mt-row-right"><p class="mt-row-sub" style="color:#94a3b8;">Pending</p></div></div>';
+            }).join('');
+
+            const label = document.getElementById('mt-home-pending-label');
+            const count = document.getElementById('mt-home-pend-count');
+            const homeBox = document.getElementById('mt-home-pending');
+            if (label) label.style.display = pendingOrders.length ? '' : 'none';
+            if (count) count.innerText = pendingOrders.length;
+            if (homeBox) homeBox.innerHTML = rows;
+
+            const ordersBox = document.getElementById('mt-orders-list');
+            if (ordersBox) ordersBox.innerHTML = rows || '<p class="mt-empty">No pending orders.</p>';
+        }
+
+        // Settle `lots` of a position at the current price. Closing less than the
+        // full size books that share as its own closed record and leaves the rest
+        // open, so the history shows each partial close separately.
+        async function settleClose(pos, lots, reason) {
+            const q = bidAsk(pos.symbol);
+            if (!q) throw new Error('Price not available');
+            const closePrice = pos.side === 'buy' ? q.bid : q.ask;
+            const partial = lots < pos.lots - 1e-9;
+            const pnl = calcPnl(pos, lots);
+            const posRef = db.collection('positions').doc(pos.id);
+            const userRef = db.collection('users').doc(currentUser.uid);
+            const closedRef = partial ? db.collection('positions').doc() : posRef;
+
+            await db.runTransaction(async t => {
+                const snap = await t.get(userRef);
+                t.update(userRef, { balance: Math.max(0, (snap.data().balance || 0) + pnl) });
+                const closedDoc = {
+                    status: 'closed', closePrice: closePrice, pnl: pnl,
+                    closeTime: firebase.firestore.FieldValue.serverTimestamp(),
+                    closeReason: reason || 'Manual'
+                };
+                if (partial) {
+                    t.set(closedRef, {
+                        uid: pos.uid, symbol: pos.symbol, side: pos.side, lots: lots,
+                        openPrice: pos.openPrice, openTime: pos.openTime || null, ...closedDoc
                     });
+                    t.update(posRef, { lots: Number((pos.lots - lots).toFixed(2)) });
+                } else {
+                    t.update(posRef, { lots: pos.lots, ...closedDoc });
+                }
+            });
+            showNairaToast((reason ? reason + ' — ' : '') + 'closed ' + lots + ' ' + pos.symbol +
+                ': ' + (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(2));
+            return pnl;
+        }
+
+        function openPositionSheet(id) {
+            const pos = openPositions.find(p => p.id === id) || pendingOrders.find(o => o.id === id);
+            if (!pos) return;
+            sheetPositionId = id;
+            const isPending = pos.status === 'pending';
+            const entry = Number(isPending ? pos.triggerPrice : pos.openPrice);
+            const dec = priceDecimals(entry || 1);
+
+            document.getElementById('mt-pos-title').innerText =
+                pos.symbol + ' · ' + (isPending ? (pos.orderType || '').replace('_', ' ') : pos.side).toUpperCase() + ' ' + pos.lots;
+            document.getElementById('mt-pos-sub').innerText = isPending
+                ? 'Waiting to trigger at ' + entry.toFixed(dec)
+                : 'Opened at ' + entry.toFixed(dec) + ' · floating ' + ((pos.pnl || 0) >= 0 ? '+' : '') + '$' + (pos.pnl || 0).toFixed(2);
+
+            const volField = document.getElementById('mt-pos-vol').closest('.mt-field');
+            const chips = document.getElementById('mt-pos-vol-chips');
+            const closeBtn = document.getElementById('mt-pos-close-btn');
+            volField.style.display = isPending ? 'none' : '';
+            chips.style.display = isPending ? 'none' : '';
+            closeBtn.style.display = isPending ? 'none' : '';
+            document.getElementById('mt-pos-cancel-btn').style.display = isPending ? '' : 'none';
+
+            if (!isPending) {
+                document.getElementById('mt-pos-vol').value = pos.lots;
+                document.getElementById('mt-pos-vol').max = pos.lots;
+                // Offer the usual fractions so a partial close is one tap, while
+                // the field above still accepts any volume typed by hand.
+                const steps = [0.01, pos.lots / 4, pos.lots / 2, pos.lots]
+                    .map(v => Number(v.toFixed(2)))
+                    .filter((v, i, a) => v >= 0.01 && v <= pos.lots && a.indexOf(v) === i);
+                chips.innerHTML = steps.map(v =>
+                    '<span class="mt-vol-chip" onclick="document.getElementById(\'mt-pos-vol\').value=' + v + '">' +
+                    (Math.abs(v - pos.lots) < 1e-9 ? 'All ' : '') + v + '</span>').join('');
+            }
+
+            document.getElementById('mt-pos-sl').value = pos.sl != null ? pos.sl : '';
+            document.getElementById('mt-pos-tp').value = pos.tp != null ? pos.tp : '';
+            document.getElementById('mt-pos-sltp-hint').innerText = pos.side === 'buy'
+                ? 'Buy: stop loss below ' + entry.toFixed(dec) + ', take profit above it.'
+                : 'Sell: stop loss above ' + entry.toFixed(dec) + ', take profit below it.';
+
+            document.getElementById('mt-pos-sheet').classList.add('show');
+            document.getElementById('mt-pos-backdrop').classList.add('show');
+        }
+
+        function closePositionSheet() {
+            sheetPositionId = null;
+            document.getElementById('mt-pos-sheet').classList.remove('show');
+            document.getElementById('mt-pos-backdrop').classList.remove('show');
+        }
+
+        async function confirmClosePosition() {
+            const pos = openPositions.find(p => p.id === sheetPositionId);
+            if (!pos) return;
+            const lots = parseFloat(document.getElementById('mt-pos-vol').value);
+            if (isNaN(lots) || lots < 0.01) { alert('Enter a volume of at least 0.01 lots.'); return; }
+            if (lots > pos.lots + 1e-9) { alert('You only have ' + pos.lots + ' lots open on this position.'); return; }
+            const btn = document.getElementById('mt-pos-close-btn');
+            btn.disabled = true; btn.innerText = 'Closing...';
+            try {
+                await settleClose(pos, Number(lots.toFixed(2)), null);
+                closePositionSheet();
+            } catch (e) { alert('Failed to close: ' + e.message); }
+            finally { btn.disabled = false; btn.innerText = 'Close'; }
+        }
+
+        async function savePositionSLTP() {
+            const pos = openPositions.find(p => p.id === sheetPositionId) || pendingOrders.find(o => o.id === sheetPositionId);
+            if (!pos) return;
+            const sl = readOptionalPrice('mt-pos-sl');
+            const tp = readOptionalPrice('mt-pos-tp');
+            const entry = Number(pos.status === 'pending' ? pos.triggerPrice : pos.openPrice);
+            const err = validateStops(pos.side, entry, sl, tp);
+            if (err) { alert(err); return; }
+            try {
+                await db.collection('positions').doc(pos.id).update({ sl: sl, tp: tp });
+                showNairaToast('Stop loss and take profit updated.');
+                closePositionSheet();
+            } catch (e) { alert('Failed to save: ' + e.message); }
+        }
+
+        async function cancelPendingOrder() {
+            const order = pendingOrders.find(o => o.id === sheetPositionId);
+            if (!order) return;
+            try {
+                await db.collection('positions').doc(order.id).update({
+                    status: 'cancelled', closeTime: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                showNairaToast('Position closed: ' + (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(2));
-            } catch (e) { alert('Failed to close position: ' + e.message); }
+                showNairaToast('Pending order cancelled.');
+                closePositionSheet();
+            } catch (e) { alert('Failed to cancel: ' + e.message); }
         }
 
         function switchHistoryView(view, btn) {
@@ -4928,6 +5396,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             document.getElementById('mt-view-' + view).classList.remove('hidden');
             if (btn) btn.classList.add('active');
             if (view === 'positions') renderPositions();
+            if (view === 'orders') renderPendingOrders();
             if (view === 'deals') renderDeals();
         }
 
@@ -4960,9 +5429,10 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                     const cls = pnl >= 0 ? 'mt-up' : 'mt-down';
                     const sideColor = p.side === 'buy' ? '#3b82f6' : '#ef4444';
                     const date = p.closeTime ? p.closeTime.toDate().toLocaleString() : '';
+                    const why = p.closeReason && p.closeReason !== 'Manual' ? ' &middot; ' + p.closeReason : '';
                     return '<div class="mt-row" style="cursor:default;">' +
                         '<div><p class="mt-row-sym">' + p.symbol + ', <span style="color:' + sideColor + ';">' + p.side + ' ' + p.lots + '</span></p>' +
-                        '<p class="mt-row-name">' + Number(p.openPrice).toFixed(5) + ' &rarr; ' + Number(p.closePrice || 0).toFixed(5) + '<br>' + date + '</p></div>' +
+                        '<p class="mt-row-name">' + Number(p.openPrice).toFixed(5) + ' &rarr; ' + Number(p.closePrice || 0).toFixed(5) + why + '<br>' + date + '</p></div>' +
                         '<p class="mt-row-price ' + cls + '">' + (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '</p></div>';
                 } else {
                     const t = d.data;
@@ -4996,8 +5466,14 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
 
         window.selectSymbolForTrade = selectSymbolForTrade;
         window.placeTrade = placeTrade;
-        window.closePosition = closePosition;
         window.switchHistoryView = switchHistoryView;
+        window.selectTimeframe = selectTimeframe;
+        window.selectOrderType = selectOrderType;
+        window.openPositionSheet = openPositionSheet;
+        window.closePositionSheet = closePositionSheet;
+        window.confirmClosePosition = confirmClosePosition;
+        window.savePositionSLTP = savePositionSLTP;
+        window.cancelPendingOrder = cancelPendingOrder;
 
         fetchQuotes();
         setInterval(fetchQuotes, 20000);
