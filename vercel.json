@@ -1,3 +1,9 @@
 {
-  "version": 2
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://cyrus-capital-production.up.railway.app/api/:path*"
+    }
+  ]
 }
