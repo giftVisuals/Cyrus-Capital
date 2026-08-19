@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getQuotes, getCandles } from './api/_forex.js';
+import { getQuotes, getCandles } from './lib/forex.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -9,8 +9,15 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.static(__dirname));
 
-// The two /api routes below mirror the Vercel serverless functions in /api, so
-// the same front-end works whether it is served from Railway or Vercel.
+// Railway owns the price API. The front-end may be served from another host
+// (Vercel), so allow cross-origin reads — these endpoints return public market
+// data only, take no credentials and expose no keys.
+app.use('/api', (req, res, next) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET,OPTIONS');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
 
 // Batch live quotes for one or more symbols, e.g. /api/quotes?symbols=EUR/USD,GBP/USD
 app.get('/api/quotes', async (req, res) => {
