@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "redirects": [
+    { "source": "/", "destination": "/app", "permanent": false }
+  ],
   "rewrites": [
     {
       "source": "/api/:path*",

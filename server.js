@@ -41,6 +41,9 @@ app.get('/api/candles', async (req, res) => {
   }
 });
 
+// No marketing landing page — Cyrus Capital is a broker, so the root is the
+// trading app itself.
+app.get('/', (req, res) => res.redirect('/app'));
 app.get('/app', (req, res) => res.sendFile(path.join(__dirname, 'app/index.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin/index.html')));
 app.get('/admin/support', (req, res) => res.sendFile(path.join(__dirname, 'admin/support.html')));
