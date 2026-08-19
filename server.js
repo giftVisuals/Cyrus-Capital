@@ -1,28 +1,23 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getQuotes, getCandles } from './api/_forex.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Forex price data — https://twelvedata.com (free tier, needs an API key).
-// Set FOREX_API_KEY in Railway's variables.
-const FOREX_API_KEY = process.env.FOREX_API_KEY || '';
-const FOREX_BASE = 'https://api.twelvedata.com';
-
 app.use(express.static(__dirname));
+
+// The two /api routes below mirror the Vercel serverless functions in /api, so
+// the same front-end works whether it is served from Railway or Vercel.
 
 // Batch live quotes for one or more symbols, e.g. /api/quotes?symbols=EUR/USD,GBP/USD
 app.get('/api/quotes', async (req, res) => {
-  const symbols = req.query.symbols;
-  if (!symbols) return res.status(400).json({ error: 'symbols query param required' });
-  if (!FOREX_API_KEY) return res.status(503).json({ error: 'FOREX_API_KEY not configured on the server' });
+  const symbols = (req.query.symbols || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (!symbols.length) return res.status(400).json({ error: 'symbols query param required' });
   try {
-    const url = `${FOREX_BASE}/quote?symbol=${encodeURIComponent(symbols)}&apikey=${FOREX_API_KEY}`;
-    const r = await fetch(url);
-    const data = await r.json();
-    res.json(data);
+    res.json(await getQuotes(symbols));
   } catch (err) {
     res.status(502).json({ error: err.message });
   }
@@ -31,14 +26,9 @@ app.get('/api/quotes', async (req, res) => {
 // Candlestick history for one symbol, e.g. /api/candles?symbol=EUR/USD&interval=5min
 app.get('/api/candles', async (req, res) => {
   const symbol = req.query.symbol;
-  const interval = req.query.interval || '5min';
   if (!symbol) return res.status(400).json({ error: 'symbol query param required' });
-  if (!FOREX_API_KEY) return res.status(503).json({ error: 'FOREX_API_KEY not configured on the server' });
   try {
-    const url = `${FOREX_BASE}/time_series?symbol=${encodeURIComponent(symbol)}&interval=${encodeURIComponent(interval)}&outputsize=120&apikey=${FOREX_API_KEY}`;
-    const r = await fetch(url);
-    const data = await r.json();
-    res.json(data);
+    res.json(await getCandles(symbol, req.query.interval || '5min'));
   } catch (err) {
     res.status(502).json({ error: err.message });
   }
