@@ -1,0 +1,3928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cyrus Capital | Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; }
+        .admin-card { background: white; border-radius: 24px; border: 1px solid #f1f5f9; box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 20px; overflow: hidden; }
+        .tab-btn { padding: 12px 24px; border-radius: 16px; font-size: 12px; font-weight: 800; cursor: pointer; border: 2px solid transparent; transition: 0.2s; color: #94a3b8; background: white; flex-shrink: 0; white-space: nowrap; }
+        .tab-btn.active { background: #0f172a; color: white; border-color: #0f172a; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-approved { background: #dcfce7; color: #166534; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        .status-processing { background: #dbeafe; color: #1e40af; }
+        .status-available { background: #dcfce7; color: #166534; }
+        .status-claimed { background: #fee2e2; color: #991b1b; }
+        .request-row { border-bottom: 1px solid #f1f5f9; padding: 16px; transition: 0.2s; }
+        .request-row:hover { background: #f8fafc; }
+        .btn-approve { background: #10b981; color: white; padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-approve:hover { background: #059669; }
+        .btn-approve:disabled { background: #d1d5db; cursor: not-allowed; }
+        .btn-reject { background: #ef4444; color: white; padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-reject:hover { background: #dc2626; }
+        .btn-reject:disabled { background: #d1d5db; cursor: not-allowed; }
+        .detail-label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+        .detail-value { font-size: 13px; font-weight: 700; color: #0f172a; }
+        .commission-badge { background: #fae8ff; color: #a21caf; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; }
+        .referral-chain { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px; margin-top: 8px; }
+        .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: white; padding: 16px 24px; border-radius: 16px; font-weight: 700; font-size: 13px; z-index: 9999; box-shadow: 0 10px 40px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: #10b981; }
+        .toast.error { background: #ef4444; }
+        .stats-card { background: white; border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9; text-align: center; }
+        .stats-number { font-size: 28px; font-weight: 900; color: #0f172a; }
+        .stats-label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #94a3b8; }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; color: #e2e8f0; }
+        .filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+        .filter-bar::-webkit-scrollbar { display: none; }
+        .search-input { width: 100%; padding: 12px 16px; background: #f8fafc; border: 2px solid transparent; border-radius: 16px; font-size: 13px; font-weight: 700; outline: none; transition: 0.3s; }
+        .search-input:focus { background: #fff; border-color: #fbbf24; }
+        .user-chip { display: inline-flex; align-items: center; gap: 6px; background: #f1f5f9; padding: 6px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; color: #475569; }
+        .amount-badge { font-family: monospace; font-size: 16px; font-weight: 900; color: #0f172a; }
+        .timestamp-text { font-size: 11px; color: #94a3b8; font-weight: 600; }
+        .section-title { font-size: 20px; font-weight: 900; color: #0f172a; margin-bottom: 4px; }
+        .section-subtitle { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; }
+        .form-input { width: 100%; padding: 14px 16px; background: #f8fafc; border: 2px solid transparent; border-radius: 16px; font-size: 13px; font-weight: 700; outline: none; transition: 0.3s; }
+        .form-input:focus { background: #fff; border-color: #fbbf24; }
+        .form-label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; display: block; }
+        .mt5-card { background: white; border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9; transition: all 0.2s ease; }
+        .mt5-card:hover { box-shadow: 0 10px 40px rgba(0,0,0,0.06); transform: translateY(-2px); }
+        .mt5-stat-card { background: white; border-radius: 20px; padding: 24px; border: 1px solid #f1f5f9; text-align: center; transition: all 0.2s ease; }
+        .mt5-stat-card:hover { box-shadow: 0 10px 40px rgba(0,0,0,0.06); transform: translateY(-2px); }
+        .mt5-stat-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+        .mt5-stat-number { font-size: 32px; font-weight: 900; color: #0f172a; line-height: 1; }
+        .mt5-stat-label { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 8px; }
+        .dashboard-stat-card { background: white; border-radius: 20px; padding: 24px; border: 1px solid #f1f5f9; text-align: center; transition: all 0.2s ease; }
+        .dashboard-stat-card:hover { box-shadow: 0 10px 40px rgba(0,0,0,0.06); transform: translateY(-2px); }
+        .dashboard-stat-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+        .dashboard-stat-number { font-size: 28px; font-weight: 900; line-height: 1; }
+        .dashboard-stat-label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 8px; }
+        .password-mask { font-family: monospace; letter-spacing: 2px; }
+    
+        .leaderboard-card { background: white; border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9; }
+        .leaderboard-row { display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid #f1f5f9; transition: 0.2s; }
+        .leaderboard-row:hover { background: #f8fafc; }
+        .leaderboard-row.current-user { background: #fef3c7; border-left: 4px solid #fbbf24; }
+        .rank-badge { width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; margin-right: 12px; flex-shrink: 0; }
+        .rank-1 { background: #fef3c7; color: #92400e; }
+        .rank-2 { background: #e2e8f0; color: #475569; }
+        .rank-3 { background: #fed7aa; color: #9a3412; }
+        .rank-other { background: #f1f5f9; color: #94a3b8; }
+        .leaderboard-avatar { width: 40px; height: 40px; border-radius: 12px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; color: #64748b; margin-right: 12px; flex-shrink: 0; }
+        .leaderboard-name { font-size: 14px; font-weight: 700; color: #0f172a; }
+        .leaderboard-email { font-size: 11px; color: #94a3b8; font-weight: 600; }
+        .leaderboard-profit { font-size: 18px; font-weight: 900; color: #0f172a; text-align: right; flex-shrink: 0; }
+        .leaderboard-reward { font-size: 11px; font-weight: 800; color: #10b981; text-align: right; }
+        .week-badge { background: #f0fdf4; color: #166534; padding: 6px 14px; border-radius: 10px; font-size: 11px; font-weight: 800; }
+        .history-row { border-bottom: 1px solid #f1f5f9; padding: 12px 16px; }
+        .approve-profit-btn { background: #10b981; color: white; padding: 10px 20px; border-radius: 12px; font-size: 12px; font-weight: 800; border: none; cursor: pointer; transition: 0.2s; }
+        .approve-profit-btn:hover { background: #059669; }
+        .close-week-btn { background: #ef4444; color: white; padding: 14px 28px; border-radius: 16px; font-size: 13px; font-weight: 900; border: none; cursor: pointer; transition: 0.2s; }
+        .close-week-btn:hover { background: #dc2626; }
+
+        /* ── MOBILE ── */
+        .form-input, .search-input { font-size: 16px; } /* prevents iOS auto-zoom on focus */
+        @media (max-width: 640px) {
+            .max-w-7xl { padding-left: 14px !important; padding-right: 14px !important; }
+            .admin-card { border-radius: 18px; }
+            .section-title { font-size: 17px; }
+            .stats-number { font-size: 22px; }
+            .mt5-stat-number, .dashboard-stat-number { font-size: 24px; }
+            .request-row { padding: 14px 12px; }
+            .leaderboard-profit { font-size: 15px; }
+        }
+</style>
+<base target="_blank">
+<base target="_blank">
+<base target="_blank">
+<base target="_blank">
+<base target="_blank">
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center px-6">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-10">
+                <div class="w-16 h-16 bg-yellow-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-shield-halved text-slate-900 text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-black text-slate-900">Admin Portal</h1>
+                <p class="text-sm font-bold text-slate-400 mt-2">Cyrus Capital Institutional</p>
+            </div>
+            <div class="bg-white p-8 rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.05)] border border-gray-100">
+                <form id="admin-login-form" class="space-y-4">
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Admin Email</label>
+                        <input type="email" id="admin-email" placeholder="admin@cyrus.com" required class="w-full p-4 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-yellow-400 transition-all font-bold text-sm">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Password</label>
+                        <input type="password" id="admin-password" placeholder="••••••••" required class="w-full p-4 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-yellow-400 transition-all font-bold text-sm">
+                    </div>
+                    <button type="submit" id="admin-login-btn" class="w-full py-5 bg-slate-900 text-white font-bold rounded-xl hover:brightness-105 active:scale-[0.98] transition-all tracking-[0.2em] shadow-lg mt-4 uppercase text-sm">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" style="display:none;">
+        <!-- Top Navigation -->
+        <nav class="bg-white border-b border-slate-100 px-6 py-4 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 bg-yellow-400 rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-shield-halved text-slate-900"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-black text-slate-900 text-lg leading-tight">Cyrus Capital</h1>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Admin Panel</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden sm:block">
+                        <p id="admin-user-name" class="text-sm font-bold text-slate-900">Admin</p>
+                        <p id="admin-user-email" class="text-[10px] font-bold text-slate-400">admin@cyrus.com</p>
+                    </div>
+                    <button onclick="logoutAdmin()" class="h-10 w-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 hover:bg-red-50 hover:text-red-500 transition-all">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <!-- Stats Row -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="stats-card">
+                    <p id="stat-pending-deposits" class="stats-number text-yellow-500">0</p>
+                    <p class="stats-label">Pending Deposits</p>
+                </div>
+                <div class="stats-card">
+                    <p id="stat-pending-conversions" class="stats-number text-blue-500">0</p>
+                    <p class="stats-label">Pending Conversions</p>
+                </div>
+                <div class="stats-card">
+                    <div class="flex items-center justify-center gap-2">
+                        <p id="stat-total-users" class="stats-number">0</p>
+                    </div>
+                    <p class="stats-label">Total Users</p>
+                </div>
+                <div class="stats-card">
+                    <div class="flex items-center justify-center gap-2">
+                        <p id="stat-total-referrals" class="stats-number text-purple-500">0</p>
+                    </div>
+                    <p class="stats-label">Total Referrals</p>
+                </div>
+            </div>
+
+            <!-- NEW: Financial Dashboard Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="dashboard-stat-card">
+                    <div class="dashboard-stat-icon bg-green-50 text-green-600">
+                        <i class="fa-solid fa-arrow-down text-xl"></i>
+                    </div>
+                    <p id="stat-total-deposits" class="dashboard-stat-number text-green-600">$0</p>
+                    <p class="dashboard-stat-label">Total Deposits</p>
+                </div>
+                <div class="dashboard-stat-card">
+                    <div class="dashboard-stat-icon bg-red-50 text-red-600">
+                        <i class="fa-solid fa-arrow-up text-xl"></i>
+                    </div>
+                    <p id="stat-total-withdrawals" class="dashboard-stat-number text-red-600">$0</p>
+                    <p class="dashboard-stat-label">Total Withdrawals</p>
+                </div>
+                <div class="dashboard-stat-card">
+                    <div class="dashboard-stat-icon bg-blue-50 text-blue-600">
+                        <i class="fa-solid fa-server text-xl"></i>
+                    </div>
+                    <p id="stat-mt5-claimed" class="dashboard-stat-number text-blue-600">0</p>
+                    <p class="dashboard-stat-label">MT5 Accounts Claimed</p>
+                </div>
+            </div>
+
+<!-- MANUAL STATS OVERRIDE -->
+<div class="admin-card p-6 mb-6">
+    <div class="mb-4">
+        <h2 class="section-title">📊 Override Dashboard Stats</h2>
+        <p class="section-subtitle">Manually set total deposits and withdrawals displayed</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Total Deposits Override -->
+        <div>
+            <label class="form-label">Override Total Deposits ($)</label>
+            <div class="flex gap-3">
+                <input type="number" id="override-deposits-input" placeholder="e.g. 15000" step="0.01" class="form-input flex-1">
+                <button onclick="overrideStat('total_deposits')" class="px-6 py-3 bg-green-500 text-white rounded-xl font-black text-xs uppercase tracking-wider hover:bg-green-600 transition-all flex-shrink-0">
+                    <i class="fa-solid fa-pen mr-1"></i>Set
+                </button>
+            </div>
+            <p id="current-deposits-display" class="text-xs font-bold text-slate-400 mt-2">Current: Loading...</p>
+        </div>
+        <!-- Total Withdrawals Override -->
+        <div>
+            <label class="form-label">Override Total Withdrawals ($)</label>
+            <div class="flex gap-3">
+                <input type="number" id="override-withdrawals-input" placeholder="e.g. 5000" step="0.01" class="form-input flex-1">
+                <button onclick="overrideStat('total_withdrawals')" class="px-6 py-3 bg-red-500 text-white rounded-xl font-black text-xs uppercase tracking-wider hover:bg-red-600 transition-all flex-shrink-0">
+                    <i class="fa-solid fa-pen mr-1"></i>Set
+                </button>
+            </div>
+            <p id="current-withdrawals-display" class="text-xs font-bold text-slate-400 mt-2">Current: Loading...</p>
+        </div>
+    </div>
+    <div class="mt-4 p-3 bg-yellow-50 rounded-xl border border-yellow-100">
+        <p class="text-xs font-bold text-yellow-700"><i class="fa-solid fa-triangle-exclamation mr-1"></i>These values override what shows on the dashboard stats. Use to correct displayed totals.</p>
+    </div>
+</div>
+
+            <!-- Tab Navigation -->
+            <div class="flex gap-2 mb-6 filter-bar">
+                <button class="tab-btn active" onclick="switchAdminTab('deposits', this)">
+                    <i class="fa-solid fa-money-bill-wave mr-2"></i>Deposit Proofs
+                </button>
+                <button class="tab-btn" onclick="switchAdminTab('conversions', this)">
+                    <i class="fa-solid fa-rotate mr-2"></i>Profit Conversions
+                </button>
+                <button class="tab-btn" onclick="switchAdminTab('withdrawals', this)">
+                    <i class="fa-solid fa-money-bill-transfer mr-2"></i>Withdrawals
+                </button>
+                <button class="tab-btn" onclick="switchAdminTab('kyc', this)">
+                    <i class="fa-solid fa-id-card mr-2"></i>KYC Reviews
+                </button>
+                <button class="tab-btn" onclick="switchAdminTab('funded', this)">
+                    <i class="fa-solid fa-cart-shopping mr-2"></i>Funded Accounts
+                </button>
+                <button class="tab-btn" onclick="switchAdminTab('users', this)">
+                    <i class="fa-solid fa-users mr-2"></i>All Users
+                </button>
+                <button class="tab-btn" onclick="switchAdminTab('referrals', this)">
+                    <i class="fa-solid fa-user-group mr-2"></i>Referral Network
+                </button>
+                <button class="tab-btn" onclick="switchAdminTab('mt5', this)">
+                    <i class="fa-solid fa-server mr-2"></i>MT5 Inventory
+                </button>
+                <button class="tab-btn" onclick="switchAdminTab('broadcast', this)">
+                    <i class="fa-solid fa-bullhorn mr-2"></i>Broadcast
+                </button>
+                <button class="tab-btn" onclick="switchAdminTab('leaderboard', this)">
+    <i class="fa-solid fa-trophy mr-2"></i>Leaderboard
+</button>
+<button class="tab-btn" onclick="switchAdminTab('pnl', this)">
+    <i class="fa-solid fa-chart-mixed mr-2"></i>PNL
+</button>
+<button class="tab-btn" onclick="switchAdminTab('gallery', this)">
+    <i class="fa-solid fa-layer-group mr-2"></i>MT5 Gallery
+</button>
+<button class="tab-btn" onclick="window.open('support.html', '_blank')">
+    <i class="fa-solid fa-headset mr-2"></i>Support <i class="fa-solid fa-up-right-from-square ml-1" style="font-size:9px;"></i>
+</button>
+<button class="tab-btn" onclick="switchAdminTab('settings', this)">
+    <i class="fa-solid fa-gear mr-2"></i>Settings
+</button>
+
+            </div>
+
+            <!-- DEPOSIT PROOFS SECTION -->
+            <div id="tab-deposits" class="admin-tab-content">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="section-title">Deposit Proofs</h2>
+                        <p class="section-subtitle">Verify and approve deposit submissions</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="filterDeposits('all')" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider">All</button>
+                        <button onclick="filterDeposits('pending')" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Pending</button>
+                        <button onclick="filterDeposits('approved')" class="px-4 py-2 bg-green-100 text-green-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Approved</button>
+                        <button onclick="filterDeposits('rejected')" class="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Rejected</button>
+                    </div>
+                </div>
+                <div id="deposits-list" class="admin-card">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <p class="font-bold text-sm">Loading deposit proofs...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFIT CONVERSIONS SECTION -->
+            <div id="tab-conversions" class="admin-tab-content" style="display:none;">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="section-title">Profit Conversions</h2>
+                        <p class="section-subtitle">Approve profit-to-balance conversions</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="filterConversions('all')" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider">All</button>
+                        <button onclick="filterConversions('pending')" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Pending</button>
+                        <button onclick="filterConversions('approved')" class="px-4 py-2 bg-green-100 text-green-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Approved</button>
+                        <button onclick="filterConversions('rejected')" class="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Rejected</button>
+                    </div>
+                </div>
+                <div id="conversions-list" class="admin-card">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <p class="font-bold text-sm">Loading conversion requests...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WITHDRAWALS SECTION -->
+            <div id="tab-withdrawals" class="admin-tab-content" style="display:none;">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="section-title">Withdrawal Requests</h2>
+                        <p class="section-subtitle">Process user withdrawal requests</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="filterWithdrawals('all')" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider">All</button>
+                        <button onclick="filterWithdrawals('processing')" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Processing</button>
+                        <button onclick="filterWithdrawals('approved')" class="px-4 py-2 bg-green-100 text-green-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Approved</button>
+                        <button onclick="filterWithdrawals('rejected')" class="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Rejected</button>
+                    </div>
+                </div>
+                <div id="withdrawals-list" class="admin-card">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <p class="font-bold text-sm">Loading withdrawals...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KYC SECTION -->
+            <div id="tab-kyc" class="admin-tab-content" style="display:none;">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="section-title">KYC Reviews</h2>
+                        <p class="section-subtitle">Verify user identity documents</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="filterKyc('all')" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider">All</button>
+                        <button onclick="filterKyc('pending')" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Pending</button>
+                        <button onclick="filterKyc('verified')" class="px-4 py-2 bg-green-100 text-green-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Verified</button>
+                        <button onclick="filterKyc('rejected')" class="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Rejected</button>
+                    </div>
+                </div>
+                <div id="kyc-list" class="admin-card">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <p class="font-bold text-sm">Loading KYC submissions...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FUNDED ACCOUNTS SECTION -->
+            <div id="tab-funded" class="admin-tab-content" style="display:none;">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="section-title">Funded Account Orders</h2>
+                        <p class="section-subtitle">Process account purchase requests</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="filterFunded('all')" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider">All</button>
+                        <button onclick="filterFunded('processing')" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Processing</button>
+                        <button onclick="filterFunded('approved')" class="px-4 py-2 bg-green-100 text-green-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Approved</button>
+                        <button onclick="filterFunded('rejected')" class="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Rejected</button>
+                    </div>
+                </div>
+                <div id="funded-list" class="admin-card">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <p class="font-bold text-sm">Loading funded account requests...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALL USERS SECTION -->
+            <div id="tab-users" class="admin-tab-content" style="display:none;">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="section-title">All Users</h2>
+                        <p class="section-subtitle">Manage user accounts and balances</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="user-search" placeholder="Search by name or email..." onkeyup="searchUsers()" class="search-input" style="width: 280px;">
+                    </div>
+                </div>
+                <div id="users-list" class="admin-card">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <p class="font-bold text-sm">Loading users...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REFERRAL NETWORK SECTION -->
+            <div id="tab-referrals" class="admin-tab-content" style="display:none;">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="section-title">Referral Network</h2>
+                        <p class="section-subtitle">View all referral relationships and commissions</p>
+                    </div>
+                </div>
+                <div id="referrals-list" class="admin-card">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <p class="font-bold text-sm">Loading referral data...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: MT5 INVENTORY SECTION -->
+            <div id="tab-mt5" class="admin-tab-content" style="display:none;">
+                <!-- MT5 Stats Row -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="mt5-stat-card">
+                        <div class="mt5-stat-icon bg-slate-100 text-slate-600">
+                            <i class="fa-solid fa-server text-xl"></i>
+                        </div>
+                        <p id="mt5-stat-total" class="mt5-stat-number">0</p>
+                        <p class="mt5-stat-label">Total Accounts</p>
+                    </div>
+                    <div class="mt5-stat-card">
+                        <div class="mt5-stat-icon bg-green-50 text-green-600">
+                            <i class="fa-solid fa-check-circle text-xl"></i>
+                        </div>
+                        <p id="mt5-stat-available" class="mt5-stat-number text-green-600">0</p>
+                        <p class="mt5-stat-label">Available</p>
+                    </div>
+                    <div class="mt5-stat-card">
+                        <div class="mt5-stat-icon bg-red-50 text-red-600">
+                            <i class="fa-solid fa-lock text-xl"></i>
+                        </div>
+                        <p id="mt5-stat-claimed" class="mt5-stat-number text-red-600">0</p>
+                        <p class="mt5-stat-label">Claimed</p>
+                    </div>
+                </div>
+
+                <!-- Add MT5 Account Form -->
+                <div class="admin-card p-6 mb-6">
+                    <div class="mb-4">
+                        <h2 class="section-title">Add MT5 Account</h2>
+                        <p class="section-subtitle">Add new MT5 credentials to inventory</p>
+                    </div>
+                    <form id="mt5-add-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+        <div>
+            <label class="form-label">MT5 Login</label>
+            <input type="text" id="mt5-login-input" placeholder="e.g. 12345678" required class="form-input">
+        </div>
+        <div>
+            <label class="form-label">Server</label>
+            <input type="text" id="mt5-server-input" placeholder="e.g. Headway-Real" required class="form-input">
+        </div>
+        <div>
+            <label class="form-label">Admin Account Name (Gmail) <span style="color:#ef4444;">*</span></label>
+            <input type="email" id="mt5-admin-gmail-input" placeholder="e.g. oluwafisayoawe@gmail.com" required class="form-input">
+        </div>
+        <div>
+            <button type="submit" id="mt5-add-btn" class="w-full py-4 bg-slate-900 text-white font-black rounded-xl hover:brightness-105 active:scale-[0.98] transition-all tracking-wider shadow-lg uppercase text-xs">
+                <i class="fa-solid fa-plus mr-2"></i>Add to Inventory & Gallery
+            </button>
+        </div>
+    </form>
+                </div>
+
+                <!-- MT5 Inventory List -->
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="section-title">MT5 Inventory</h2>
+                        <p class="section-subtitle">All MT5 accounts and their status</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="filterMt5('all')" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider">All</button>
+                        <button onclick="filterMt5('available')" class="px-4 py-2 bg-green-100 text-green-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Available</button>
+                        <button onclick="filterMt5('claimed')" class="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Claimed</button>
+                    </div>
+                </div>
+                <div id="mt5-list" class="admin-card">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <p class="font-bold text-sm">Loading MT5 inventory...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BROADCAST SECTION -->
+            <div id="tab-broadcast" class="admin-tab-content" style="display:none;">
+                <!-- SEND NOTIFICATION TO SPECIFIC USER -->
+<div class="admin-card p-6 mb-6">
+    <div class="mb-4">
+        <h2 class="section-title">Send User Notification</h2>
+        <p class="section-subtitle">Send a notification to a specific user by UID or Email</p>
+    </div>
+    <div class="space-y-4 max-w-2xl">
+        <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">User UID or Email</label>
+            <input type="text" id="notif-user-input" placeholder="Paste user UID or email..." class="w-full p-4 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-yellow-400 transition-all font-bold text-sm">
+        </div>
+        <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Notification Title</label>
+            <input type="text" id="notif-title" placeholder="e.g. Deposit Approved" class="w-full p-4 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-yellow-400 transition-all font-bold text-sm">
+        </div>
+        <div>
+            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Message</label>
+            <textarea id="notif-message" rows="3" placeholder="Enter your message..." class="w-full p-4 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-yellow-400 transition-all font-bold text-sm resize-none"></textarea>
+        </div>
+        <button onclick="sendUserNotification()" class="px-8 py-4 bg-yellow-400 text-slate-900 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:brightness-110 transition-all">
+            <i class="fa-solid fa-paper-plane mr-2"></i>Send Notification
+        </button>
+    </div>
+</div>
+                <!-- FIX UNCLAIMED USERS -->
+<div class="admin-card p-6 mb-6">
+    <div class="mb-4">
+        <h2 class="section-title">🔧 Fix Unclaimed Users</h2>
+        <p class="section-subtitle">Remove MT5 data from users whose account was unclaimed</p>
+    </div>
+    <p class="text-sm font-bold text-slate-500 mb-4">Click this button to automatically fix all users who still have MT5 credentials but their account was unclaimed from inventory.</p>
+    <button onclick="fixAllUnclaimedUsers()" class="px-8 py-4 bg-red-500 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:brightness-110 transition-all">
+        <i class="fa-solid fa-wrench mr-2"></i>Fix All Unclaimed Users
+    </button>
+</div>
+
+<div class="mb-6">
+                    <h2 class="section-title">System Broadcast</h2>
+                    <p class="section-subtitle">Send notifications to all users</p>
+                </div>
+                <div class="admin-card p-6">
+                    <div class="space-y-4 max-w-2xl">
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Broadcast Title</label>
+                            <input type="text" id="broadcast-title" placeholder="e.g. System Maintenance" class="w-full p-4 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-yellow-400 transition-all font-bold text-sm">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Message Body</label>
+                            <textarea id="broadcast-body" rows="4" placeholder="Enter your broadcast message..." class="w-full p-4 bg-slate-50 border-none rounded-xl outline-none focus:ring-2 focus:ring-yellow-400 transition-all font-bold text-sm resize-none"></textarea>
+                        </div>
+                        <button onclick="sendBroadcast()" class="px-8 py-4 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:brightness-110 transition-all">
+                            <i class="fa-solid fa-paper-plane mr-2"></i>Send Broadcast
+                        </button>
+                    </div>
+                </div>
+            </div>
+        
+<!-- PNL SECTION -->
+<div id="tab-pnl" class="admin-tab-content" style="display:none;">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="section-title">PNL Management</h2>
+            <p class="section-subtitle">Add daily profit & loss records for all users</p>
+        </div>
+    </div>
+
+    <!-- ADD PNL FORM -->
+    <div class="admin-card p-6 mb-6">
+        <div class="mb-4">
+            <h2 class="section-title">Add Daily PNL</h2>
+            <p class="section-subtitle">Enter today's profit and loss figures</p>
+        </div>
+        <div class="space-y-4 max-w-2xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="form-label">Profit ($)</label>
+                    <input type="number" id="pnl-profit-input" placeholder="e.g. 500" min="0" step="0.01" class="form-input">
+                </div>
+                <div>
+                    <label class="form-label">Loss ($)</label>
+                    <input type="number" id="pnl-loss-input" placeholder="e.g. 200" min="0" step="0.01" class="form-input">
+                </div>
+            </div>
+            <div>
+                <label class="form-label">Date</label>
+                <input type="date" id="pnl-date-input" class="form-input">
+            </div>
+            <div>
+                <label class="form-label">Note (Optional)</label>
+                <input type="text" id="pnl-note-input" placeholder="e.g. Strong NFP day, Market volatile..." class="form-input">
+            </div>
+            <!-- NET PREVIEW -->
+            <div id="pnl-net-preview" class="hidden p-4 rounded-xl text-center">
+                <p class="text-[10px] font-black uppercase tracking-widest mb-1 opacity-70">Net PNL Preview</p>
+                <p id="pnl-net-value" class="text-3xl font-black">$0</p>
+            </div>
+            <button onclick="addPNLRecord()" id="pnl-add-btn" class="px-8 py-4 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:brightness-110 transition-all flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i> Add PNL Record
+            </button>
+        </div>
+    </div>
+
+    <!-- PNL STATS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="dashboard-stat-card">
+            <div class="dashboard-stat-icon bg-green-50 text-green-600">
+                <i class="fa-solid fa-arrow-trend-up text-xl"></i>
+            </div>
+            <p id="pnl-stat-profit" class="dashboard-stat-number text-green-600">$0</p>
+            <p class="dashboard-stat-label">Total Profit (All Time)</p>
+        </div>
+        <div class="dashboard-stat-card">
+            <div class="dashboard-stat-icon bg-red-50 text-red-600">
+                <i class="fa-solid fa-arrow-trend-down text-xl"></i>
+            </div>
+            <p id="pnl-stat-loss" class="dashboard-stat-number text-red-600">$0</p>
+            <p class="dashboard-stat-label">Total Loss (All Time)</p>
+        </div>
+        <div class="dashboard-stat-card">
+            <div class="dashboard-stat-icon bg-yellow-50 text-yellow-600">
+                <i class="fa-solid fa-scale-balanced text-xl"></i>
+            </div>
+            <p id="pnl-stat-net" class="dashboard-stat-number text-yellow-600">$0</p>
+            <p class="dashboard-stat-label">Net PNL (All Time)</p>
+        </div>
+    </div>
+
+    <!-- PNL RECORDS LIST -->
+    <div class="flex justify-between items-center mb-4">
+        <div>
+            <h2 class="section-title">PNL Records</h2>
+            <p class="section-subtitle">All daily records</p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="filterPNL('all')" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider">All</button>
+            <button onclick="filterPNL('profit')" class="px-4 py-2 bg-green-100 text-green-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Profit Days</button>
+            <button onclick="filterPNL('loss')" class="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-[10px] font-black uppercase tracking-wider">Loss Days</button>
+        </div>
+    </div>
+    <div id="pnl-records-list" class="admin-card">
+        <div class="empty-state">
+            <i class="fa-solid fa-chart-mixed"></i>
+            <p class="font-bold text-sm">Loading PNL records...</p>
+        </div>
+    </div>
+</div>
+            <!-- LEADERBOARD SECTION -->
+            <div id="tab-leaderboard" class="admin-tab-content" style="display:none;">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="section-title">Weekly Leaderboard</h2>
+                        <p class="section-subtitle">Live profit rankings and week management</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="closeWeek()" class="close-week-btn">
+                            <i class="fa-solid fa-flag-checkered mr-2"></i>Close Week
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Leaderboard Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="dashboard-stat-card">
+                        <div class="dashboard-stat-icon bg-yellow-50 text-yellow-600">
+                            <i class="fa-solid fa-trophy text-xl"></i>
+                        </div>
+                        <p id="leaderboard-top-profit" class="dashboard-stat-number text-yellow-600">$0</p>
+                        <p class="dashboard-stat-label">Top Weekly Profit</p>
+                    </div>
+                    <div class="dashboard-stat-card">
+                        <div class="dashboard-stat-icon bg-blue-50 text-blue-600">
+                            <i class="fa-solid fa-users text-xl"></i>
+                        </div>
+                        <p id="leaderboard-participants" class="dashboard-stat-number text-blue-600">0</p>
+                        <p class="dashboard-stat-label">Active Traders</p>
+                    </div>
+                    <div class="dashboard-stat-card">
+                        <div class="dashboard-stat-icon bg-purple-50 text-purple-600">
+                            <i class="fa-solid fa-calendar-week text-xl"></i>
+                        </div>
+                        <p id="leaderboard-current-week" class="dashboard-stat-number text-purple-600">--</p>
+                        <p class="dashboard-stat-label">Current Week</p>
+                    </div>
+                </div>
+
+                <!-- Approve Profit Form -->
+                <div class="admin-card p-6 mb-6">
+                    <div class="mb-4">
+                        <h2 class="section-title">Approve Profit</h2>
+                        <p class="section-subtitle">Add profit to user for leaderboard tracking</p>
+                    </div>
+                    <form id="approve-profit-form" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <div>
+                            <label class="form-label">User UID</label>
+                            <input type="text" id="profit-uid-input" placeholder="Enter user UID" required class="form-input">
+                        </div>
+                        <div>
+                            <label class="form-label">Profit Amount ($)</label>
+                            <input type="number" id="profit-amount-input" placeholder="e.g. 500" step="0.01" required class="form-input">
+                        </div>
+                        <div>
+                            <button type="submit" id="approve-profit-btn" class="approve-profit-btn w-full">
+                                <i class="fa-solid fa-check mr-2"></i>Approve Profit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Live Leaderboard -->
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="section-title">Live Rankings</h2>
+                        <p class="section-subtitle">Top 10 traders this week</p>
+                    </div>
+                    <div class="week-badge" id="leaderboard-week-badge">Week --</div>
+                </div>
+                <div id="leaderboard-list" class="admin-card">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-trophy"></i>
+                        <p class="font-bold text-sm">Loading leaderboard...</p>
+                    </div>
+                </div>
+
+                <!-- Current User Rank (if outside top 10) -->
+                <div id="current-user-rank-section" class="mt-4" style="display:none;">
+                    <div class="admin-card p-4">
+                        <p class="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Your Current Rank</p>
+                        <div id="current-user-rank"></div>
+                    </div>
+                </div>
+
+                <!-- Week History -->
+                <div class="mt-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h2 class="section-title">Week History</h2>
+                            <p class="section-subtitle">Past leaderboard results</p>
+                        </div>
+                    </div>
+                    <div id="leaderboard-history-list" class="admin-card">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <p class="font-bold text-sm">No history yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</div>
+    </div>
+<!-- MT5 GALLERY SECTION -->
+<div id="tab-gallery" class="admin-tab-content" style="display:none;">
+    
+    <!-- Gallery Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="mt5-stat-card">
+            <div class="mt5-stat-icon bg-blue-50 text-blue-600">
+                <i class="fa-solid fa-layer-group text-xl"></i>
+            </div>
+            <p id="gallery-stat-total" class="mt5-stat-number text-blue-600">0</p>
+            <p class="mt5-stat-label">Total in Gallery</p>
+        </div>
+        <div class="mt5-stat-card">
+            <div class="mt5-stat-icon bg-purple-50 text-purple-600">
+                <i class="fa-solid fa-user-shield text-xl"></i>
+            </div>
+            <p id="gallery-stat-owners" class="mt5-stat-number text-purple-600">0</p>
+            <p class="mt5-stat-label">Admin Accounts</p>
+        </div>
+        <div class="mt5-stat-card">
+            <div class="mt5-stat-icon bg-green-50 text-green-600">
+                <i class="fa-solid fa-check-circle text-xl"></i>
+            </div>
+            <p id="gallery-stat-available" class="mt5-stat-number text-green-600">0</p>
+            <p class="mt5-stat-label">Available in Gallery</p>
+        </div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="admin-card p-6 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div>
+                <label class="form-label">Search by MT5 Login</label>
+                <input type="text" id="gallery-search-login" placeholder="e.g. 12345678" oninput="renderGallery()" class="form-input">
+            </div>
+            <div>
+                <label class="form-label">Filter by Admin Gmail</label>
+                <select id="gallery-filter-gmail" onchange="renderGallery()" class="form-input">
+                    <option value="all">All Admin Accounts</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label">Filter by Status</label>
+                <select id="gallery-filter-status" onchange="renderGallery()" class="form-input">
+                    <option value="all">All</option>
+                    <option value="available">Available</option>
+                    <option value="claimed">Claimed</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Existing Inventory to Gallery -->
+    <div class="admin-card p-6 mb-6">
+        <div class="mb-4">
+            <h2 class="section-title">Add Existing Account to Gallery</h2>
+            <p class="section-subtitle">Link an existing inventory account to an admin Gmail</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div>
+                <label class="form-label">MT5 Login</label>
+                <input type="text" id="gallery-existing-login" placeholder="Existing MT5 login" class="form-input">
+            </div>
+            <div>
+                <label class="form-label">Admin Gmail</label>
+                <input type="email" id="gallery-existing-gmail" placeholder="e.g. oluwafisayoawe@gmail.com" class="form-input">
+            </div>
+            <div>
+                <button onclick="addExistingToGallery()" class="w-full py-4 bg-yellow-400 text-slate-900 font-black rounded-xl hover:brightness-105 active:scale-[0.98] transition-all tracking-wider shadow-lg uppercase text-xs">
+                    <i class="fa-solid fa-link mr-2"></i>Link to Gallery
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery List -->
+    <div class="flex justify-between items-center mb-4">
+        <div>
+            <h2 class="section-title">MT5 Gallery</h2>
+            <p class="section-subtitle">All MT5 accounts organized by admin Gmail</p>
+        </div>
+    </div>
+    <div id="gallery-list" class="admin-card">
+        <div class="empty-state">
+            <i class="fa-solid fa-layer-group"></i>
+            <p class="font-bold text-sm">Loading gallery...</p>
+        </div>
+    </div>
+</div>
+
+<!-- SETTINGS SECTION -->
+<div id="tab-settings" class="admin-tab-content" style="display:none;">
+    <div class="mb-6">
+        <h2 class="section-title">Settings</h2>
+        <p class="section-subtitle">Manage admin access</p>
+    </div>
+    <div class="admin-card p-6 mb-6">
+        <div class="mb-4">
+            <h2 class="section-title">Add Another Admin</h2>
+            <p class="section-subtitle">Grant admin panel access to an existing user by email</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div class="md:col-span-2">
+                <label class="form-label">User Email</label>
+                <input type="email" id="new-admin-email" placeholder="e.g. teammate@gmail.com" class="form-input">
+            </div>
+            <div>
+                <button onclick="addAdminByEmail()" class="w-full py-4 bg-yellow-400 text-slate-900 font-black rounded-xl hover:brightness-105 active:scale-[0.98] transition-all tracking-wider shadow-lg uppercase text-xs">
+                    <i class="fa-solid fa-user-shield mr-2"></i>Make Admin
+                </button>
+            </div>
+        </div>
+        <p class="text-xs font-bold text-slate-400 mt-3">The user must already have an account on Cyrus Capital. They'll get admin access next time they log in here.</p>
+    </div>
+    <div class="admin-card p-6">
+        <div class="mb-4">
+            <h2 class="section-title">Current Admins</h2>
+            <p class="section-subtitle">Everyone with admin panel access</p>
+        </div>
+        <div id="admins-list">
+            <div class="empty-state">
+                <i class="fa-solid fa-user-shield"></i>
+                <p class="font-bold text-sm">Loading admins...</p>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Image Preview Modal -->
+    <div id="image-modal" class="fixed inset-0 bg-black/80 z-[9999] hidden items-center justify-center p-4" onclick="closeImageModal()">
+        <img id="image-modal-img" src="" alt="Preview" class="max-w-full max-h-[90vh] rounded-2xl shadow-2xl">
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>emailjs.init("Kxsa4skOqDMxIAUKs");</script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+
+    <script>
+    // // =========================================================
+//  TELEGRAM NOTIFICATION SYSTEM
+// =========================================================
+const TELEGRAM_BOT_TOKEN = "8305268349:AAFugGOJ0mAVxYuB1LFoP4WwC_MHNS6j99c";
+const TELEGRAM_CHAT_ID = "-1003903750289";
+
+async function sendTelegramNotification(message) {
+    try {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                chat_id: TELEGRAM_CHAT_ID,
+                text: message,
+                parse_mode: "HTML"
+            })
+        });
+    } catch (err) {
+        console.error("Telegram notification failed:", err);
+    }
+}
+
+// =========================================================
+//  FIREBASE CONFIGURATION
+// =========================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyBrpzFcShlTEluT6McutQYyQk38kY63iIc",
+        authDomain: "cyrus-project-01.firebaseapp.com",
+        projectId: "cyrus-project-01",
+        storageBucket: "cyrus-project-01.firebasestorage.app",
+        messagingSenderId: "311717930259",
+        appId: "1:311717930259:web:740716507764d6b4bca6e6"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db   = firebase.firestore();
+    const auth = firebase.auth();
+
+    // =========================================================
+    //  GLOBAL STATE
+    // =========================================================
+    let currentAdmin       = null;
+    let allDepositProofs   = [];
+    let allNairaDeposits   = [];
+    let allConversions     = [];
+    let allWithdrawals     = [];
+    let allKyc             = [];
+    let allFunded          = [];
+    let allUsers           = [];
+    let allReferrals       = [];
+    let allinventory    = [];
+    let depositFilter      = 'all';
+    let conversionFilter   = 'all';
+    let withdrawalFilter   = 'all';
+    let kycFilter          = 'all';
+    let fundedFilter       = 'all';
+    let mt5Filter          = 'all';
+
+    // =========================================================
+    //  AUTHENTICATION
+    // =========================================================
+    document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('admin-login-btn');
+        const email = document.getElementById('admin-email').value;
+        const password = document.getElementById('admin-password').value;
+
+        btn.innerText = "AUTHENTICATING...";
+        btn.disabled = true;
+
+        try {
+            const cred = await auth.signInWithEmailAndPassword(email, password);
+            currentAdmin = cred.user;
+
+            // Verify admin status
+            const adminDoc = await db.collection("admins").doc(currentAdmin.uid).get();
+            if (!adminDoc.exists) {
+                await auth.signOut();
+                showToast("Access denied. Admin privileges required.", "error");
+                btn.innerText = "SIGN IN";
+                btn.disabled = false;
+                return;
+            }
+
+            document.getElementById('admin-user-name').innerText = currentAdmin.displayName || "Admin";
+            document.getElementById('admin-user-email').innerText = currentAdmin.email;
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-dashboard').style.display = 'block';
+
+            initRealtimeListeners();
+            loadAdminsList();
+        } catch (err) {
+            showToast("Login failed: " + err.message, "error");
+            btn.innerText = "SIGN IN";
+            btn.disabled = false;
+        }
+    });
+
+    function logoutAdmin() {
+        auth.signOut().then(() => {
+            currentAdmin = null;
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('admin-dashboard').style.display = 'none';
+            showToast("Logged out successfully", "success");
+        });
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (!user) {
+            currentAdmin = null;
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('admin-dashboard').style.display = 'none';
+        }
+    });
+
+    // =========================================================
+    //  REALTIME LISTENERS
+    // =========================================================
+
+    // All possible naira collection names (add more as needed)
+    const NAIRA_COLLECTION_NAMES = [
+    "deposit_requests"
+];
+
+    let nairaListeners = [];
+
+    function initRealtimeListeners() {
+        // Clear any existing naira listeners
+        nairaListeners.forEach(unsub => unsub());
+        nairaListeners = [];
+
+        // --- CRYPTO DEPOSITS (depositProofs collection) ---
+        const cryptoUnsub = db.collection("depositProofs").orderBy("timestamp", "desc").onSnapshot(snap => {
+            snap.docChanges().forEach(change => {
+                if (change.type === "added") {
+                    const d = change.doc.data();
+                    if (d.status === "pending") {
+                        sendTelegramNotification(
+`💰 <b>New Deposit Proof</b>
+👤 User: ${d.firstName || d.userEmail || "Unknown"}
+📧 Email: ${d.userEmail || "N/A"}
+💵 Amount: $${d.amount || 0}
+🆔 Payment ID: ${d.paymentId || "N/A"}
+⏰ Time: ${new Date().toLocaleString()}`
+                        );
+                    }
+                }
+            });
+            allDepositProofs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            updateDepositStats();
+            renderDeposits();
+        }, err => {
+            console.error("[Cyrus Admin] depositProofs listener error:", err);
+            // Fallback without orderBy
+            db.collection("depositProofs").get().then(snap => {
+                allDepositProofs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                updateDepositStats();
+                renderDeposits();
+            }).catch(e => console.error("[Cyrus Admin] Fallback failed:", e));
+        });
+
+        // --- NAIRA DEPOSITS - Try ALL possible collection names with listeners ---
+        NAIRA_COLLECTION_NAMES.forEach(colName => {
+            // Try with orderBy first
+            const unsub = db.collection(colName).orderBy("createdAt", "desc").onSnapshot(snap => {
+                const newDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                // Merge: remove old docs from this collection, add new ones
+                allNairaDeposits = allNairaDeposits.filter(d => {
+                    return !newDocs.find(nd => nd.id === d.id);
+                });
+                allNairaDeposits = [...allNairaDeposits, ...newDocs];
+                updateDepositStats();
+                renderDeposits();
+                console.log(`[Cyrus Admin] Naira listener active on: ${colName}, docs: ${snap.size}`);
+            }, err => {
+                // orderBy failed (missing index), try without orderBy
+                console.warn(`[Cyrus Admin] orderBy failed for ${colName}, trying without...`);
+                const unsub2 = db.collection(colName).onSnapshot(snap => {
+                    const newDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    allNairaDeposits = allNairaDeposits.filter(d => !newDocs.find(nd => nd.id === d.id));
+                    allNairaDeposits = [...allNairaDeposits, ...newDocs];
+                    updateDepositStats();
+                    renderDeposits();
+                    console.log(`[Cyrus Admin] Naira listener active on: ${colName} (no orderBy), docs: ${snap.size}`);
+                }, err2 => {
+                    // Collection doesn't exist or no permission
+                    console.log(`[Cyrus Admin] Collection ${colName} not accessible:`, err2.message);
+                });
+                nairaListeners.push(unsub2);
+            });
+            nairaListeners.push(unsub);
+        });
+
+        // --- ALSO check if naira deposits are stored in depositProofs with type/currency field ---
+        // Some apps store everything in one collection with a type discriminator
+        try {
+            const unifiedUnsub = db.collection("depositProofs")
+                .where("currency", "in", ["naira", "NGN", "ngn", "NAIRA"])
+                .onSnapshot(snap => {
+                    const nairaFromUnified = snap.docs.map(d => ({ id: d.id, ...d.data(), _fromUnified: true }));
+                    // These are already in allDepositProofs, but we mark them for display
+                    console.log(`[Cyrus Admin] Unified naira deposits in depositProofs: ${snap.size}`);
+                }, err => {
+                    console.log("[Cyrus Admin] Unified naira query not supported (needs composite index):", err.message);
+                });
+            nairaListeners.push(unifiedUnsub);
+        } catch (e) {
+            console.log("[Cyrus Admin] Unified naira query setup failed:", e.message);
+        }
+
+        // Conversion Requests
+        db.collection("conversionRequests").orderBy("timestamp", "desc").onSnapshot(snap => {
+            snap.docChanges().forEach(change => {
+                if (change.type === "added") {
+                    const d = change.doc.data();
+                    if (d.status === "processing" || d.status === "pending") {
+                        sendTelegramNotification(
+`🔄 <b>New Profit Conversion</b>
+👤 User: ${d.metadata?.username || "Unknown"}
+📧 Email: ${d.metadata?.userEmail || "N/A"}
+💵 Profit Amount: $${d.amount || 0}
+💰 Reward: $${d.metadata?.rewardValue || 0}
+⏰ Time: ${new Date().toLocaleString()}`
+                        );
+                    }
+                }
+            });
+            allConversions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('stat-pending-conversions').innerText = allConversions.filter(d => d.status === 'processing' || d.status === 'pending').length;
+            renderConversions();
+        });
+
+        // Withdrawals
+        db.collection("withdrawRequests").orderBy("timestamp", "desc").onSnapshot(snap => {
+            snap.docChanges().forEach(change => {
+                if (change.type === "added") {
+                    const d = change.doc.data();
+                    if (d.status === "processing" || d.status === "pending") {
+                        sendTelegramNotification(
+`🏦 <b>New Withdrawal Request</b>
+👤 User: ${d.metadata?.username || "Unknown"}
+📧 Email: ${d.metadata?.userEmail || "N/A"}
+💵 Amount: $${d.amount || 0}
+🔄 Method: ${d.metadata?.method || "N/A"}
+⏰ Time: ${new Date().toLocaleString()}`
+                        );
+                    }
+                }
+            });
+            allWithdrawals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderWithdrawals();
+        });
+
+        // KYC (users with kycStatus != 'none')
+        db.collection("users").where("kycStatus", "in", ["pending", "verified", "rejected"]).onSnapshot(snap => {
+            allKyc = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderKyc();
+        });
+
+        // Funded Account Requests
+        db.collection("fundedRequests").orderBy("timestamp", "desc").onSnapshot(snap => {
+            snap.docChanges().forEach(change => {
+                if (change.type === "added") {
+                    const d = change.doc.data();
+                    if (d.status === "processing" || d.status === "pending") {
+                        sendTelegramNotification(
+`🚀 <b>New Funded Account Request</b>
+👤 User: ${d.metadata?.username || "Unknown"}
+📧 Email: ${d.metadata?.userEmail || "N/A"}
+📦 Account: ${d.metadata?.item || "N/A"}
+💵 Fee: $${d.amount || 0}
+⏰ Time: ${new Date().toLocaleString()}`
+                        );
+                    }
+                }
+            });
+            allFunded = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderFunded();
+        });
+
+        // All Users
+        db.collection("users").orderBy("createdAt", "desc").onSnapshot(snap => {
+            allUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('stat-total-users').innerText = allUsers.length;
+            renderUsers();
+        });
+
+        // All Referrals
+        db.collection("referrals").orderBy("createdAt", "desc").onSnapshot(snap => {
+            allReferrals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('stat-total-referrals').innerText = allReferrals.length;
+            renderReferrals();
+        });
+
+        // MT5 Inventory
+        db.collection("inventory").orderBy("createdAt", "desc").onSnapshot(snap => {
+            allinventory = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            updateMt5Stats();
+            renderinventory();
+        });
+
+        // Dashboard Financial Stats
+                initLeaderboardListeners();
+initDashboardStats();
+initPNLListeners();
+initGalleryListeners();
+loadStatOverrides();
+    }
+
+    // =========================================================
+    //  DEPOSIT STATS HELPER
+    // =========================================================
+    function updateDepositStats() {
+        const allDeposits = [...allDepositProofs, ...allNairaDeposits];
+        document.getElementById('stat-pending-deposits').innerText = allDeposits.filter(d => d.status === 'pending').length;
+    }
+
+    // =========================================================
+    //  DASHBOARD FINANCIAL STATS
+    // =========================================================
+    function initDashboardStats() {
+        // Total Deposits (all approved deposit types)
+        db.collection("transactions")
+            .where("status", "==", "approved")
+            .onSnapshot(snap => {
+                let total = 0;
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    const type = data.type || '';
+                    if (type === 'Deposit' || type === 'Naira Deposit' || type === 'Deposit Proof') {
+                        total += Number(data.amount || 0);
+                    }
+                });
+                document.getElementById('stat-total-deposits').innerText = '$' + total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            });
+
+        // Total Withdrawals (approved transactions of type "Withdrawal")
+        db.collection("transactions")
+            .where("type", "==", "Withdrawal")
+            .where("status", "==", "approved")
+            .onSnapshot(snap => {
+                let total = 0;
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    total += Number(data.amount || 0);
+                });
+                document.getElementById('stat-total-withdrawals').innerText = '$' + total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            });
+
+        // Total MT5 Accounts Claimed
+        db.collection("inventory")
+            .where("claimed", "==", true)
+            .onSnapshot(snap => {
+                document.getElementById('stat-mt5-claimed').innerText = snap.size;
+            });
+    }
+
+    // =========================================================
+    //  TAB NAVIGATION
+    // =========================================================
+    function switchAdminTab(tabId, btn) {
+        document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + tabId).style.display = 'block';
+        btn.classList.add('active');
+    }
+
+    // =========================================================
+    //  ADMIN MANAGEMENT
+    // =========================================================
+    async function makeUserAdmin(uid, email) {
+        if (!uid) { showToast("Missing user ID.", "error"); return; }
+        if (!confirm(`Give admin panel access to ${email || uid}?`)) return;
+        try {
+            await db.collection("admins").doc(uid).set({
+                email: email || "",
+                addedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                addedBy: currentAdmin ? currentAdmin.email : "unknown"
+            });
+            showToast("User is now an admin.", "success");
+            loadAdminsList();
+        } catch (err) {
+            showToast("Failed to add admin: " + err.message, "error");
+        }
+    }
+
+    async function addAdminByEmail() {
+        const emailInput = document.getElementById('new-admin-email');
+        const email = emailInput.value.trim().toLowerCase();
+        if (!email) { showToast("Enter an email address.", "error"); return; }
+        try {
+            let userDoc = allUsers.find(u => (u.email || '').toLowerCase() === email);
+            if (!userDoc) {
+                const userSnap = await db.collection("users").where("email", "==", email).limit(1).get();
+                if (!userSnap.empty) userDoc = { id: userSnap.docs[0].id };
+            }
+            if (!userDoc) {
+                showToast("No user found with that email. They must sign up first.", "error");
+                return;
+            }
+            await db.collection("admins").doc(userDoc.id).set({
+                email: email,
+                addedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                addedBy: currentAdmin ? currentAdmin.email : "unknown"
+            });
+            showToast(email + " is now an admin.", "success");
+            emailInput.value = '';
+            loadAdminsList();
+        } catch (err) {
+            showToast("Failed to add admin: " + err.message, "error");
+        }
+    }
+
+    async function removeAdmin(uid, email) {
+        if (currentAdmin && uid === currentAdmin.uid) { showToast("You can't remove your own admin access here.", "error"); return; }
+        if (!confirm(`Remove admin access for ${email || uid}?`)) return;
+        try {
+            await db.collection("admins").doc(uid).delete();
+            showToast("Admin access removed.", "success");
+            loadAdminsList();
+        } catch (err) {
+            showToast("Failed to remove admin: " + err.message, "error");
+        }
+    }
+
+    async function loadAdminsList() {
+        const container = document.getElementById('admins-list');
+        try {
+            const snap = await db.collection("admins").get();
+            if (snap.empty) {
+                container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-user-shield"></i><p class="font-bold text-sm">No admins found.</p></div>`;
+                return;
+            }
+            container.innerHTML = snap.docs.map(d => {
+                const data = d.data();
+                return `
+                <div class="request-row flex items-center justify-between">
+                    <div>
+                        <p class="detail-value">${data.email || 'Unknown'}</p>
+                        <p class="user-chip"><i class="fa-solid fa-fingerprint"></i>${d.id}</p>
+                    </div>
+                    <button onclick="removeAdmin('${d.id}', '${(data.email || '').replace(/'/g, "\\'")}')" class="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-red-200 transition-all"><i class="fa-solid fa-user-slash mr-1"></i>Remove</button>
+                </div>`;
+            }).join('');
+        } catch (err) {
+            container.innerHTML = `<div class="empty-state"><p class="font-bold text-sm">Failed to load admins: ${err.message}</p></div>`;
+        }
+    }
+
+    // =========================================================
+    //  TOAST NOTIFICATIONS
+    // =========================================================
+    function showToast(message, type) {
+        const toast = document.getElementById('toast');
+        toast.innerText = message;
+        toast.className = 'toast ' + type;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // =========================================================
+    //  IMAGE PREVIEW
+    // =========================================================
+    function openImageModal(url) {
+        document.getElementById('image-modal-img').src = url;
+        document.getElementById('image-modal').style.display = 'flex';
+    }
+    function closeImageModal() {
+        document.getElementById('image-modal').style.display = 'none';
+    }
+
+
+    // =========================================================
+    //  DEPOSIT PROOFS RENDERING
+    // =========================================================
+    function filterDeposits(status) {
+        depositFilter = status;
+        renderDeposits();
+    }
+
+    function renderDeposits() {
+        const container = document.getElementById('deposits-list');
+
+        // Detect naira per document from depositProofs collection
+        let docs = allDepositProofs.map(d => {
+            const isNaira = d.currency === 'naira' || d.currency === 'NGN' || d.type === 'naira' || d.depositType === 'naira' || 
+                           (d.nairaAmount && d.nairaAmount > 0) || d.bankReference || d.bankName || 
+                           (d.paymentMethod && (d.paymentMethod.includes('naira') || d.paymentMethod.includes('bank'))) ||
+                           d._fromUnified === true;
+            return { ...d, depositType: isNaira ? 'naira' : 'crypto' };
+        });
+
+        // Add separate naira collection docs - mark all as naira
+        const nairaDocs = allNairaDeposits.map(d => ({ 
+            ...d, 
+            depositType: 'naira',
+            // Ensure these fields exist for consistent rendering
+            amount: d.amountUSD || d.amount || d.dollarAmount || d.usdAmount || 0,
+            nairaAmount: d.nairaAmount || d.naira || d.amountNGN || 0,
+            userEmail: d.userEmail || d.email || d.userId || '',
+            uid: d.uid || d.userId || d.userUid || '',
+            paymentId: d.paymentId || d.bankReference || d.transactionRef || d.reference || d.ref || ''
+        }));
+
+        docs = [...docs, ...nairaDocs];
+
+        // Sort by timestamp descending
+        docs.sort((a, b) => {
+            const aTime = a.timestamp ? (a.timestamp.toDate ? a.timestamp.toDate().getTime() : a.timestamp) : 
+                          (a.createdAt ? (a.createdAt.toDate ? a.createdAt.toDate().getTime() : a.createdAt) : 0);
+            const bTime = b.timestamp ? (b.timestamp.toDate ? b.timestamp.toDate().getTime() : b.timestamp) : 
+                          (b.createdAt ? (b.createdAt.toDate ? b.createdAt.toDate().getTime() : b.createdAt) : 0);
+            return bTime - aTime;
+        });
+
+        if (depositFilter !== 'all') {
+            docs = docs.filter(d => d.status === depositFilter);
+        }
+
+        if (docs.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <p class="font-bold text-sm">No deposit proofs found.</p>
+                    <p class="text-xs mt-2">Crypto: ${allDepositProofs.length} | Naira: ${allNairaDeposits.length}</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = docs.map(d => {
+            const statusClass = d.status === 'pending' ? 'status-pending' :
+                               d.status === 'approved' ? 'status-approved' : 'status-rejected';
+            const statusLabel = d.status === 'pending' ? 'PENDING' :
+                               d.status === 'approved' ? 'APPROVED' : 'REJECTED';
+            const date = d.timestamp ? (d.timestamp.toDate ? d.timestamp.toDate().toLocaleString() : new Date(d.timestamp).toLocaleString()) : 
+                        (d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toLocaleString() : new Date(d.createdAt).toLocaleString()) : 'N/A');
+            const hasImage = d.imageUrl || d.screenshotUrl || d.proofImageUrl || d.receiptUrl || d.paymentProof || d.proofImage || d.bankReceipt;
+            const isNaira = d.depositType === 'naira';
+            const typeBadge = isNaira 
+                ? '<span class="inline-flex items-center px-2 py-1 rounded-lg text-[10px] font-black bg-purple-100 text-purple-700 mr-2">NAIRA</span>'
+                : '<span class="inline-flex items-center px-2 py-1 rounded-lg text-[10px] font-black bg-blue-100 text-blue-700 mr-2">CRYPTO</span>';
+            const displayAmount = isNaira && (d.nairaAmount || d.naira) 
+                ? `₦${Number(d.nairaAmount || d.naira || 0).toLocaleString()} ($${Number(d.amount || 0).toLocaleString()})`
+                : `$${Number(d.amount || 0).toLocaleString()}`;
+            const paymentIdLabel = isNaira ? 'Bank Ref' : 'Payment ID';
+const paymentIdValue = d.paymentId || d.bankReference || d.transactionRef || d.reference || d.ref || 'N/A';
+const senderBank = d.senderBank || d.bankUsed || '';
+const senderName = d.senderName || d.accountName || '';
+const receiptImage = d.receiptImage || d.receiptUrl || d.imageUrl || d.screenshotUrl || '';
+            const userName = d.firstName || d.userName || d.name || d.displayName || 'Unknown';
+            const userLastName = d.lastName || d.surname || '';
+            const userEmail = d.userEmail || d.email || d.userId || 'N/A';
+            const userUid = d.uid || d.userId || d.userUid || '';
+            const imageUrl = d.imageUrl || d.screenshotUrl || d.proofImageUrl || d.receiptUrl || d.paymentProof || d.proofImage || d.bankReceipt;
+
+            return `
+            <div class="request-row">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-2">
+                            ${typeBadge}
+                            <span class="${statusClass} px-3 py-1 rounded-lg text-[10px] font-black uppercase">${statusLabel}</span>
+                            <span class="amount-badge">${displayAmount}</span>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
+                            <div>
+                                <p class="detail-label">User</p>
+                                <p class="detail-value">${userName} ${userLastName}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Email</p>
+                                <p class="detail-value text-xs">${userEmail}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">${paymentIdLabel}</p>
+                                <p class="detail-value font-mono text-xs">${paymentIdValue}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Submitted</p>
+                                <p class="timestamp-text">${date}</p>
+                            </div>
+                        </div>
+                        ${userUid ? `<div class="user-chip"><i class="fa-solid fa-fingerprint"></i>UID: ${userUid}</div>` : ''}
+                        ${isNaira && senderBank ? `
+    <div class="bg-slate-50 rounded-xl p-3 mt-2 text-xs space-y-1">
+        <p class="font-black text-slate-700"><i class="fa-solid fa-building-columns mr-1 text-yellow-500"></i>Bank Used: ${senderBank}</p>
+        <p class="font-bold text-slate-500"><i class="fa-solid fa-user mr-1"></i>Account Name: ${senderName}</p>
+    </div>
+` : ''}
+${isNaira && receiptImage ? `
+    <button onclick="openImageModal('${receiptImage}')" class="mt-2 px-4 py-2 bg-green-100 text-green-700 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-green-200 transition-all">
+        <i class="fa-solid fa-receipt mr-1"></i>View Receipt
+    </button>
+` : ''}
+${d.referralCommission ? `<div class="commission-badge mt-2"><i class="fa-solid fa-gift mr-1"></i>Commission: $${d.referralCommission} paid to ${d.referralCommissionTo || 'referrer'}</div>` : ''}
+                    </div>
+                    <div class="flex flex-col gap-2 flex-shrink-0">
+                        ${hasImage ? `<button onclick="openImageModal('${imageUrl}')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-slate-200 transition-all"><i class="fa-solid fa-image mr-1"></i>View Proof</button>` : ''}
+                        ${d.status === 'pending' ? `
+                            <button onclick="approveDeposit('${d.id}', '${userUid}', ${d.amount || 0}, '${userEmail}', '${d.depositType}')" class="btn-approve"><i class="fa-solid fa-check mr-1"></i>Approve</button>
+                            <button onclick="rejectDeposit('${d.id}', '${d.depositType}')" class="btn-reject"><i class="fa-solid fa-xmark mr-1"></i>Reject</button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+
+    // =========================================================
+    //  PROFIT CONVERSIONS RENDERING
+    // =========================================================
+    function filterConversions(status) {
+        conversionFilter = status;
+        renderConversions();
+    }
+
+    function renderConversions() {
+        const container = document.getElementById('conversions-list');
+        let docs = allConversions;
+        if (conversionFilter !== 'all') {
+            docs = docs.filter(d => d.status === conversionFilter);
+        }
+
+        if (docs.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <p class="font-bold text-sm">No conversion requests found.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = docs.map(d => {
+            const statusClass = d.status === 'pending' || d.status === 'processing' ? 'status-processing' :
+                               d.status === 'approved' ? 'status-approved' : 'status-rejected';
+            const statusLabel = d.status === 'processing' || d.status === 'pending' ? 'PROCESSING' :
+                               d.status === 'approved' ? 'APPROVED' : 'REJECTED';
+            const date = d.timestamp ? d.timestamp.toDate().toLocaleString() : 'N/A';
+            const reward = d.metadata && d.metadata.rewardValue ? d.metadata.rewardValue : 0;
+            const mt5Login = d.metadata && d.metadata.mt5Login ? d.metadata.mt5Login : 'N/A';
+
+            return `
+            <div class="request-row">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="${statusClass} px-3 py-1 rounded-lg text-[10px] font-black uppercase">${statusLabel}</span>
+                            <span class="amount-badge">$${Number(d.amount || 0).toLocaleString()} Profit &rarr; $${Number(reward).toLocaleString()} Balance</span>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
+                            <div>
+                                <p class="detail-label">User</p>
+                                <p class="detail-value">${d.metadata && d.metadata.username ? d.metadata.username : 'Unknown'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Email</p>
+                                <p class="detail-value text-xs">${d.metadata && d.metadata.userEmail ? d.metadata.userEmail : 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">MT5 Login</p>
+                                <p class="detail-value font-mono text-xs">${mt5Login}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Submitted</p>
+                                <p class="timestamp-text">${date}</p>
+                            </div>
+                        </div>
+                        ${d.uid ? `<div class="user-chip"><i class="fa-solid fa-fingerprint"></i>UID: ${d.uid}</div>` : ''}
+                    </div>
+                    <div class="flex flex-col gap-2 flex-shrink-0">
+                        ${d.status === 'processing' || d.status === 'pending' ? `
+                            <button onclick="approveConversion('${d.id}', '${d.uid}', ${reward}, '${d.metadata && d.metadata.userEmail ? d.metadata.userEmail : ''}')" class="btn-approve"><i class="fa-solid fa-check mr-1"></i>Approve</button>
+                            <button onclick="rejectConversion('${d.id}')" class="btn-reject"><i class="fa-solid fa-xmark mr-1"></i>Reject</button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // =========================================================
+    //  WITHDRAWALS RENDERING
+    // =========================================================
+    function filterWithdrawals(status) {
+        withdrawalFilter = status;
+        renderWithdrawals();
+    }
+
+    function renderWithdrawals() {
+        const container = document.getElementById('withdrawals-list');
+        let docs = allWithdrawals;
+        if (withdrawalFilter !== 'all') {
+            docs = docs.filter(d => d.status === withdrawalFilter);
+        }
+
+        if (docs.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <p class="font-bold text-sm">No withdrawal requests found.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = docs.map(d => {
+            const statusClass = d.status === 'processing' || d.status === 'pending' ? 'status-processing' :
+                               d.status === 'approved' ? 'status-approved' : 'status-rejected';
+            const statusLabel = d.status === 'processing' || d.status === 'pending' ? 'PROCESSING' :
+                               d.status === 'approved' ? 'APPROVED' : 'REJECTED';
+            const date = d.timestamp ? d.timestamp.toDate().toLocaleString() : 'N/A';
+            const method = d.metadata && d.metadata.method ? d.metadata.method : 'N/A';
+            const bankDetails = d.metadata && d.metadata.bankDetails ? d.metadata.bankDetails : '';
+            const accountNumber = d.metadata && d.metadata.accountNumber ? d.metadata.accountNumber : '';
+            const accountName = d.metadata && d.metadata.accountName ? d.metadata.accountName : '';
+            const walletAddress = d.metadata && d.metadata.walletAddress ? d.metadata.walletAddress : '';
+            const nairaAmount = d.metadata && d.metadata.nairaAmount ? d.metadata.nairaAmount : '';
+
+            return `
+            <div class="request-row">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="${statusClass} px-3 py-1 rounded-lg text-[10px] font-black uppercase">${statusLabel}</span>
+                            <span class="amount-badge">$${Number(d.amount || 0).toLocaleString()}</span>
+                            ${nairaAmount ? `<span class="text-xs font-bold text-yellow-600">${nairaAmount}</span>` : ''}
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
+                            <div>
+                                <p class="detail-label">User</p>
+                                <p class="detail-value">${d.metadata && d.metadata.username ? d.metadata.username : 'Unknown'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Email</p>
+                                <p class="detail-value text-xs">${d.metadata && d.metadata.userEmail ? d.metadata.userEmail : 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Method</p>
+                                <p class="detail-value text-xs">${method}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Submitted</p>
+                                <p class="timestamp-text">${date}</p>
+                            </div>
+                        </div>
+                        ${walletAddress ? `<div class="user-chip"><i class="fa-solid fa-wallet"></i>Wallet: ${walletAddress}</div>` : ''}
+                        ${bankDetails ? `
+                            <div class="bg-slate-50 rounded-xl p-3 mt-2 text-xs">
+                                <p class="font-bold text-slate-700">${bankDetails}</p>
+                                <p class="text-slate-500">${accountNumber} &middot; ${accountName}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="flex flex-col gap-2 flex-shrink-0">
+                        ${d.status === 'processing' || d.status === 'pending' ? `
+                            <button onclick="approveWithdrawal('${d.id}', '${d.uid}', ${d.amount})" class="btn-approve"><i class="fa-solid fa-check mr-1"></i>Approve</button>
+                            <button onclick="rejectWithdrawal('${d.id}')" class="btn-reject"><i class="fa-solid fa-xmark mr-1"></i>Reject</button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // =========================================================
+    //  KYC RENDERING
+    // =========================================================
+    function filterKyc(status) {
+        kycFilter = status;
+        renderKyc();
+    }
+
+    function renderKyc() {
+        const container = document.getElementById('kyc-list');
+        let docs = allKyc;
+        if (kycFilter !== 'all') {
+            docs = docs.filter(d => d.kycStatus === kycFilter);
+        }
+
+        if (docs.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <p class="font-bold text-sm">No KYC submissions found.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = docs.map(d => {
+            const statusClass = d.kycStatus === 'pending' ? 'status-processing' :
+                               d.kycStatus === 'verified' ? 'status-approved' : 'status-rejected';
+            const statusLabel = d.kycStatus === 'pending' ? 'PENDING' :
+                               d.kycStatus === 'verified' ? 'VERIFIED' : 'REJECTED';
+            const hasImage = d.kycImageUrl;
+
+            return `
+            <div class="request-row">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="${statusClass} px-3 py-1 rounded-lg text-[10px] font-black uppercase">${statusLabel}</span>
+                            <span class="user-chip">${d.firstName || 'Unknown'} ${d.lastName || ''}</span>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
+                            <div>
+                                <p class="detail-label">Email</p>
+                                <p class="detail-value text-xs">${d.email || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Country</p>
+                                <p class="detail-value">${d.country || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">DOB</p>
+                                <p class="detail-value">${d.dob || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Phone</p>
+                                <p class="detail-value text-xs">${d.phone || 'N/A'}</p>
+                            </div>
+                        </div>
+                        ${d.uid ? `<div class="user-chip"><i class="fa-solid fa-fingerprint"></i>UID: ${d.uid}</div>` : ''}
+                    </div>
+                    <div class="flex flex-col gap-2 flex-shrink-0">
+                        ${hasImage ? `<button onclick="openImageModal('${d.kycImageUrl}')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-slate-200 transition-all"><i class="fa-solid fa-id-card mr-1"></i>View ID</button>` : ''}
+                        ${d.kycStatus === 'pending' ? `
+                            <button onclick="approveKyc('${d.id}')" class="btn-approve"><i class="fa-solid fa-check mr-1"></i>Verify</button>
+                            <button onclick="rejectKyc('${d.id}')" class="btn-reject"><i class="fa-solid fa-xmark mr-1"></i>Reject</button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // =========================================================
+    //  FUNDED ACCOUNTS RENDERING
+    // =========================================================
+    function filterFunded(status) {
+        fundedFilter = status;
+        renderFunded();
+    }
+
+    function renderFunded() {
+        const container = document.getElementById('funded-list');
+        let docs = allFunded;
+        if (fundedFilter !== 'all') {
+            docs = docs.filter(d => d.status === fundedFilter);
+        }
+
+        if (docs.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <p class="font-bold text-sm">No funded account requests found.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = docs.map(d => {
+            const statusClass = d.status === 'processing' || d.status === 'pending' ? 'status-processing' :
+                               d.status === 'approved' ? 'status-approved' : 'status-rejected';
+            const statusLabel = d.status === 'processing' || d.status === 'pending' ? 'PROCESSING' :
+                               d.status === 'approved' ? 'APPROVED' : 'REJECTED';
+            const date = d.timestamp ? d.timestamp.toDate().toLocaleString() : 'N/A';
+            const item = d.metadata && d.metadata.item ? d.metadata.item : (d.item || 'N/A');
+
+            return `
+            <div class="request-row">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="${statusClass} px-3 py-1 rounded-lg text-[10px] font-black uppercase">${statusLabel}</span>
+                            <span class="amount-badge">${item}</span>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
+                            <div>
+                                <p class="detail-label">User</p>
+                                <p class="detail-value">${d.metadata && d.metadata.username ? d.metadata.username : 'Unknown'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Email</p>
+                                <p class="detail-value text-xs">${d.metadata && d.metadata.userEmail ? d.metadata.userEmail : 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Amount</p>
+                                <p class="detail-value">$${Number(d.amount || 0).toLocaleString()}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Submitted</p>
+                                <p class="timestamp-text">${date}</p>
+                            </div>
+                        </div>
+                        ${d.uid ? `<div class="user-chip"><i class="fa-solid fa-fingerprint"></i>UID: ${d.uid}</div>` : ''}
+                    </div>
+                    <div class="flex flex-col gap-2 flex-shrink-0">
+                        ${d.status === 'processing' || d.status === 'pending' ? `
+                            <button onclick="approveFunded('${d.id}', '${d.uid}')" class="btn-approve"><i class="fa-solid fa-check mr-1"></i>Approve</button>
+                            <button onclick="rejectFunded('${d.id}')" class="btn-reject"><i class="fa-solid fa-xmark mr-1"></i>Reject</button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // =========================================================
+    //  USERS RENDERING
+    // =========================================================
+    function searchUsers() {
+        renderUsers();
+    }
+
+    function renderUsers() {
+        const container = document.getElementById('users-list');
+        const searchTerm = document.getElementById('user-search').value.toLowerCase();
+        let docs = allUsers;
+
+        if (searchTerm) {
+            docs = docs.filter(d =>
+                (d.firstName && d.firstName.toLowerCase().includes(searchTerm)) ||
+                (d.lastName && d.lastName.toLowerCase().includes(searchTerm)) ||
+                (d.email && d.email.toLowerCase().includes(searchTerm)) ||
+                (d.uid && d.uid.toLowerCase().includes(searchTerm))
+            );
+        }
+
+        if (docs.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <p class="font-bold text-sm">No users found.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = docs.map(d => {
+            const statusClass = d.status === 'banned' ? 'status-rejected' : 'status-approved';
+            const statusLabel = d.status === 'banned' ? 'BANNED' : 'ACTIVE';
+            const kycClass = d.kycStatus === 'verified' ? 'status-approved' : (d.kycStatus === 'pending' ? 'status-processing' : 'status-pending');
+            const kycLabel = d.kycStatus === 'verified' ? 'VERIFIED' : (d.kycStatus === 'pending' ? 'PENDING' : 'UNVERIFIED');
+            const date = d.createdAt ? d.createdAt.toDate().toLocaleDateString() : 'N/A';
+
+            return `
+            <div class="request-row">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="${statusClass} px-3 py-1 rounded-lg text-[10px] font-black uppercase">${statusLabel}</span>
+                            <span class="${kycClass} px-3 py-1 rounded-lg text-[10px] font-black uppercase">${kycLabel}</span>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-2">
+                            <div>
+                                <p class="detail-label">Name</p>
+                                <p class="detail-value">${d.firstName || ''} ${d.lastName || ''}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Email</p>
+                                <p class="detail-value text-xs">${d.email || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Balance</p>
+                                <p class="detail-value text-green-600">$${Number(d.balance || 0).toLocaleString()}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Profit</p>
+                                <p class="detail-value text-yellow-600">$${Number(d.profit || 0).toLocaleString()}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Joined</p>
+                                <p class="timestamp-text">${date}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 flex-wrap">
+                            <div class="user-chip"><i class="fa-solid fa-fingerprint"></i>${d.uid}</div>
+                            ${d.referredBy ? `<div class="user-chip bg-purple-50 text-purple-600"><i class="fa-solid fa-user-tag"></i>Referred by: ${d.referredBy.substring(0, 12)}...</div>` : ''}
+                            ${d.mt5Login ? `<div class="user-chip"><i class="fa-solid fa-server"></i>MT5: ${d.mt5Login}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-2 flex-shrink-0">
+                        <button onclick="editUserBalance('${d.id}', ${d.balance || 0}, ${d.profit || 0})" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-yellow-200 transition-all"><i class="fa-solid fa-pen mr-1"></i>Edit Balance</button>
+                        <button onclick="makeUserAdmin('${d.id}', '${(d.email || '').replace(/'/g, "\\'")}')" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-purple-200 transition-all"><i class="fa-solid fa-user-shield mr-1"></i>Make Admin</button>
+                        ${d.status !== 'banned' ? `
+                            <button onclick="banUser('${d.id}')" class="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-red-200 transition-all"><i class="fa-solid fa-ban mr-1"></i>Ban</button>
+                        ` : `
+                            <button onclick="unbanUser('${d.id}')" class="px-4 py-2 bg-green-100 text-green-700 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-green-200 transition-all"><i class="fa-solid fa-check mr-1"></i>Unban</button>
+                        `}
+                        <button onclick="deleteUser('${d.id}', '${d.email || ''}')" class="px-4 py-2 bg-red-600 text-white rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-red-700 transition-all"><i class="fa-solid fa-trash mr-1"></i>Delete</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // =========================================================
+    //  REFERRALS RENDERING
+    // =========================================================
+    function renderReferrals() {
+        const container = document.getElementById('referrals-list');
+        const docs = allReferrals;
+
+        if (docs.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <p class="font-bold text-sm">No referrals found.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = docs.map(d => {
+            const date = d.createdAt ? d.createdAt.toDate().toLocaleString() : 'N/A';
+            const depositBadge = d.hasDeposited
+                ? '<span class="inline-flex items-center px-2 py-1 rounded-lg text-[10px] font-black bg-green-100 text-green-700">DEPOSITED</span>'
+                : '<span class="inline-flex items-center px-2 py-1 rounded-lg text-[10px] font-black bg-slate-100 text-slate-500">NO DEPOSIT</span>';
+
+            return `
+            <div class="request-row">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="user-chip bg-purple-50 text-purple-600"><i class="fa-solid fa-user-tag mr-1"></i>Referrer: ${d.referrerId ? d.referrerId.substring(0, 16) + '...' : 'N/A'}</span>
+                            ${depositBadge}
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
+                            <div>
+                                <p class="detail-label">Referred User</p>
+                                <p class="detail-value">${d.referredUserName || 'Unknown'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Referred Email</p>
+                                <p class="detail-value text-xs">${d.referredUserEmail || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">User UID</p>
+                                <p class="detail-value font-mono text-xs">${d.referredUserId || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Date</p>
+                                <p class="timestamp-text">${date}</p>
+                            </div>
+                        </div>
+                        ${d.referralCommission ? `<div class="commission-badge"><i class="fa-solid fa-gift mr-1"></i>Commission Paid: $${d.referralCommission}</div>` : ''}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // =========================================================
+    //  MT5 INVENTORY SYSTEM
+    // =========================================================
+
+    // Update MT5 Stats counters
+    function updateMt5Stats() {
+        const total = allinventory.length;
+        const available = allinventory.filter(d => d.status === 'available').length;
+const claimed = allinventory.filter(d => d.status === 'claimed').length;
+
+        document.getElementById('mt5-stat-total').innerText = total;
+        document.getElementById('mt5-stat-available').innerText = available;
+        document.getElementById('mt5-stat-claimed').innerText = claimed;
+    }
+
+    // Filter MT5 inventory
+    function filterMt5(status) {
+        mt5Filter = status;
+        renderinventory();
+    }
+
+    // Render MT5 Inventory List
+    function renderinventory() {
+        const container = document.getElementById('mt5-list');
+        let docs = allinventory;
+
+        if (mt5Filter === 'available') {
+    docs = docs.filter(d => d.status === 'available');
+} else if (mt5Filter === 'claimed') {
+    docs = docs.filter(d => d.status === 'claimed');
+}
+
+        if (docs.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-inbox"></i>
+                    <p class="font-bold text-sm">No MT5 accounts found.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = docs.map(d => {
+            const statusClass = d.status === 'claimed' ? 'status-claimed' : 'status-available';
+const statusLabel = d.status === 'claimed' ? 'CLAIMED' : 'AVAILABLE';
+            const createdDate = d.createdAt ? d.createdAt.toDate().toLocaleString() : 'N/A';
+            const claimedDate = d.claimedAt ? d.claimedAt.toDate().toLocaleString() : 'N/A';
+
+            return `
+            <div class="request-row">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="${statusClass} px-3 py-1 rounded-lg text-[10px] font-black uppercase">${statusLabel}</span>
+                            <span class="user-chip font-mono">${d.login || 'N/A'}</span>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
+                            <div>
+                                <p class="detail-label">Login</p>
+                                <p class="detail-value font-mono">${d.login || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Server</p>
+                                <p class="detail-value">${d.server || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Password</p>
+                                <p class="detail-value password-mask text-slate-400">${d.password || 'Cyruspass@1'}</p>
+                            </div>
+                            <div>
+                                <p class="detail-label">Created</p>
+                                <p class="timestamp-text">${createdDate}</p>
+                            </div>
+                        </div>
+                        ${d.status === 'claimed' ? `
+    <div class="flex gap-2 flex-wrap">
+                                <div class="user-chip bg-blue-50 text-blue-600">
+                                    <i class="fa-solid fa-user"></i>Claimed by: ${d.claimedBy ? d.claimedBy.substring(0, 16) + '...' : 'N/A'}
+                                </div>
+                                <div class="user-chip">
+                                    <i class="fa-solid fa-clock"></i>${claimedDate}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="flex flex-col gap-2 flex-shrink-0">
+                        ${d.status !== 'claimed' ? `
+                            <button onclick="deleteMt5Account('${d.id}')" class="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-red-200 transition-all">
+                                <i class="fa-solid fa-trash mr-1"></i>Delete
+                            </button>
+                        ` : `
+                            <button onclick="unclaimMt5Account('${d.id}')" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-yellow-200 transition-all">
+                                <i class="fa-solid fa-rotate-left mr-1"></i>Unclaim
+                            </button>
+                        `}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // Add MT5 Account Form Handler
+    document.getElementById('mt5-add-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('mt5-add-btn');
+        const loginInput = document.getElementById('mt5-login-input');
+        const serverInput = document.getElementById('mt5-server-input');
+
+        const login = loginInput.value.trim();
+        const server = serverInput.value.trim();
+
+        if (!login || !server) {
+            showToast("Please fill in all fields", "error");
+            return;
+        }
+
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Adding...';
+        btn.disabled = true;
+
+        try {
+            // Check if login already exists
+            const existingQuery = await db.collection("inventory")
+                .where("login", "==", login)
+                .limit(1)
+                .get();
+
+            if (!existingQuery.empty) {
+                showToast("An account with this login already exists", "error");
+                btn.innerHTML = '<i class="fa-solid fa-plus mr-2"></i>Add Account';
+                btn.disabled = false;
+                return;
+            }
+
+            const adminGmail = document.getElementById('mt5-admin-gmail-input').value.trim();
+
+await db.collection("inventory").add({
+    login: login,
+    server: server,
+    password: "Cyruspass@1",
+    status: "available",
+    claimedBy: null,
+    claimedAt: null,
+    adminGmail: adminGmail,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+
+// Also add to gallery collection
+await db.collection("mt5_gallery").add({
+    login: login,
+    server: server,
+    adminGmail: adminGmail,
+    status: "available",
+    claimedBy: null,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+
+document.getElementById('mt5-admin-gmail-input').value = '';
+
+            loginInput.value = '';
+            serverInput.value = '';
+            showToast("MT5 account added successfully", "success");
+        } catch (err) {
+            console.error("addMt5Account error:", err);
+            showToast("Failed to add account: " + err.message, "error");
+        } finally {
+            btn.innerHTML = '<i class="fa-solid fa-plus mr-2"></i>Add Account';
+            btn.disabled = false;
+        }
+    });
+
+    // Delete MT5 Account
+    async function deleteMt5Account(accountId) {
+        if (!confirm("Delete this MT5 account from inventory?")) return;
+
+        try {
+            await db.collection("inventory").doc(accountId).delete();
+            showToast("MT5 account deleted", "success");
+        } catch (err) {
+            console.error("deleteMt5Account error:", err);
+            showToast("Delete failed: " + err.message, "error");
+        }
+    }
+
+    // Unclaim MT5 Account (admin only - removes from user and makes available again)
+    async function unclaimMt5Account(accountId) {
+        if (!confirm("Unclaim this MT5 account? This will remove it from the user and make it available again.")) return;
+
+        try {
+            const accountRef = db.collection("inventory").doc(accountId);
+            const accountSnap = await accountRef.get();
+
+            if (!accountSnap.exists) {
+                showToast("Account not found", "error");
+                return;
+            }
+
+            const accountData = accountSnap.data();
+            const claimedBy = accountData.claimedBy;
+
+            const batch = db.batch();
+
+            // Reset the MT5 inventory document
+            batch.update(accountRef, {
+    status: "available",
+    claimedBy: null,
+    claimedAt: null
+});
+
+            // Remove MT5 details from user document if claimedBy exists
+            if (claimedBy) {
+                const userRef = db.collection("users").doc(claimedBy);
+                batch.update(userRef, {
+                    mt5Login: firebase.firestore.FieldValue.delete(),
+                    mt5Server: firebase.firestore.FieldValue.delete(),
+                    mt5Password: firebase.firestore.FieldValue.delete()
+                });
+            }if (claimedBy) {
+                const userRef = db.collection("users").doc(claimedBy);
+                batch.update(userRef, {
+                    mt5Login: firebase.firestore.FieldValue.delete(),
+                    mt5Server: firebase.firestore.FieldValue.delete(),
+                    mt5Password: firebase.firestore.FieldValue.delete(),
+                    mt5Account: firebase.firestore.FieldValue.delete(),
+                    mt5Balance: firebase.firestore.FieldValue.delete(),
+                    mt5ClaimedAt: firebase.firestore.FieldValue.delete(),
+                    mt5Suspended: firebase.firestore.FieldValue.delete(),
+                    hasApprovedConversion: firebase.firestore.FieldValue.delete()
+                });
+            }
+
+            await batch.commit();
+            showToast("MT5 account unclaimed and made available", "success");
+        } catch (err) {
+            console.error("unclaimMt5Account error:", err);
+            showToast("Unclaim failed: " + err.message, "error");
+        }
+    }
+
+    // =========================================================
+    //  USER CLAIM MT5 ACCOUNT FUNCTION
+    //  Call this from your user-facing app when they click "Create MT5 Account"
+    // =========================================================
+    async function claimMt5AccountForUser(userUid) {
+        // Prevent duplicate assignment - check if user already has MT5
+        const userRef = db.collection("users").doc(userUid);
+        const userSnap = await userRef.get();
+
+        if (!userSnap.exists) {
+            throw new Error("User not found");
+        }
+
+        const userData = userSnap.data();
+        if (userData.mt5Login) {
+            throw new Error("User already has an MT5 account assigned");
+        }
+
+        // Find first available account using transaction for atomicity
+        const result = await db.runTransaction(async (transaction) => {
+            // Query for available accounts
+            const querySnapshot = await db.collection("inventory")
+                .where("claimed", "==", false)
+                .limit(1)
+                .get();
+
+            if (querySnapshot.empty) {
+                return { success: false, message: "No available MT5 accounts" };
+            }
+
+            const accountDoc = querySnapshot.docs[0];
+            const accountRef = accountDoc.ref;
+
+            // Double-check it's still unclaimed inside transaction
+            const accountSnap = await transaction.get(accountRef);
+            const accountData = accountSnap.data();
+
+            if (accountData.claimed) {
+                return { success: false, message: "Account was just claimed by someone else" };
+            }
+
+            // Atomically claim the account
+            transaction.update(accountRef, {
+                claimed: true,
+                claimedBy: userUid,
+                claimedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Save MT5 details to user
+            transaction.update(userRef, {
+                mt5Login: accountData.login,
+                mt5Server: accountData.server,
+                mt5Password: accountData.password || "Cyruspass@1"
+            });
+
+            return {
+                success: true,
+                login: accountData.login,
+                server: accountData.server,
+                password: accountData.password || "Cyruspass@1"
+            };
+        });
+
+        return result;
+    }
+
+
+    // =========================================================
+    //  CORE APPROVAL LOGIC -- DEPOSIT APPROVAL WITH REFERRAL COMMISSION
+    // =========================================================
+    async function approveDeposit(depositProofId, userUid, amount, userEmail, depositType = 'crypto') {
+        const isNaira = depositType === 'naira';
+        const currencyLabel = isNaira ? 'Naira deposit' : 'deposit';
+        if (!confirm(`Approve ${currencyLabel} of $${amount} for user ${userEmail || userUid}?`)) return;
+
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Processing...';
+        btn.disabled = true;
+
+        try {
+            // Search ALL possible collections for this document ID
+            let depositRef = null;
+            let depositSnap = null;
+            let foundCollection = null;
+
+            const allCollections = ["depositProofs", ...NAIRA_COLLECTION_NAMES];
+
+            for (const colName of allCollections) {
+                try {
+                    const ref = db.collection(colName).doc(depositProofId);
+                    const snap = await ref.get();
+                    if (snap.exists) {
+                        depositRef = ref;
+                        depositSnap = snap;
+                        foundCollection = colName;
+                        console.log(`[Cyrus Admin] Found deposit in collection: ${colName}`);
+                        break;
+                    }
+                } catch (e) {
+                    // Continue to next collection
+                }
+            }
+
+            if (!depositSnap || !depositSnap.exists) {
+                throw new Error("Deposit proof not found in any collection");
+            }
+
+            const depositData = depositSnap.data();
+
+            if (depositData.status === 'approved') {
+                showToast("This deposit has already been approved.", "error");
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+                return;
+            }
+
+            const userRef  = db.collection("users").doc(userUid);
+            const userSnap = await userRef.get();
+
+            if (!userSnap.exists) {
+                throw new Error("User not found");
+            }
+
+            const userData = userSnap.data();
+            const referrerUid = userData.referredBy || null;
+
+            const batch = db.batch();
+
+            batch.update(userRef, {
+                balance: firebase.firestore.FieldValue.increment(amount)
+            });
+
+            batch.update(depositRef, {
+                status: 'approved',
+                approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                approvedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+
+            // Try to find and update the corresponding transaction
+            try {
+                const txQuery = await db.collection("transactions")
+                    .where("uid", "==", userUid)
+                    .where("type", "in", ["Deposit", "Deposit Proof", "Naira Deposit", "Naira Deposit Proof"])
+                    .limit(5)
+                    .get();
+
+                txQuery.forEach(txDoc => {
+                    const txData = txDoc.data();
+                    // Match by amount or paymentId
+                    const txAmount = Number(txData.amount || 0);
+                    const depositAmount = Number(amount || 0);
+                    const txPaymentId = txData.metadata && txData.metadata.paymentId ? txData.metadata.paymentId : '';
+                    const depositPaymentId = depositData.paymentId || depositData.bankReference || '';
+
+                    if (Math.abs(txAmount - depositAmount) < 0.01 || txPaymentId === depositPaymentId) {
+                        batch.update(txDoc.ref, {
+                            status: 'approved',
+                            approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                });
+            } catch (txErr) {
+                console.log("[Cyrus Admin] Transaction update skipped:", txErr.message);
+            }
+
+            let commissionAmount = 0;
+            let commissionApplied = false;
+
+            if (referrerUid) {
+                // Use partner level commission rate
+const partnerLevel = userData.partnerLevel || 'Bronze';
+const commissionRates = { Bronze: 0.05, Silver: 0.08, Gold: 0.12, Royal: 0.15 };
+const commissionRate = commissionRates[partnerLevel] || 0.05;
+commissionAmount = parseFloat((amount * commissionRate).toFixed(2));
+
+                if (commissionAmount > 0) {
+                    const referrerRef = db.collection("users").doc(referrerUid);
+                    batch.update(referrerRef, {
+                        balance: firebase.firestore.FieldValue.increment(commissionAmount)
+                    });
+
+                    const bonusTxId = `refbonus_${depositProofId}`;
+                    const bonusTxRef = db.collection("transactions").doc(bonusTxId);
+                    batch.set(bonusTxRef, {
+                        uid:           referrerUid,
+                        type:          'Referral Bonus',
+                        amount:        commissionAmount,
+                        status:        'approved',
+                        timestamp:     firebase.firestore.FieldValue.serverTimestamp(),
+                        metadata: {
+                            fromUser:       userUid,
+                            fromDeposit:    amount,
+                            depositProofId: depositProofId,
+                            commissionRate: '5%',
+                            userEmail:      userEmail || userData.email || ''
+                        }
+                    });
+
+                    const referralDocId = `ref_${referrerUid}_${userUid}`;
+                    const referralRef   = db.collection("referrals").doc(referralDocId);
+                    batch.update(referralRef, {
+                        hasDeposited:      true,
+                        referralCommission:  commissionAmount,
+                        referralCommissionTo: referrerUid,
+                        commissionPaidAt:  firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    commissionApplied = true;
+                }
+            }
+
+            await batch.commit();
+
+// ── SEND DEPOSIT APPROVAL EMAIL ──
+try {
+    const depositUserData = userSnap.data();
+    const userEmailAddr = depositUserData.email || userEmail || '';
+    const userName = depositUserData.firstName || 'Trader';
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const txIdShort = depositProofId ? depositProofId.substring(0, 16).toUpperCase() : 'N/A';
+    const currencyStr = isNaira ? 'NGN (Naira)' : 'USD (Crypto)';
+    const methodStr = isNaira ? 'Bank Transfer' : 'Cryptocurrency';
+
+    if (userEmailAddr) {
+        emailjs.send("service_5bklzec", "template_8dp7b2t", {
+            email: userEmailAddr,
+            to_email: userEmailAddr,
+            firstName: userName,
+            amount: `$${Number(amount).toLocaleString()}`,
+            currency: currencyStr,
+            method: methodStr,
+            tx_id: txIdShort,
+            date: dateStr
+        });
+    }
+} catch(emailErr) { console.warn("Deposit approval email failed:", emailErr); }
+
+            let successMsg = `${currencyLabel.charAt(0).toUpperCase() + currencyLabel.slice(1)} of $${amount} approved successfully.`;
+            if (commissionApplied) {
+                successMsg += ` Referral commission of $${commissionAmount} (5%) credited to referrer.`;
+            }
+            showToast(successMsg, "success");
+
+        } catch (err) {
+            console.error("approveDeposit error:", err);
+            showToast("Approval failed: " + err.message, "error");
+        } finally {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }
+
+
+
+    async function rejectDeposit(depositProofId, depositType = 'crypto') {
+        const isNaira = depositType === 'naira';
+        const currencyLabel = isNaira ? 'Naira deposit' : 'deposit proof';
+        if (!confirm(`Reject this ${currencyLabel}? This action cannot be undone.`)) return;
+
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Processing...';
+        btn.disabled = true;
+
+        try {
+            // Search ALL possible collections for this document ID
+            let depositRef = null;
+            let depositSnap = null;
+
+            const allCollections = ["depositProofs", ...NAIRA_COLLECTION_NAMES];
+
+            for (const colName of allCollections) {
+                try {
+                    const ref = db.collection(colName).doc(depositProofId);
+                    const snap = await ref.get();
+                    if (snap.exists) {
+                        depositRef = ref;
+                        depositSnap = snap;
+                        console.log(`[Cyrus Admin] Found deposit to reject in: ${colName}`);
+                        break;
+                    }
+                } catch (e) {
+                    // Continue to next collection
+                }
+            }
+
+            if (!depositSnap || !depositSnap.exists) {
+                throw new Error("Deposit proof not found in any collection");
+            }
+
+            const depositData = depositSnap.data();
+            const userUid = depositData.uid || depositData.userId || depositData.userUid;
+
+            const batch = db.batch();
+
+            batch.update(depositRef, {
+                status: 'rejected',
+                rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                rejectedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+
+            // Try to find and update the corresponding transaction
+            try {
+                const txQuery = await db.collection("transactions")
+                    .where("uid", "==", userUid)
+                    .where("type", "in", ["Deposit", "Deposit Proof", "Naira Deposit", "Naira Deposit Proof"])
+                    .limit(5)
+                    .get();
+
+                txQuery.forEach(txDoc => {
+                    const txData = txDoc.data();
+                    const txAmount = Number(txData.amount || 0);
+                    const depositAmount = Number(depositData.amount || 0);
+                    const txPaymentId = txData.metadata && txData.metadata.paymentId ? txData.metadata.paymentId : '';
+                    const depositPaymentId = depositData.paymentId || depositData.bankReference || '';
+
+                    if (Math.abs(txAmount - depositAmount) < 0.01 || txPaymentId === depositPaymentId) {
+                        batch.update(txDoc.ref, {
+                            status: 'rejected',
+                            rejectedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                });
+            } catch (txErr) {
+                console.log("[Cyrus Admin] Transaction update skipped:", txErr.message);
+            }
+
+            await batch.commit();
+            showToast(`${currencyLabel.charAt(0).toUpperCase() + currencyLabel.slice(1)} rejected.`, "success");
+
+        } catch (err) {
+            console.error("rejectDeposit error:", err);
+            showToast("Rejection failed: " + err.message, "error");
+        } finally {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }
+
+
+    // =========================================================
+    //  CORE APPROVAL LOGIC -- PROFIT CONVERSION APPROVAL
+    // =========================================================
+    async function approveConversion(conversionId, userUid, rewardAmount, userEmail) {
+        if (!confirm(`Approve profit conversion of $${rewardAmount} for user ${userEmail || userUid}?`)) return;
+
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Processing...';
+        btn.disabled = true;
+
+        try {
+            const convRef  = db.collection("conversionRequests").doc(conversionId);
+            const convSnap = await convRef.get();
+
+            if (!convSnap.exists) {
+                throw new Error("Conversion request not found");
+            }
+
+            const convData = convSnap.data();
+
+            if (convData.status === 'approved') {
+                showToast("This conversion has already been approved.", "error");
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+                return;
+            }
+
+            const userRef  = db.collection("users").doc(userUid);
+            const userSnap = await userRef.get();
+
+            if (!userSnap.exists) {
+                throw new Error("User not found");
+            }
+
+            const batch = db.batch();
+
+            batch.update(userRef, {
+                profit: firebase.firestore.FieldValue.increment(rewardAmount)
+            });
+
+            batch.update(convRef, {
+                status: 'approved',
+                approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                approvedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+
+// Mark user as active trader
+const activeUserRef = db.collection('users').doc(userUid);
+batch.update(activeUserRef, {
+    hasApprovedConversion: true,
+    lastApprovedConversionAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+
+// ── PROFIT CHALLENGE BONUS ──
+const CHALLENGE_TIERS = [
+    {profit: 100, bonus: 0.2},
+    {profit: 500, bonus: 1},
+    {profit: 1000, bonus: 2},
+    {profit: 2000, bonus: 4},
+    {profit: 5000, bonus: 10},
+    {profit: 10000, bonus: 20},
+    {profit: 20000, bonus: 40},
+    {profit: 50000, bonus: 100}
+];
+
+const convAmount = Number(convData.amount || 0);
+const matchedTier = CHALLENGE_TIERS.slice().reverse().find(t => convAmount >= t.profit);
+
+if (matchedTier) {
+    const bonusAmount = matchedTier.bonus;
+    batch.update(activeUserRef, {
+        profit: firebase.firestore.FieldValue.increment(bonusAmount)
+    });
+
+    const bonusTxRef = db.collection('transactions').doc();
+    batch.set(bonusTxRef, {
+        uid: userUid,
+        type: 'Challenge Bonus',
+        amount: bonusAmount,
+        status: 'approved',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        metadata: {
+            conversionAmount: convAmount,
+            tier: matchedTier.profit,
+            userEmail: userEmail || ''
+        }
+    });
+
+    sendTelegramNotification(
+`🏆 <b>Challenge Bonus Awarded!</b>
+👤 User: ${userEmail || 'N/A'}
+💵 Profit Converted: $${convAmount}
+🎁 Bonus: +$${bonusAmount}
+⏰ Time: ${new Date().toLocaleString()}`
+    );
+}
+            const txQuery = await db.collection("transactions")
+                .where("uid", "==", userUid)
+                .where("type", "==", "Profit Conversion")
+                .where("metadata.rewardValue", "==", rewardAmount)
+                .limit(1)
+                .get();
+
+            if (!txQuery.empty) {
+                const txDoc = txQuery.docs[0];
+                batch.update(txDoc.ref, {
+                    status: 'approved',
+                    approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            const reqQuery = await db.collection("requests")
+                .where("uid", "==", userUid)
+                .where("type", "==", "Profit Conversion")
+                .where("rewardValue", "==", rewardAmount)
+                .limit(1)
+                .get();
+
+            if (!reqQuery.empty) {
+                const reqDoc = reqQuery.docs[0];
+                batch.update(reqDoc.ref, {
+                    status: 'approved',
+                    approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            await batch.commit();
+            showToast(`Profit conversion of $${rewardAmount} approved successfully.`, "success");
+
+        } catch (err) {
+            console.error("approveConversion error:", err);
+            showToast("Approval failed: " + err.message, "error");
+        } finally {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }
+
+    async function rejectConversion(conversionId) {
+        if (!confirm("Reject this profit conversion? This action cannot be undone.")) return;
+
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Processing...';
+        btn.disabled = true;
+
+        try {
+            const convRef  = db.collection("conversionRequests").doc(conversionId);
+            const convSnap = await convRef.get();
+
+            if (!convSnap.exists) {
+                throw new Error("Conversion request not found");
+            }
+
+            const convData = convSnap.data();
+            const userUid = convData.uid;
+            const rewardAmount = convData.metadata && convData.metadata.rewardValue ? convData.metadata.rewardValue : 0;
+
+            const batch = db.batch();
+
+            batch.update(convRef, {
+                status: 'rejected',
+                rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                rejectedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+
+            const txQuery = await db.collection("transactions")
+                .where("uid", "==", userUid)
+                .where("type", "==", "Profit Conversion")
+                .where("metadata.rewardValue", "==", rewardAmount)
+                .limit(1)
+                .get();
+
+            if (!txQuery.empty) {
+                const txDoc = txQuery.docs[0];
+                batch.update(txDoc.ref, {
+                    status: 'rejected',
+                    rejectedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            const reqQuery = await db.collection("requests")
+                .where("uid", "==", userUid)
+                .where("type", "==", "Profit Conversion")
+                .where("rewardValue", "==", rewardAmount)
+                .limit(1)
+                .get();
+
+            if (!reqQuery.empty) {
+                const reqDoc = reqQuery.docs[0];
+                batch.update(reqDoc.ref, {
+                    status: 'rejected',
+                    rejectedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            await batch.commit();
+            showToast("Profit conversion rejected.", "success");
+
+        } catch (err) {
+            console.error("rejectConversion error:", err);
+            showToast("Rejection failed: " + err.message, "error");
+        } finally {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }
+
+    // =========================================================
+    //  WITHDRAWAL APPROVAL / REJECTION
+    // =========================================================
+    async function approveWithdrawal(withdrawalId, userUid, amount) {
+        if (!confirm(`Approve withdrawal of $${amount}?`)) return;
+
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Processing...';
+        btn.disabled = true;
+
+        try {
+            const withdrawalRef  = db.collection("withdrawRequests").doc(withdrawalId);
+            const withdrawalSnap = await withdrawalRef.get();
+
+            if (!withdrawalSnap.exists) {
+                throw new Error("Withdrawal request not found");
+            }
+
+            const withdrawalData = withdrawalSnap.data();
+
+            if (withdrawalData.status === 'approved') {
+                showToast("This withdrawal has already been approved.", "error");
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+                return;
+            }
+
+            const batch = db.batch();
+
+            batch.update(withdrawalRef, {
+                status: 'approved',
+                approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                approvedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+
+            const txQuery = await db.collection("transactions")
+                .where("uid", "==", userUid)
+                .where("type", "==", "Withdrawal")
+                .where("amount", "==", amount)
+                .limit(1)
+                .get();
+
+            if (!txQuery.empty) {
+                const txDoc = txQuery.docs[0];
+                batch.update(txDoc.ref, {
+                    status: 'approved',
+                    approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            const reqQuery = await db.collection("requests")
+                .where("uid", "==", userUid)
+                .where("type", "==", "Withdrawal")
+                .where("amount", "==", amount)
+                .limit(1)
+                .get();
+
+            if (!reqQuery.empty) {
+                const reqDoc = reqQuery.docs[0];
+                batch.update(reqDoc.ref, {
+                    status: 'approved',
+                    approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            await batch.commit();
+            showToast(`Withdrawal of $${amount} approved.`, "success");
+
+        } catch (err) {
+            console.error("approveWithdrawal error:", err);
+            showToast("Approval failed: " + err.message, "error");
+        } finally {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }
+
+    async function rejectWithdrawal(withdrawalId) {
+        if (!confirm("Reject this withdrawal?")) return;
+
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Processing...';
+        btn.disabled = true;
+
+        try {
+            const withdrawalRef  = db.collection("withdrawRequests").doc(withdrawalId);
+            const withdrawalSnap = await withdrawalRef.get();
+
+            if (!withdrawalSnap.exists) {
+                throw new Error("Withdrawal request not found");
+            }
+
+            const withdrawalData = withdrawalSnap.data();
+            const userUid = withdrawalData.uid;
+            const amount = withdrawalData.amount || 0;
+
+            const batch = db.batch();
+
+            batch.update(withdrawalRef, {
+                status: 'rejected',
+                rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                rejectedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+
+            const userRef = db.collection("users").doc(userUid);
+            batch.update(userRef, {
+                profit: firebase.firestore.FieldValue.increment(amount)
+            });
+
+            const txQuery = await db.collection("transactions")
+                .where("uid", "==", userUid)
+                .where("type", "==", "Withdrawal")
+                .where("amount", "==", amount)
+                .limit(1)
+                .get();
+
+            if (!txQuery.empty) {
+                const txDoc = txQuery.docs[0];
+                batch.update(txDoc.ref, {
+                    status: 'rejected',
+                    rejectedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            await batch.commit();
+            showToast("Withdrawal rejected. Profit refunded to user.", "success");
+
+        } catch (err) {
+            console.error("rejectWithdrawal error:", err);
+            showToast("Rejection failed: " + err.message, "error");
+        } finally {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }
+
+    // =========================================================
+    //  KYC APPROVAL / REJECTION
+    // =========================================================
+    async function approveKyc(userId) {
+        if (!confirm("Verify this user's KYC?")) return;
+
+        try {
+            await db.collection("users").doc(userId).update({
+                kycStatus: 'verified',
+                kycVerifiedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                kycVerifiedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+            showToast("KYC verified successfully.", "success");
+        } catch (err) {
+            showToast("KYC verification failed: " + err.message, "error");
+        }
+    }
+
+    async function rejectKyc(userId) {
+        if (!confirm("Reject this KYC submission?")) return;
+
+        try {
+            await db.collection("users").doc(userId).update({
+                kycStatus: 'rejected',
+                kycRejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                kycRejectedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+            showToast("KYC rejected.", "success");
+        } catch (err) {
+            showToast("KYC rejection failed: " + err.message, "error");
+        }
+    }
+
+    // =========================================================
+    //  FUNDED ACCOUNT APPROVAL / REJECTION
+    // =========================================================
+    async function approveFunded(fundedId, userUid) {
+        if (!confirm("Approve this funded account request?")) return;
+
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Processing...';
+        btn.disabled = true;
+
+        try {
+            const fundedRef  = db.collection("fundedRequests").doc(fundedId);
+            const fundedSnap = await fundedRef.get();
+
+            if (!fundedSnap.exists) {
+                throw new Error("Funded request not found");
+            }
+
+            const fundedData = fundedSnap.data();
+
+            if (fundedData.status === 'approved') {
+                showToast("This request has already been approved.", "error");
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+                return;
+            }
+
+            const batch = db.batch();
+
+            batch.update(fundedRef, {
+                status: 'approved',
+                approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                approvedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+
+            const txQuery = await db.collection("transactions")
+                .where("uid", "==", userUid)
+                .where("type", "==", "Account Purchase")
+                .limit(1)
+                .get();
+
+            if (!txQuery.empty) {
+                const txDoc = txQuery.docs[0];
+                batch.update(txDoc.ref, {
+                    status: 'approved',
+                    approvedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            await batch.commit();
+            showToast("Funded account request approved.", "success");
+
+        } catch (err) {
+            console.error("approveFunded error:", err);
+            showToast("Approval failed: " + err.message, "error");
+        } finally {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }
+
+    async function rejectFunded(fundedId) {
+        if (!confirm("Reject this funded account request?")) return;
+
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>Processing...';
+        btn.disabled = true;
+
+        try {
+            const fundedRef  = db.collection("fundedRequests").doc(fundedId);
+            const fundedSnap = await fundedRef.get();
+
+            if (!fundedSnap.exists) {
+                throw new Error("Funded request not found");
+            }
+
+            const fundedData = fundedSnap.data();
+            const userUid = fundedData.uid;
+            const amount = fundedData.amount || 0;
+
+            const batch = db.batch();
+
+            batch.update(fundedRef, {
+                status: 'rejected',
+                rejectedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                rejectedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+
+            const userRef = db.collection("users").doc(userUid);
+            batch.update(userRef, {
+                balance: firebase.firestore.FieldValue.increment(amount)
+            });
+
+            const txQuery = await db.collection("transactions")
+                .where("uid", "==", userUid)
+                .where("type", "==", "Account Purchase")
+                .limit(1)
+                .get();
+
+            if (!txQuery.empty) {
+                const txDoc = txQuery.docs[0];
+                batch.update(txDoc.ref, {
+                    status: 'rejected',
+                    rejectedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            await batch.commit();
+            showToast("Funded account request rejected. Balance refunded.", "success");
+
+        } catch (err) {
+            console.error("rejectFunded error:", err);
+            showToast("Rejection failed: " + err.message, "error");
+        } finally {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }
+
+    // =========================================================
+    //  USER MANAGEMENT
+    // =========================================================
+    async function editUserBalance(userId, currentBalance, currentProfit) {
+        const newBalance = prompt(`Current Balance: $${currentBalance}
+Enter new balance:`, currentBalance);
+        if (newBalance === null) return;
+
+        const newProfit = prompt(`Current Profit: $${currentProfit}
+Enter new profit:`, currentProfit);
+        if (newProfit === null) return;
+
+        try {
+            await db.collection("users").doc(userId).update({
+                balance: parseFloat(newBalance),
+                profit: parseFloat(newProfit)
+            });
+            showToast("User balance updated.", "success");
+        } catch (err) {
+            showToast("Update failed: " + err.message, "error");
+        }
+    }
+// ── DELETE USER ──
+async function deleteUser(userId, userEmail) {
+    if (!confirm(`⚠️ PERMANENTLY DELETE user ${userEmail || userId}?\n\nThis will:\n- Delete their Firestore document\n- Remove their transactions\n- Cannot be undone!\n\nType DELETE to confirm.`)) return;
+
+    const confirmation = prompt('Type DELETE to confirm permanent deletion:');
+    if (confirmation !== 'DELETE') {
+        showToast('Deletion cancelled.', 'error');
+        return;
+    }
+
+    try {
+        showToast('Deleting user...', 'success');
+
+        const batch = db.batch();
+
+        // 1. Delete user document
+        batch.delete(db.collection('users').doc(userId));
+
+        // 2. Mark transactions as deleted (don't delete for audit trail)
+        const txSnap = await db.collection('transactions')
+            .where('uid', '==', userId)
+            .limit(50)
+            .get();
+        txSnap.forEach(doc => batch.delete(doc.ref));
+
+        // 3. Delete referral records
+        const refSnap = await db.collection('referrals')
+            .where('referredUserId', '==', userId)
+            .limit(10)
+            .get();
+        refSnap.forEach(doc => batch.delete(doc.ref));
+
+        // 4. Delete notifications
+        const notifSnap = await db.collection('notifications')
+            .where('uid', '==', userId)
+            .limit(50)
+            .get();
+        notifSnap.forEach(doc => batch.delete(doc.ref));
+
+        await batch.commit();
+
+        showToast(`User ${userEmail || userId} deleted permanently.`, 'success');
+
+    } catch(err) {
+        showToast('Delete failed: ' + err.message, 'error');
+        console.error('deleteUser error:', err);
+    }
+}
+
+// ── OVERRIDE DASHBOARD STATS ──
+async function overrideStat(type) {
+    const isDeposit = type === 'total_deposits';
+    const inputId = isDeposit ? 'override-deposits-input' : 'override-withdrawals-input';
+    const displayId = isDeposit ? 'current-deposits-display' : 'current-withdrawals-display';
+    const statElementId = isDeposit ? 'stat-total-deposits' : 'stat-total-withdrawals';
+    const label = isDeposit ? 'Total Deposits' : 'Total Withdrawals';
+
+    const value = parseFloat(document.getElementById(inputId).value);
+    if (isNaN(value) || value < 0) {
+        showToast('Please enter a valid amount.', 'error');
+        return;
+    }
+
+    if (!confirm(`Set ${label} to $${value.toLocaleString()}?`)) return;
+
+    try {
+        await db.collection('admin_stats').doc('overrides').set({
+            [type]: value,
+            [`${type}_updatedAt`]: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedBy: currentAdmin ? currentAdmin.uid : 'admin'
+        }, { merge: true });
+
+        // Update the display immediately
+        document.getElementById(statElementId).innerText = '$' + value.toLocaleString(undefined, {
+            minimumFractionDigits: 2, maximumFractionDigits: 2
+        });
+        document.getElementById(displayId).innerText = `Current: $${value.toLocaleString()}`;
+        document.getElementById(inputId).value = '';
+
+        showToast(`${label} updated to $${value.toLocaleString()}`, 'success');
+
+    } catch(err) {
+        showToast('Failed: ' + err.message, 'error');
+    }
+}
+
+// Load overrides on init
+async function loadStatOverrides() {
+    try {
+        const overrideDoc = await db.collection('admin_stats').doc('overrides').get();
+        if (overrideDoc.exists) {
+            const data = overrideDoc.data();
+
+            if (data.total_deposits !== undefined) {
+                document.getElementById('stat-total-deposits').innerText = '$' + Number(data.total_deposits).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.getElementById('current-deposits-display').innerText = `Current override: $${Number(data.total_deposits).toLocaleString()}`;
+            } else {
+                document.getElementById('current-deposits-display').innerText = 'No override set — showing live total';
+            }
+
+            if (data.total_withdrawals !== undefined) {
+                document.getElementById('stat-total-withdrawals').innerText = '$' + Number(data.total_withdrawals).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                document.getElementById('current-withdrawals-display').innerText = `Current override: $${Number(data.total_withdrawals).toLocaleString()}`;
+            } else {
+                document.getElementById('current-withdrawals-display').innerText = 'No override set — showing live total';
+            }
+        } else {
+            document.getElementById('current-deposits-display').innerText = 'No override set — showing live total';
+            document.getElementById('current-withdrawals-display').innerText = 'No override set — showing live total';
+        }
+    } catch(err) {
+        console.error('loadStatOverrides error:', err);
+    }
+}
+    async function banUser(userId) {
+        if (!confirm("Ban this user? They will be locked out of the platform.")) return;
+
+        try {
+            await db.collection("users").doc(userId).update({
+                status: 'banned',
+                bannedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                bannedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+            showToast("User banned.", "success");
+        } catch (err) {
+            showToast("Ban failed: " + err.message, "error");
+        }
+    }
+
+    async function unbanUser(userId) {
+        if (!confirm("Unban this user?")) return;
+
+        try {
+            await db.collection("users").doc(userId).update({
+                status: 'active',
+                unbannedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                unbannedBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+            showToast("User unbanned.", "success");
+        } catch (err) {
+            showToast("Unban failed: " + err.message, "error");
+        }
+    }
+
+    // =========================================================
+    //  BROADCAST SYSTEM
+    // =========================================================
+    // ── FIX ALL UNCLAIMED USERS ──
+async function fixAllUnclaimedUsers() {
+    if (!confirm("This will scan all users and remove MT5 data from users whose MT5 account is no longer in inventory as claimed. Continue?")) return;
+
+    try {
+        showToast("Scanning users... please wait", "success");
+
+        // Get all claimed inventory logins
+        const inventorySnap = await db.collection("inventory").where("status", "==", "claimed").get();
+        const claimedLogins = new Set(inventorySnap.docs.map(d => d.data().login).filter(Boolean));
+
+        // Get all users who have mt5Account
+        const usersSnap = await db.collection("users").get();
+        let fixedCount = 0;
+        const batch = db.batch();
+
+        usersSnap.forEach(userDoc => {
+            const userData = userDoc.data();
+            const mt5Login = userData.mt5Login || (userData.mt5Account && userData.mt5Account.login);
+            
+            // If user has MT5 but it's NOT in claimed inventory → remove it
+            if (mt5Login && !claimedLogins.has(mt5Login)) {
+                batch.update(userDoc.ref, {
+                    mt5Login: firebase.firestore.FieldValue.delete(),
+                    mt5Server: firebase.firestore.FieldValue.delete(),
+                    mt5Password: firebase.firestore.FieldValue.delete(),
+                    mt5Account: firebase.firestore.FieldValue.delete(),
+                    mt5Balance: firebase.firestore.FieldValue.delete(),
+                    mt5ClaimedAt: firebase.firestore.FieldValue.delete(),
+                    mt5Suspended: firebase.firestore.FieldValue.delete(),
+                    hasApprovedConversion: firebase.firestore.FieldValue.delete()
+                });
+                fixedCount++;
+            }
+        });
+
+        await batch.commit();
+        showToast(`Fixed ${fixedCount} users successfully! ✅`, "success");
+
+    } catch(err) {
+        showToast("Fix failed: " + err.message, "error");
+    }
+}
+
+async function sendUserNotification() {
+    const input = document.getElementById('notif-user-input').value.trim();
+    const title = document.getElementById('notif-title').value.trim();
+    const message = document.getElementById('notif-message').value.trim();
+
+    if (!input || !title || !message) {
+        showToast("Please fill in all fields.", "error");
+        return;
+    }
+
+    try {
+        let userUid = null;
+
+        // Check if input is email or UID
+        if (input.includes('@')) {
+            // Search by email
+            const usersSnap = await db.collection("users")
+                .where("email", "==", input)
+                .limit(1)
+                .get();
+
+            if (usersSnap.empty) {
+                showToast("No user found with that email.", "error");
+                return;
+            }
+            userUid = usersSnap.docs[0].id;
+        } else {
+            // Use as UID directly
+            const userSnap = await db.collection("users").doc(input).get();
+            if (!userSnap.exists) {
+                showToast("No user found with that UID.", "error");
+                return;
+            }
+            userUid = input;
+        }
+
+        // Send notification
+        await db.collection("notifications").add({
+            uid: userUid,
+            title: title,
+            message: message,
+            read: false,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            sentBy: currentAdmin ? currentAdmin.uid : 'admin'
+        });
+
+        // Clear fields
+        document.getElementById('notif-user-input').value = '';
+        document.getElementById('notif-title').value = '';
+        document.getElementById('notif-message').value = '';
+
+        showToast("Notification sent successfully!", "success");
+
+    } catch (err) {
+        showToast("Failed to send: " + err.message, "error");
+    }
+}
+// =========================================================
+//  PNL SYSTEM
+// =========================================================
+let allPNLRecords = [];
+let pnlFilter = 'all';
+
+function initPNLListeners() {
+    db.collection("pnl_records").orderBy("date", "desc").onSnapshot(snap => {
+        allPNLRecords = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        updatePNLStats();
+        renderPNLRecords();
+    });
+}
+
+function updatePNLStats() {
+    let totalProfit = 0;
+    let totalLoss = 0;
+    allPNLRecords.forEach(d => {
+        totalProfit += d.profit || 0;
+        totalLoss += d.loss || 0;
+    });
+    const net = totalProfit - totalLoss;
+    document.getElementById('pnl-stat-profit').innerText = '$' + totalProfit.toLocaleString();
+    document.getElementById('pnl-stat-loss').innerText = '$' + totalLoss.toLocaleString();
+    const netEl = document.getElementById('pnl-stat-net');
+    netEl.innerText = (net >= 0 ? '+' : '-') + '$' + Math.abs(net).toLocaleString();
+    netEl.className = 'dashboard-stat-number ' + (net >= 0 ? 'text-green-600' : 'text-red-600');
+}
+
+function filterPNL(type) {
+    pnlFilter = type;
+    renderPNLRecords();
+}
+
+function renderPNLRecords() {
+    const container = document.getElementById('pnl-records-list');
+    let docs = allPNLRecords;
+    if (pnlFilter === 'profit') { docs = docs.filter(d => (d.profit || 0) > (d.loss || 0)); }
+    else if (pnlFilter === 'loss') { docs = docs.filter(d => (d.loss || 0) > (d.profit || 0)); }
+    if (docs.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-chart-mixed"></i><p class="font-bold text-sm">No PNL records found.</p></div>`;
+        return;
+    }
+    container.innerHTML = docs.map(d => {
+        const net = (d.profit || 0) - (d.loss || 0);
+        const isPositive = net >= 0;
+        const date = d.date ? d.date.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
+        return `
+        <div class="request-row">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4 flex-1">
+                    <div class="h-12 w-12 ${isPositive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid ${isPositive ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down'} text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="font-black text-slate-900">${date}</p>
+                        <p class="text-xs text-slate-400 font-bold">${d.note || 'Daily Record'}</p>
+                        <div class="flex gap-3 mt-1">
+                            <span class="text-[10px] font-black text-green-600">Profit: $${(d.profit || 0).toLocaleString()}</span>
+                            <span class="text-[10px] font-black text-red-500">Loss: $${(d.loss || 0).toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 flex-shrink-0">
+                    <p class="font-black text-xl ${isPositive ? 'text-green-600' : 'text-red-500'}">${isPositive ? '+' : '-'}$${Math.abs(net).toLocaleString()}</p>
+                    <button onclick="deletePNLRecord('${d.id}')" class="px-3 py-2 bg-red-100 text-red-600 rounded-xl text-[10px] font-black hover:bg-red-200 transition-all">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+async function addPNLRecord() {
+    const profit = parseFloat(document.getElementById('pnl-profit-input').value) || 0;
+    const loss = parseFloat(document.getElementById('pnl-loss-input').value) || 0;
+    const dateVal = document.getElementById('pnl-date-input').value;
+    const note = document.getElementById('pnl-note-input').value.trim();
+    const btn = document.getElementById('pnl-add-btn');
+
+    if (!dateVal) { showToast("Please select a date.", "error"); return; }
+    if (profit === 0 && loss === 0) { showToast("Please enter profit or loss amount.", "error"); return; }
+
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Adding...';
+    btn.disabled = true;
+
+    try {
+        const date = new Date(dateVal);
+        await db.collection("pnl_records").add({
+            profit: profit,
+            loss: loss,
+            note: note || 'Daily Record',
+            date: firebase.firestore.Timestamp.fromDate(date),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            addedBy: currentAdmin ? currentAdmin.uid : 'admin'
+        });
+        document.getElementById('pnl-profit-input').value = '';
+        document.getElementById('pnl-loss-input').value = '';
+        document.getElementById('pnl-date-input').value = '';
+        document.getElementById('pnl-note-input').value = '';
+        document.getElementById('pnl-net-preview').classList.add('hidden');
+        showToast("PNL record added successfully!", "success");
+    } catch (err) {
+        showToast("Failed to add PNL: " + err.message, "error");
+    } finally {
+        btn.innerHTML = '<i class="fa-solid fa-plus mr-2"></i>Add PNL Record';
+        btn.disabled = false;
+    }
+}
+
+async function deletePNLRecord(id) {
+    if (!confirm("Delete this PNL record?")) return;
+    try {
+        await db.collection("pnl_records").doc(id).delete();
+        showToast("PNL record deleted.", "success");
+    } catch (err) {
+        showToast("Delete failed: " + err.message, "error");
+    }
+}
+
+// Live net preview
+document.addEventListener('input', function(e) {
+    if (e.target.id === 'pnl-profit-input' || e.target.id === 'pnl-loss-input') {
+        const profit = parseFloat(document.getElementById('pnl-profit-input').value) || 0;
+        const loss = parseFloat(document.getElementById('pnl-loss-input').value) || 0;
+        const net = profit - loss;
+        const preview = document.getElementById('pnl-net-preview');
+        const netVal = document.getElementById('pnl-net-value');
+        if (profit > 0 || loss > 0) {
+            preview.classList.remove('hidden');
+            preview.className = `p-4 rounded-xl text-center ${net >= 0 ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}`;
+            netVal.innerText = (net >= 0 ? '+' : '-') + '$' + Math.abs(net).toLocaleString();
+            netVal.className = 'text-3xl font-black ' + (net >= 0 ? 'text-green-600' : 'text-red-500');
+        } else {
+            preview.classList.add('hidden');
+        }
+    }
+});
+   // =========================================================
+//  MT5 GALLERY SYSTEM
+// =========================================================
+let allGallery = [];
+
+function initGalleryListeners() {
+    db.collection("mt5_gallery").orderBy("createdAt", "desc").onSnapshot(snap => {
+        allGallery = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        updateGalleryStats();
+        renderGallery();
+        updateGalleryGmailFilter();
+    });
+}
+
+function updateGalleryStats() {
+    document.getElementById('gallery-stat-total').innerText = allGallery.length;
+    const owners = [...new Set(allGallery.map(d => d.adminGmail).filter(Boolean))];
+    document.getElementById('gallery-stat-owners').innerText = owners.length;
+    document.getElementById('gallery-stat-available').innerText = allGallery.filter(d => d.status === 'available').length;
+}
+
+function updateGalleryGmailFilter() {
+    const select = document.getElementById('gallery-filter-gmail');
+    const gmails = [...new Set(allGallery.map(d => d.adminGmail).filter(Boolean))];
+    const current = select.value;
+    select.innerHTML = '<option value="all">All Admin Accounts</option>' +
+        gmails.map(g => `<option value="${g}" ${current === g ? 'selected' : ''}>${g}</option>`).join('');
+}
+
+function renderGallery() {
+    const container = document.getElementById('gallery-list');
+    const searchLogin = (document.getElementById('gallery-search-login').value || '').toLowerCase();
+    const filterGmail = document.getElementById('gallery-filter-gmail').value;
+    const filterStatus = document.getElementById('gallery-filter-status').value;
+
+    let docs = allGallery;
+
+    if (searchLogin) docs = docs.filter(d => (d.login || '').toLowerCase().includes(searchLogin));
+    if (filterGmail !== 'all') docs = docs.filter(d => d.adminGmail === filterGmail);
+    if (filterStatus !== 'all') docs = docs.filter(d => d.status === filterStatus);
+
+    if (docs.length === 0) {
+        container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-layer-group"></i><p class="font-bold text-sm">No accounts found in gallery.</p></div>`;
+        return;
+    }
+
+    // Group by admin Gmail
+    const grouped = {};
+    docs.forEach(d => {
+        const key = d.adminGmail || 'Unknown';
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(d);
+    });
+
+    container.innerHTML = Object.keys(grouped).map(gmail => {
+        const accounts = grouped[gmail];
+        const available = accounts.filter(a => a.status === 'available').length;
+        const claimed = accounts.filter(a => a.status === 'claimed').length;
+
+        return `
+        <div style="border-bottom:2px solid #f1f5f9; padding:20px;">
+            <!-- Gmail Header -->
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:44px; height:44px; background:#fef9c3; border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <i class="fa-brands fa-google" style="color:#854d0e; font-size:18px;"></i>
+                    </div>
+                    <div>
+                        <p style="font-size:14px; font-weight:800; color:#0f172a;">${gmail}</p>
+                        <p style="font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.1em;">${accounts.length} accounts · ${available} available · ${claimed} claimed</p>
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <span style="background:#dcfce7; color:#166534; padding:6px 12px; border-radius:10px; font-size:10px; font-weight:800;">${available} Available</span>
+                    <span style="background:#fee2e2; color:#991b1b; padding:6px 12px; border-radius:10px; font-size:10px; font-weight:800;">${claimed} Claimed</span>
+                </div>
+            </div>
+
+            <!-- Accounts Grid -->
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px;">
+                ${accounts.map(a => {
+                    const isAvailable = a.status === 'available';
+                    const claimedDate = a.claimedAt ? (a.claimedAt.toDate ? a.claimedAt.toDate().toLocaleDateString() : 'N/A') : '';
+                    return `
+                    <div style="background:${isAvailable ? '#f8fafc' : '#fff5f5'}; border:2px solid ${isAvailable ? '#e2e8f0' : '#fecaca'}; border-radius:16px; padding:16px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+                            <div>
+                                <p style="font-size:10px; font-weight:800; color:#94a3b8; text-transform:uppercase; margin-bottom:3px;">MT5 Login</p>
+                                <p style="font-size:18px; font-weight:900; color:#0f172a; font-family:monospace;">${a.login || 'N/A'}</p>
+                            </div>
+                            <span style="background:${isAvailable ? '#dcfce7' : '#fee2e2'}; color:${isAvailable ? '#166534' : '#991b1b'}; padding:4px 10px; border-radius:8px; font-size:9px; font-weight:800; text-transform:uppercase;">${a.status || 'available'}</span>
+                        </div>
+                        <p style="font-size:11px; color:#64748b; font-weight:600; margin-bottom:8px;"><i class="fa-solid fa-server mr-1"></i>${a.server || 'N/A'}</p>
+                        ${a.claimedBy ? `<p style="font-size:10px; color:#94a3b8; font-weight:600;"><i class="fa-solid fa-user mr-1"></i>Claimed: ${a.claimedBy.substring(0,16)}... · ${claimedDate}</p>` : ''}
+                        <div style="display:flex; gap:6px; margin-top:10px;">
+                            <button onclick="removeFromGallery('${a.id}')" style="flex:1; padding:8px; background:#fee2e2; color:#dc2626; border:none; border-radius:10px; font-size:10px; font-weight:800; cursor:pointer; text-transform:uppercase;">
+                                <i class="fa-solid fa-trash mr-1"></i>Remove
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+async function addExistingToGallery() {
+    const login = document.getElementById('gallery-existing-login').value.trim();
+    const gmail = document.getElementById('gallery-existing-gmail').value.trim();
+
+    if (!login || !gmail) { showToast("Please fill in both fields.", "error"); return; }
+
+    try {
+        // Find in inventory
+        const invSnap = await db.collection("inventory").where("login", "==", login).limit(1).get();
+        if (invSnap.empty) { showToast("MT5 login not found in inventory.", "error"); return; }
+
+        const invDoc = invSnap.docs[0];
+        const invData = invDoc.data();
+
+        // Check if already in gallery
+        const existingGallery = await db.collection("mt5_gallery").where("login", "==", login).limit(1).get();
+        if (!existingGallery.empty) {
+            // Update gmail on existing gallery entry
+            await db.collection("mt5_gallery").doc(existingGallery.docs[0].id).update({ adminGmail: gmail });
+            showToast("Gallery entry updated with new Gmail!", "success");
+        } else {
+            // Add new gallery entry
+            await db.collection("mt5_gallery").add({
+                login: login,
+                server: invData.server || '',
+                adminGmail: gmail,
+                status: invData.status || 'available',
+                claimedBy: invData.claimedBy || null,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            showToast("Account added to gallery!", "success");
+        }
+
+        // Update inventory with gmail
+        await db.collection("inventory").doc(invDoc.id).update({ adminGmail: gmail });
+
+        document.getElementById('gallery-existing-login').value = '';
+        document.getElementById('gallery-existing-gmail').value = '';
+
+    } catch(err) {
+        showToast("Failed: " + err.message, "error");
+    }
+}
+
+async function removeFromGallery(galleryId) {
+    if (!confirm("Remove this account from gallery?")) return;
+    try {
+        await db.collection("mt5_gallery").doc(galleryId).delete();
+        showToast("Removed from gallery.", "success");
+    } catch(err) {
+        showToast("Failed: " + err.message, "error");
+    }
+}
+
+window.renderGallery = renderGallery;
+window.addExistingToGallery = addExistingToGallery;
+window.removeFromGallery = removeFromGallery;
+    async function sendBroadcast() {
+        const title = document.getElementById('broadcast-title').value.trim();
+        const body = document.getElementById('broadcast-body').value.trim();
+
+        if (!title || !body) {
+            showToast("Please enter both title and message.", "error");
+            return;
+        }
+
+        try {
+            await db.collection("settings").doc("broadcast").set({
+                title: title,
+                body: body,
+                sentAt: firebase.firestore.FieldValue.serverTimestamp(),
+                sentBy: currentAdmin ? currentAdmin.uid : 'admin'
+            });
+
+            const usersSnap = await db.collection("users").get();
+            const batch = db.batch();
+            let count = 0;
+
+            usersSnap.forEach(userDoc => {
+                const notifRef = db.collection("notifications").doc();
+                batch.set(notifRef, {
+                    uid: userDoc.id,
+                    title: title,
+                    message: body,
+                    read: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                count++;
+                if (count >= 400) return;
+            });
+
+            await batch.commit();
+
+            document.getElementById('broadcast-title').value = '';
+            document.getElementById('broadcast-body').value = '';
+            showToast(`Broadcast sent to ${count} users.`, "success");
+
+        } catch (err) {
+            showToast("Broadcast failed: " + err.message, "error");
+        }
+    }
+    
+
+    // =========================================================
+    //  LEADERBOARD & PROFIT SYSTEM
+    // =========================================================
+    let allLeaderboardUsers = [];
+    let leaderboardListener = null;
+    let historyListener = null;
+
+    function getISOWeekId(date) {
+        const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        return d.getUTCFullYear() + '-W' + String(weekNo).padStart(2, '0');
+    }
+
+    function initLeaderboardListeners() {
+        const currentWeekId = getISOWeekId(new Date());
+        document.getElementById('leaderboard-current-week').innerText = currentWeekId;
+        document.getElementById('leaderboard-week-badge').innerText = 'Week ' + currentWeekId;
+
+        if (leaderboardListener) leaderboardListener();
+        leaderboardListener = db.collection("users")
+            .orderBy("weeklyProfit", "desc")
+            .onSnapshot(snap => {
+                allLeaderboardUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderLeaderboard();
+                updateLeaderboardStats();
+            });
+
+        if (historyListener) historyListener();
+        historyListener = db.collection("leaderboard_history")
+            .orderBy("createdAt", "desc")
+            .onSnapshot(snap => {
+                renderLeaderboardHistory(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+            });
+    }
+
+    function updateLeaderboardStats() {
+        const active = allLeaderboardUsers.filter(u => (u.weeklyProfit || 0) > 0);
+        document.getElementById('leaderboard-participants').innerText = active.length;
+        const top = active[0];
+        document.getElementById('leaderboard-top-profit').innerText = top ? '$' + Number(top.weeklyProfit || 0).toLocaleString() : '$0';
+    }
+
+    function renderLeaderboard() {
+        const container = document.getElementById('leaderboard-list');
+        const sorted = allLeaderboardUsers.filter(u => (u.weeklyProfit || 0) > 0).sort((a, b) => (b.weeklyProfit || 0) - (a.weeklyProfit || 0));
+        const top10 = sorted.slice(0, 10);
+
+        if (top10.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-trophy"></i>
+                    <p class="font-bold text-sm">No profits recorded this week.</p>
+                </div>`;
+            document.getElementById('current-user-rank-section').style.display = 'none';
+            return;
+        }
+
+        container.innerHTML = top10.map((u, i) => {
+            const rank = i + 1;
+            const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+            const initials = (u.firstName || 'U').charAt(0) + (u.lastName || '').charAt(0);
+            const isCurrent = currentAdmin && u.id === currentAdmin.uid;
+            return `
+            <div class="leaderboard-row ${isCurrent ? 'current-user' : ''}">
+                <div class="rank-badge ${rankClass}">${rank}</div>
+                <div class="leaderboard-avatar">${initials || 'U'}</div>
+                <div class="flex-1 min-w-0">
+                    <p class="leaderboard-name">${u.firstName || 'Unknown'} ${u.lastName || ''}</p>
+                    <p class="leaderboard-email">${u.email || ''}</p>
+                </div>
+                <div class="text-right">
+                    <p class="leaderboard-profit">$${Number(u.weeklyProfit || 0).toLocaleString()}</p>
+                    ${rank <= 3 ? `<p class="leaderboard-reward">Reward: $${rank === 1 ? '100' : rank === 2 ? '60' : '40'}</p>` : ''}
+                </div>
+            </div>`;
+        }).join('');
+
+        const currentUserRank = sorted.findIndex(u => currentAdmin && u.id === currentAdmin.uid);
+        if (currentUserRank >= 10) {
+            const u = sorted[currentUserRank];
+            const initials = (u.firstName || 'U').charAt(0) + (u.lastName || '').charAt(0);
+            document.getElementById('current-user-rank').innerHTML = `
+            <div class="leaderboard-row current-user">
+                <div class="rank-badge rank-other">${currentUserRank + 1}</div>
+                <div class="leaderboard-avatar">${initials || 'U'}</div>
+                <div class="flex-1 min-w-0">
+                    <p class="leaderboard-name">${u.firstName || 'Unknown'} ${u.lastName || ''}</p>
+                    <p class="leaderboard-email">${u.email || ''}</p>
+                </div>
+                <div class="text-right">
+                    <p class="leaderboard-profit">$${Number(u.weeklyProfit || 0).toLocaleString()}</p>
+                </div>
+            </div>`;
+            document.getElementById('current-user-rank-section').style.display = 'block';
+        } else {
+            document.getElementById('current-user-rank-section').style.display = 'none';
+        }
+    }
+
+    function renderLeaderboardHistory(historyDocs) {
+        const container = document.getElementById('leaderboard-history-list');
+        if (historyDocs.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <p class="font-bold text-sm">No history yet</p>
+                </div>`;
+            return;
+        }
+
+        const grouped = {};
+        historyDocs.forEach(d => {
+            if (!grouped[d.weekId]) grouped[d.weekId] = [];
+            grouped[d.weekId].push(d);
+        });
+
+        container.innerHTML = Object.keys(grouped).sort().reverse().map(weekId => {
+            const entries = grouped[weekId].sort((a, b) => a.rank - b.rank);
+            return `
+            <div class="history-row">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="week-badge">${weekId}</span>
+                    <span class="text-xs font-bold text-slate-400">${entries.length} traders</span>
+                </div>
+                <div class="space-y-2">
+                    ${entries.map(e => `
+                        <div class="flex justify-between items-center py-2 px-3 bg-slate-50 rounded-xl">
+                            <div class="flex items-center gap-2">
+                                <span class="rank-badge ${e.rank === 1 ? 'rank-1' : e.rank === 2 ? 'rank-2' : e.rank === 3 ? 'rank-3' : 'rank-other'}">${e.rank}</span>
+                                <span class="text-xs font-bold text-slate-700">${e.userName || e.userId.substring(0, 12) + '...'}</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-black text-slate-900">$${Number(e.profit || 0).toLocaleString()}</span>
+                                <span class="text-xs font-bold text-green-600 ml-2">+$${Number(e.reward || 0).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    document.getElementById('approve-profit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('approve-profit-btn');
+        const uid = document.getElementById('profit-uid-input').value.trim();
+        const amount = parseFloat(document.getElementById('profit-amount-input').value);
+
+        if (!uid || isNaN(amount) || amount <= 0) {
+            showToast("Please enter valid UID and amount", "error");
+            return;
+        }
+
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Processing...';
+        btn.disabled = true;
+
+        try {
+            await approveProfit(uid, amount);
+            document.getElementById('profit-uid-input').value = '';
+            document.getElementById('profit-amount-input').value = '';
+        } catch (err) {
+            showToast(err.message, "error");
+        } finally {
+            btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Approve Profit';
+            btn.disabled = false;
+        }
+    });
+
+    async function approveProfit(uid, amount) {
+        if (!currentAdmin) throw new Error("Admin authentication required");
+
+        const userRef = db.collection("users").doc(uid);
+        const userSnap = await userRef.get();
+        if (!userSnap.exists) throw new Error("User not found");
+
+        const batch = db.batch();
+        batch.update(userRef, {
+            weeklyProfit: firebase.firestore.FieldValue.increment(amount),
+            totalProfit: firebase.firestore.FieldValue.increment(amount)
+        });
+
+        const logRef = db.collection("profitLogs").doc();
+        batch.set(logRef, {
+            uid: uid,
+            amount: amount,
+            approvedBy: currentAdmin.uid,
+            approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            weekId: getISOWeekId(new Date())
+        });
+
+        await batch.commit();
+        showToast(`Profit of $${amount} approved for user`, "success");
+    }
+
+    async function closeWeek() {
+        if (!currentAdmin) {
+            showToast("Admin authentication required", "error");
+            return;
+        }
+        if (!confirm("Close this week? This will save rankings, assign rewards, and reset all weekly profits to 0. This action cannot be undone.")) return;
+
+        const btn = event.target;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Closing Week...';
+        btn.disabled = true;
+
+        try {
+            const usersSnap = await db.collection("users").orderBy("weeklyProfit", "desc").get();
+            const users = usersSnap.docs.map(d => ({ id: d.id, ...d.data() })).filter(u => (u.weeklyProfit || 0) > 0);
+            const weekId = getISOWeekId(new Date());
+            const totalRewardPool = 200;
+            const rewards = { 1: 100, 2: 60, 3: 40 };
+
+            const batch = db.batch();
+            let count = 0;
+
+            users.forEach((u, i) => {
+                const rank = i + 1;
+                const reward = rewards[rank] || 0;
+
+                const historyRef = db.collection("leaderboard_history").doc();
+                batch.set(historyRef, {
+                    weekId: weekId,
+                    userId: u.id,
+                    userName: (u.firstName || '') + ' ' + (u.lastName || ''),
+                    rank: rank,
+                    profit: u.weeklyProfit || 0,
+                    reward: reward,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                if (reward > 0) {
+                    const userRef = db.collection("users").doc(u.id);
+                    batch.update(userRef, {
+                        balance: firebase.firestore.FieldValue.increment(reward),
+                        weeklyProfit: 0
+                    });
+                } else {
+                    const userRef = db.collection("users").doc(u.id);
+                    batch.update(userRef, {
+                        weeklyProfit: 0
+                    });
+                }
+
+                count++;
+            });
+
+            const weekRef = db.collection("leaderboard_weeks").doc(weekId);
+            batch.set(weekRef, {
+                weekId: weekId,
+                closedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                totalRewardPool: totalRewardPool
+            });
+
+            await batch.commit();
+            showToast(`Week ${weekId} closed. ${count} users processed. Rewards distributed.`, "success");
+
+        } catch (err) {
+            console.error("closeWeek error:", err);
+            showToast("Close week failed: " + err.message, "error");
+        } finally {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }
+</script>
+</body>
+</html>

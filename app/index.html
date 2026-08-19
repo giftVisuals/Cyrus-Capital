@@ -40,6 +40,7 @@
     <div id="loginPage">
         <script src="https://cdn.tailwindcss.com">
         </script>
+        <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <style>
@@ -1793,6 +1794,32 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
             border-color: #0f172a;
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
         }
+        /* ── TRADING TERMINAL ── */
+        .trade-terminal { background:white; border:1px solid #f1f5f9; border-radius:28px; overflow:hidden; box-shadow:0 4px 20px rgba(15,23,42,0.04); margin-bottom:16px; }
+        .tt-subnav { display:flex; border-bottom:1px solid #f1f5f9; }
+        .tt-subnav-btn { flex:1; padding:14px 6px; background:none; border:none; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:#94a3b8; cursor:pointer; border-bottom:2px solid transparent; }
+        .tt-subnav-btn.active { color:#0f172a; border-bottom-color:#D4AF37; }
+        .tt-badge { display:inline-block; background:#D4AF37; color:#0f172a; font-size:9px; font-weight:900; padding:1px 6px; border-radius:100px; margin-left:2px; }
+        .tt-badge.hidden { display:none; }
+        .tt-view { padding:6px 0; max-height:420px; overflow-y:auto; }
+        .tt-view.hidden { display:none; }
+        .tt-empty { text-align:center; color:#94a3b8; font-size:12px; font-weight:700; padding:32px 16px; }
+        .tt-quote-row { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid #f8fafc; cursor:pointer; transition:background 0.15s; }
+        .tt-quote-row:hover { background:#fafaf8; }
+        .tt-quote-row:last-child { border-bottom:none; }
+        .tt-quote-sym { font-size:13px; font-weight:900; color:#0f172a; }
+        .tt-quote-name { font-size:10px; font-weight:600; color:#94a3b8; margin-top:1px; }
+        .tt-quote-right { text-align:right; }
+        .tt-quote-price { font-size:14px; font-weight:800; font-variant-numeric:tabular-nums; }
+        .tt-quote-chg { font-size:10px; font-weight:700; margin-top:1px; }
+        .tt-up { color:#16a34a; }
+        .tt-down { color:#dc2626; }
+        .tt-position-row { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid #f8fafc; gap:10px; }
+        .tt-position-row:last-child { border-bottom:none; }
+        .tt-close-btn { margin-top:4px; padding:6px 14px; background:#0f172a; color:white; border:none; border-radius:100px; font-size:10px; font-weight:800; text-transform:uppercase; cursor:pointer; }
+        .tt-buy-btn, .tt-sell-btn { flex:1; padding:16px; border:none; border-radius:16px; font-size:13px; font-weight:900; text-transform:uppercase; letter-spacing:0.05em; cursor:pointer; color:white; }
+        .tt-buy-btn { background:#16a34a; }
+        .tt-sell-btn { background:#dc2626; }
         .naira-tab-btn:not(.active) {
             background: white;
             color: #94a3b8;
@@ -2668,115 +2695,33 @@ localStorage.setItem('cyrus_registered_account', JSON.stringify({
     </div>
 </a>
 
-<h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Funded Accounts</h3>
-<div class="space-y-3 pb-10">
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$50 Account</p><p class="text-[10px] text-slate-400">Fee: $1</p></div>
-        <button onclick="triggerBuy('$50 Account',1)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
+<h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Trade</h3>
+<div class="trade-terminal">
+    <div class="tt-subnav">
+        <button class="tt-subnav-btn active" onclick="switchTradeView('market', this)">Market</button>
+        <button class="tt-subnav-btn" onclick="switchTradeView('positions', this)">Positions <span id="tt-positions-count" class="tt-badge hidden">0</span></button>
+        <button class="tt-subnav-btn" onclick="switchTradeView('history', this)">History</button>
     </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$100 Account</p><p class="text-[10px] text-slate-400">Fee: $2</p></div>
-        <button onclick="triggerBuy('$100 Account',2)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$200 Account</p><p class="text-[10px] text-slate-400">Fee: $4</p></div>
-        <button onclick="triggerBuy('$200 Account',4)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$300 Account</p><p class="text-[10px] text-slate-400">Fee: $6</p></div>
-        <button onclick="triggerBuy('$300 Account',6)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$400 Account</p><p class="text-[10px] text-slate-400">Fee: $8</p></div>
-        <button onclick="triggerBuy('$400 Account',8)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$500 Account</p><p class="text-[10px] text-slate-400">Fee: $10</p></div>
-        <button onclick="triggerBuy('$500 Account',10)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$1,000 Account</p><p class="text-[10px] text-slate-400">Fee: $20</p></div>
-        <button onclick="triggerBuy('$1,000 Account',20)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$5,000 Account</p><p class="text-[10px] text-slate-400">Fee: $100</p></div>
-        <button onclick="triggerBuy('$5,000 Account',100)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-    <div class="bg-white p-5 rounded-2xl border border-slate-100 flex justify-between items-center shadow-sm">
-        <div><p class="font-bold text-slate-800">$10,000 Account</p><p class="text-[10px] text-slate-400">Fee: $200</p></div>
-        <button onclick="triggerBuy('$10,000 Account',200)" class="text-yellow-600 font-black text-xs px-5 py-2.5 bg-yellow-50 rounded-xl">BUY</button>
-    </div>
-</div>
 
-<!-- My Referrals section removed - using Referral Network modal instead -->
-</section>
+    <div id="tt-view-market" class="tt-view">
+        <div id="tt-quotes-list"><p class="tt-empty">Loading prices...</p></div>
+    </div>
 
-<!-- ═══ WITHDRAWAL SECTION ═══ -->
-<section id="withdrawal" class="page-section px-6 pt-10 h-full overflow-y-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-black">Withdraw Profit</h2>
-        <button onclick="switchTab('history')"
-        class="h-10 w-10 bg-white rounded-full shadow-sm flex items-center justify-center text-slate-400">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-    </button>
-</div>
-<div id="withdraw-kyc-banner"
-class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex items-center gap-3">
-<i class="fa-solid fa-shield-halved text-yellow-500 text-xl"></i>
-<div>
-    <p class="font-black text-slate-800 text-xs">KYC Verification Required</p>
-    <p id="withdraw-kyc-status-text" class="text-[10px] font-bold text-slate-500">Your current status: <span
-        id="withdraw-kyc-label" class="uppercase text-yellow-600">Unverified</span></p>
+    <div id="tt-view-positions" class="tt-view hidden">
+        <div id="tt-positions-list"><p class="tt-empty">No open positions.</p></div>
     </div>
-    <button onclick="switchTab('kyc')"
-    class="ml-auto text-xs font-black text-slate-800 underline">Verify</button>
-</div>
-<div class="space-y-6 pb-20">
-    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative">
-        <h3 class="font-black text-slate-800 mb-6 flex items-center gap-2"><i
-            class="fa-solid fa-building-columns text-slate-400"></i> Naira Payout</h3>
-            <div class="space-y-4">
-                <div class="bg-slate-50 p-4 rounded-2xl">
-                    <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Amount to withdraw</p>
-                    <input type="number" id="withdraw-input-ngn" placeholder="Enter USD Amount"
-                    class="w-full bg-transparent border-0 font-bold text-lg outline-none"
-                    oninput="updateNairaCalc(this.value)">
-                    <p class="text-[10px] text-slate-500 font-bold mt-2">$1 = N1,350</p>
-                </div>
-                <div class="p-4 bg-yellow-50 rounded-2xl flex justify-between items-center">
-                    <span class="text-xs font-black uppercase">Auto-Calc:</span>
-                    <span class="font-mono font-black text-yellow-700" id="naira-display">N0.00</span>
-                </div>
-                <div class="relative">
-                    <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Bank Account</p>
-                    <input type="text" id="bank-input" onkeyup="filterBanks()" onfocus="showBanks()"
-                    placeholder="Search Nigerian banks..."
-                    class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
-                    <div id="bank-list" class="bank-dropdown"></div>
-                </div>
-                <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Account Number</p>
-                    <input type="number" id="ngn-acc-num" placeholder="Enter 10-digit number"
-                    class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
-                </div>
-                <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Account Name</p>
-                    <input type="text" id="ngn-acc-name" placeholder="Full name on account"
-                    class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
-                </div>
-                <button onclick="checkKycStatus(this)"
-                class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest mt-4 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-money-bill-1-wave"></i> Withdraw Now
-            </button>
-        </div>
+
+    <div id="tt-view-history" class="tt-view hidden">
+        <div id="tt-history-list"><p class="tt-empty">No closed trades yet.</p></div>
     </div>
 </div>
+<div class="pb-10"></div>
 </section>
 
 <!-- ═══ HISTORY SECTION ═══ -->
 <section id="history" class="page-section px-6 pt-10 h-full overflow-y-auto">
     <header class="flex items-center gap-4 mb-5">
-        <button onclick="switchTab('withdrawal')" class="text-slate-400 text-xl"><i
+        <button onclick="switchTab('payments')" class="text-slate-400 text-xl"><i
         class="fa-solid fa-arrow-left"></i></button>
         <h2 class="text-2xl font-black">Transaction History</h2>
     </header>
@@ -2795,7 +2740,18 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
 
 <!-- ═══ PAYMENTS SECTION ═══ -->
 <section id="payments" class="page-section px-4 pt-6 h-full overflow-y-auto">
-    <h2 class="text-xl font-black mb-4">Deposit Funds</h2>
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-black">Payments</h2>
+        <button onclick="switchTab('history')"
+        class="h-10 w-10 bg-white rounded-full shadow-sm flex items-center justify-center text-slate-400">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+    </button>
+    </div>
+    <div class="flex gap-2 mb-5">
+        <button id="pay-tab-deposit" onclick="switchPaymentsView('deposit')" class="naira-tab-btn active">Deposit</button>
+        <button id="pay-tab-withdraw" onclick="switchPaymentsView('withdraw')" class="naira-tab-btn">Withdraw</button>
+    </div>
+
     <div id="deposit-naira-content">
     <div class="naira-premium-card">
         <div class="naira-premium-card-header">
@@ -2831,7 +2787,7 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
     <div class="naira-premium-card">
         <div class="naira-premium-card-header">
             <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Deposit History 
+                <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Deposit History
             </h3>
         </div>
         <div class="naira-premium-card-body" style="padding-top:12px;">
@@ -2847,7 +2803,59 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
             <p class="naira-info-banner-text">Transfer to our verified corporate account, then tap "I Have Paid" and submit your details. Our team reviews and credits deposits manually, usually within 1-24 hours.</p>
         </div>
     </div>
-</div>
+    </div>
+
+    <div id="payments-withdraw-content" class="hidden">
+        <div id="withdraw-kyc-banner"
+        class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex items-center gap-3">
+        <i class="fa-solid fa-shield-halved text-yellow-500 text-xl"></i>
+        <div>
+            <p class="font-black text-slate-800 text-xs">KYC Verification Required</p>
+            <p id="withdraw-kyc-status-text" class="text-[10px] font-bold text-slate-500">Your current status: <span
+                id="withdraw-kyc-label" class="uppercase text-yellow-600">Unverified</span></p>
+            </div>
+            <button onclick="switchTab('kyc')"
+            class="ml-auto text-xs font-black text-slate-800 underline">Verify</button>
+        </div>
+        <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative mb-10">
+            <h3 class="font-black text-slate-800 mb-6 flex items-center gap-2"><i
+                class="fa-solid fa-building-columns text-slate-400"></i> Naira Payout</h3>
+                <div class="space-y-4">
+                    <div class="bg-slate-50 p-4 rounded-2xl">
+                        <p class="text-[10px] font-black uppercase text-slate-400 mb-1">Amount to withdraw</p>
+                        <input type="number" id="withdraw-input-ngn" placeholder="Enter USD Amount"
+                        class="w-full bg-transparent border-0 font-bold text-lg outline-none"
+                        oninput="updateNairaCalc(this.value)">
+                        <p class="text-[10px] text-slate-500 font-bold mt-2">$1 = N1,350</p>
+                    </div>
+                    <div class="p-4 bg-yellow-50 rounded-2xl flex justify-between items-center">
+                        <span class="text-xs font-black uppercase">Auto-Calc:</span>
+                        <span class="font-mono font-black text-yellow-700" id="naira-display">N0.00</span>
+                    </div>
+                    <div class="relative">
+                        <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Bank Account</p>
+                        <input type="text" id="bank-input" onkeyup="filterBanks()" onfocus="showBanks()"
+                        placeholder="Search Nigerian banks..."
+                        class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
+                        <div id="bank-list" class="bank-dropdown"></div>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Account Number</p>
+                        <input type="number" id="ngn-acc-num" placeholder="Enter 10-digit number"
+                        class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1">Account Name</p>
+                        <input type="text" id="ngn-acc-name" placeholder="Full name on account"
+                        class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
+                    </div>
+                    <button onclick="checkKycStatus(this)"
+                    class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest mt-4 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-money-bill-1-wave"></i> Withdraw Now
+                </button>
+            </div>
+        </div>
+    </div>
 </section>
 
 <!-- ═══ TRADE SECTION ═══ -->
@@ -2958,59 +2966,6 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
     <p class="text-[10px] font-bold text-slate-400 text-center mt-2 uppercase tracking-wider">3-step visual guide</p>
 </div>
 
-</section>
-
-<!-- ═══ AI ANALYZER SECTION ═══ -->
-<section id="analyzer" class="page-section">
-    <div class="analyzer-body min-h-screen">
-        <nav class="top-nav">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-crown text-yellow-400 text-2xl"></i>
-                <span class="font-black text-xl text-slate-900 uppercase">Cyrus AI</span>
-            </div>
-        </nav>
-        <div class="main-header">
-            <h1>Screenshot Analyzer</h1>
-            <p class="text-slate-500 font-medium">Upload any trading screenshot for instant AI analysis.</p>
-        </div>
-        <div class="upload-container">
-            <div id="upload-trigger" class="upload-box">
-                <i class="fa-solid fa-camera text-3xl text-slate-300 mb-3"></i>
-                <p id="status-text" class="font-bold text-slate-800">Tap to Upload Screenshot</p>
-                <input type="file" id="file-input" class="hidden" accept="image/*">
-            </div>
-            <div class="mt-4 mb-2">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 text-center">Analysis
-                Mode</p>
-                <div class="flex gap-2 justify-center flex-wrap">
-                    <button class="analysis-mode-btn active px-4 py-2 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-wider"
-                    data-mode="sr">S&R Zones</button>
-                    <button class="analysis-mode-btn px-4 py-2 bg-white text-slate-400 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-wider"
-                    data-mode="pattern">Pattern</button>
-                    <button class="analysis-mode-btn px-4 py-2 bg-white text-slate-400 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-wider"
-                    data-mode="sentiment">Sentiment</button>
-                    <button class="analysis-mode-btn px-4 py-2 bg-white text-slate-400 border border-slate-200 rounded-xl text-[10px] font-black uppercase tracking-wider"
-                    data-mode="full">Full</button>
-                </div>
-            </div>
-            <button id="run-btn" class="analyze-btn mt-4" disabled>Analyze Screenshot</button>
-        </div>
-        <div id="result-overlay">
-            <div id="output-card">
-                <button onclick="closeModal()" class="absolute top-5 right-5 text-slate-300 hover:text-red-500">
-                    <i class="fa-solid fa-circle-xmark text-2xl"></i>
-                </button>
-                <div id="ai-result"></div>
-            </div>
-        </div>
-        <div class="upload-container mt-8">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Recent Analyses</h3>
-                <button onclick="clearAnalyzerHistory()" class="text-[10px] font-bold text-red-400 uppercase">Clear</button>
-            </div>
-            <div id="analyzer-history-list" class="space-y-3"></div>
-        </div>
-    </div>
 </section>
 
 <!-- ═══ KYC / PROFILE SECTION ═══ -->
@@ -3168,28 +3123,37 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
         </button>
         <button onclick="switchTab('payments'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:6px 4px; position:relative;">
             <i class="fa-solid fa-credit-card" style="font-size:20px; color:#94a3b8;"></i>
-            <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">Payment</span>
-            <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
-        </button>
-        <button onclick="switchTab('analyzer'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:0; position:relative; margin-top:-18px;">
-            <div style="width:52px; height:52px; border-radius:18px; background:linear-gradient(135deg,#D4AF37,#B8860B); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(212,175,55,0.45), 0 0 0 3px rgba(212,175,55,0.15);">
-                <i class="fa-solid fa-crown" style="color:white; font-size:22px;"></i>
-            </div>
-            <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em; margin-top:2px;">AI</span>
-            <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
-        </button>
-        <button onclick="switchTab('trade'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:6px 4px; position:relative;">
-            <i class="fa-solid fa-chart-line" style="font-size:20px; color:#94a3b8;"></i>
-            <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">Trade</span>
-            <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
-        </button>
-        <button onclick="switchTab('withdrawal'); setActiveNav(this)" class="glass-nav-item" style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; cursor:pointer; padding:6px 4px; position:relative;">
-            <i class="fa-solid fa-money-bill-1-wave" style="font-size:20px; color:#94a3b8;"></i>
-            <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">Withdraw</span>
+            <span style="font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:0.08em;">Payments</span>
             <div class="nav-gold-line" style="position:absolute; bottom:-2px; left:25%; right:25%; height:2.5px; background:linear-gradient(90deg,#D4AF37,#f5c842); border-radius:2px; opacity:0;"></div>
         </button>
     </nav>
 </footer>
+
+<!-- TRADE MODAL (chart + buy/sell) -->
+<div id="trade-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width:480px; padding:0; overflow:hidden; max-height:92vh; display:flex; flex-direction:column;">
+        <div style="padding:16px 20px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+            <div>
+                <p id="tm-symbol" style="font-weight:900; font-size:16px; color:#0f172a;">EURUSD</p>
+                <p id="tm-price" style="font-size:12px; font-weight:700; color:#94a3b8;">--</p>
+            </div>
+            <button onclick="closeTradeModal()" style="color:#94a3b8; font-size:20px; font-weight:800; background:none; border:none; cursor:pointer;">✕</button>
+        </div>
+        <div id="tm-chart" style="height:240px; flex-shrink:0;"></div>
+        <div style="padding:16px 20px; display:flex; flex-direction:column; gap:14px; overflow-y:auto;">
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Lot size</label>
+                <input type="number" id="tm-lots" value="0.01" step="0.01" min="0.01" class="w-full p-4 bg-slate-50 border-0 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-yellow-400 outline-none">
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="placeTrade('sell')" class="tt-sell-btn">SELL <span id="tm-sell-price"></span></button>
+                <button onclick="placeTrade('buy')" class="tt-buy-btn">BUY <span id="tm-buy-price"></span></button>
+            </div>
+            <p class="text-[9px] font-bold text-slate-400 text-center">Simulated trading. Prices are live market data; positions and P&L are tracked on your Cyrus Capital balance.</p>
+        </div>
+    </div>
+</div>
+
 <!-- PARTNER LEVEL MODAL -->
 <div id="partner-modal" class="modal-overlay" style="display:none;">
     <div class="modal-card" style="max-width:440px;max-height:94vh;overflow-y:auto;padding:0;border:3px solid rgba(212,175,55,0.3);">
@@ -4383,6 +4347,7 @@ class="hidden mb-5 p-4 rounded-2xl border-2 border-yellow-300 bg-yellow-50 flex 
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUser = user;
+                if (typeof listenPositions === 'function') listenPositions();
                 db.collection("users").doc(user.uid).onSnapshot((snap) => {
                     if (!snap.exists) return;
                     userData = snap.data();
@@ -4883,10 +4848,241 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             if (tabId === 'payments' && typeof syncNairaPendingList === 'function') syncNairaPendingList();
         }
 
+        function switchPaymentsView(view) {
+            document.getElementById('pay-tab-deposit').classList.toggle('active', view === 'deposit');
+            document.getElementById('pay-tab-withdraw').classList.toggle('active', view === 'withdraw');
+            document.getElementById('deposit-naira-content').classList.toggle('hidden', view !== 'deposit');
+            document.getElementById('payments-withdraw-content').classList.toggle('hidden', view !== 'withdraw');
+        }
+        window.switchPaymentsView = switchPaymentsView;
+
+        // ════════════════════════════════════════════════════════
+        //  TRADING TERMINAL — live quotes, chart, buy/sell positions
+        // ════════════════════════════════════════════════════════
+        const TRADE_SYMBOLS = [
+            { sym: 'EURUSD', api: 'EUR/USD', name: 'Euro vs US Dollar' },
+            { sym: 'GBPUSD', api: 'GBP/USD', name: 'British Pound vs US Dollar' },
+            { sym: 'USDJPY', api: 'USD/JPY', name: 'US Dollar vs Japanese Yen' },
+            { sym: 'USDCHF', api: 'USD/CHF', name: 'US Dollar vs Swiss Franc' },
+            { sym: 'AUDUSD', api: 'AUD/USD', name: 'Australian Dollar vs US Dollar' },
+            { sym: 'USDCAD', api: 'USD/CAD', name: 'US Dollar vs Canadian Dollar' },
+            { sym: 'XAUUSD', api: 'XAU/USD', name: 'Gold vs US Dollar' }
+        ];
+        const TRADE_SPREAD_PCT = 0.0002;
+        const TRADE_CONTRACT_SIZE = 100000;
+        const TRADE_MARGIN_PER_LOT = 1000; // ~1:100 leverage on a 100k lot
+        let liveQuotes = {};
+        let openPositions = [];
+        let closedPositions = [];
+        let currentTradeSymbol = null;
+        let tmChart = null, tmSeries = null;
+        let positionsUnsub = null, closedUnsub = null;
+
+        async function fetchQuotes() {
+            try {
+                const symbols = TRADE_SYMBOLS.map(s => s.api).join(',');
+                const res = await fetch('/api/quotes?symbols=' + encodeURIComponent(symbols));
+                const data = await res.json();
+                TRADE_SYMBOLS.forEach(s => { if (data[s.api] && !data[s.api].code) liveQuotes[s.sym] = data[s.api]; });
+                renderQuotesList();
+                recomputeOpenPositionsPnL();
+                if (currentTradeSymbol) updateTradeModalPrice();
+            } catch (e) { console.error('Quote fetch failed', e); }
+        }
+
+        function renderQuotesList() {
+            const box = document.getElementById('tt-quotes-list');
+            if (!box) return;
+            const rows = TRADE_SYMBOLS.map(s => {
+                const q = liveQuotes[s.sym];
+                if (!q || !q.close) return '';
+                const up = parseFloat(q.percent_change || 0) >= 0;
+                return '<div class="tt-quote-row" onclick="openTradeModal(\'' + s.sym + '\')">' +
+                    '<div><p class="tt-quote-sym">' + s.sym + '</p><p class="tt-quote-name">' + s.name + '</p></div>' +
+                    '<div class="tt-quote-right">' +
+                    '<p class="tt-quote-price ' + (up ? 'tt-up' : 'tt-down') + '">' + Number(q.close).toFixed(q.close < 20 ? 5 : 2) + '</p>' +
+                    '<p class="tt-quote-chg ' + (up ? 'tt-up' : 'tt-down') + '">' + (up ? '+' : '') + Number(q.percent_change || 0).toFixed(2) + '%</p>' +
+                    '</div></div>';
+            }).join('');
+            box.innerHTML = rows || '<p class="tt-empty">Prices unavailable right now.</p>';
+        }
+
+        function switchTradeView(view, btn) {
+            document.querySelectorAll('.tt-view').forEach(v => v.classList.add('hidden'));
+            document.querySelectorAll('.tt-subnav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tt-view-' + view).classList.remove('hidden');
+            if (btn) btn.classList.add('active');
+            if (view === 'positions') renderPositions();
+            if (view === 'history') renderTradeHistory();
+        }
+
+        async function openTradeModal(sym) {
+            currentTradeSymbol = sym;
+            const meta = TRADE_SYMBOLS.find(s => s.sym === sym);
+            document.getElementById('tm-symbol').innerText = sym;
+            document.getElementById('trade-modal').style.display = 'flex';
+            updateTradeModalPrice();
+            await loadTradeChart(meta.api);
+        }
+        function closeTradeModal() { document.getElementById('trade-modal').style.display = 'none'; currentTradeSymbol = null; }
+
+        function updateTradeModalPrice() {
+            const q = liveQuotes[currentTradeSymbol];
+            if (!q || !q.close) return;
+            const price = parseFloat(q.close);
+            const decimals = price < 20 ? 5 : 2;
+            const spread = price * TRADE_SPREAD_PCT;
+            document.getElementById('tm-price').innerText = price.toFixed(decimals);
+            document.getElementById('tm-sell-price').innerText = (price - spread / 2).toFixed(decimals);
+            document.getElementById('tm-buy-price').innerText = (price + spread / 2).toFixed(decimals);
+        }
+
+        async function loadTradeChart(apiSym) {
+            const container = document.getElementById('tm-chart');
+            if (!container || typeof LightweightCharts === 'undefined') return;
+            container.innerHTML = '';
+            tmChart = LightweightCharts.createChart(container, {
+                height: 240, width: container.clientWidth,
+                layout: { background: { color: '#ffffff' }, textColor: '#334155', fontFamily: 'inherit' },
+                grid: { vertLines: { color: '#f1f5f9' }, horzLines: { color: '#f1f5f9' } },
+                timeScale: { timeVisible: true, borderColor: '#f1f5f9' },
+                rightPriceScale: { borderColor: '#f1f5f9' }
+            });
+            tmSeries = tmChart.addCandlestickSeries({ upColor: '#16a34a', downColor: '#dc2626', borderVisible: false, wickUpColor: '#16a34a', wickDownColor: '#dc2626' });
+            try {
+                const res = await fetch('/api/candles?symbol=' + encodeURIComponent(apiSym) + '&interval=5min');
+                const data = await res.json();
+                if (data.values) {
+                    const candles = data.values.slice().reverse().map(v => ({
+                        time: Math.floor(new Date(v.datetime.replace(' ', 'T')).getTime() / 1000),
+                        open: +v.open, high: +v.high, low: +v.low, close: +v.close
+                    }));
+                    tmSeries.setData(candles);
+                }
+            } catch (e) { console.error('Chart load failed', e); }
+        }
+
+        async function placeTrade(side) {
+            if (!currentUser) { alert('Please login first.'); return; }
+            const lots = parseFloat(document.getElementById('tm-lots').value) || 0.01;
+            const q = liveQuotes[currentTradeSymbol];
+            if (!q || !q.close) { alert('Price not available, try again in a moment.'); return; }
+            const price = parseFloat(q.close);
+            const spread = price * TRADE_SPREAD_PCT;
+            const execPrice = side === 'buy' ? price + spread / 2 : price - spread / 2;
+            const marginRequired = lots * TRADE_MARGIN_PER_LOT;
+            const balance = (userData && userData.balance) || 0;
+            if (marginRequired > balance) { alert('Insufficient balance for this position size.'); return; }
+            try {
+                await db.collection('positions').add({
+                    uid: currentUser.uid, symbol: currentTradeSymbol, side: side, lots: lots,
+                    openPrice: execPrice, openTime: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'open'
+                });
+                showNairaToast(side.toUpperCase() + ' ' + lots + ' ' + currentTradeSymbol + ' opened at ' + execPrice.toFixed(5));
+                closeTradeModal();
+            } catch (e) { alert('Failed to open position: ' + e.message); }
+        }
+
+        function listenPositions() {
+            if (!currentUser) return;
+            if (positionsUnsub) positionsUnsub();
+            if (closedUnsub) closedUnsub();
+            positionsUnsub = db.collection('positions').where('uid', '==', currentUser.uid).where('status', '==', 'open').onSnapshot(snap => {
+                openPositions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                const badge = document.getElementById('tt-positions-count');
+                if (badge) { badge.innerText = openPositions.length; badge.classList.toggle('hidden', openPositions.length === 0); }
+                recomputeOpenPositionsPnL();
+            });
+            closedUnsub = db.collection('positions').where('uid', '==', currentUser.uid).where('status', '==', 'closed').orderBy('closeTime', 'desc').limit(50).onSnapshot(snap => {
+                closedPositions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderTradeHistory();
+            });
+        }
+
+        function calcPnl(pos) {
+            const q = liveQuotes[pos.symbol];
+            if (!q || !q.close) return 0;
+            const price = parseFloat(q.close);
+            const spread = price * TRADE_SPREAD_PCT;
+            const closePrice = pos.side === 'buy' ? price - spread / 2 : price + spread / 2;
+            const diff = pos.side === 'buy' ? (closePrice - pos.openPrice) : (pos.openPrice - closePrice);
+            return diff * pos.lots * TRADE_CONTRACT_SIZE;
+        }
+
+        function recomputeOpenPositionsPnL() {
+            openPositions.forEach(p => { p.pnl = calcPnl(p); });
+            const activeView = document.getElementById('tt-view-positions');
+            if (activeView && !activeView.classList.contains('hidden')) renderPositions();
+        }
+
+        function renderPositions() {
+            const box = document.getElementById('tt-positions-list');
+            if (!box) return;
+            if (openPositions.length === 0) { box.innerHTML = '<p class="tt-empty">No open positions.</p>'; return; }
+            box.innerHTML = openPositions.map(p => {
+                const pnl = p.pnl || 0;
+                const cls = pnl >= 0 ? 'tt-up' : 'tt-down';
+                const sideColor = p.side === 'buy' ? '#16a34a' : '#dc2626';
+                return '<div class="tt-position-row">' +
+                    '<div><p class="tt-quote-sym">' + p.symbol + ' <span style="color:' + sideColor + ';font-size:10px;text-transform:uppercase;">' + p.side + ' ' + p.lots + '</span></p>' +
+                    '<p class="tt-quote-name">Opened at ' + Number(p.openPrice).toFixed(5) + '</p></div>' +
+                    '<div class="tt-quote-right"><p class="tt-quote-price ' + cls + '">' + (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(2) + '</p>' +
+                    '<button onclick="closePosition(\'' + p.id + '\')" class="tt-close-btn">Close</button></div></div>';
+            }).join('');
+        }
+
+        async function closePosition(id) {
+            const pos = openPositions.find(p => p.id === id);
+            if (!pos) return;
+            const pnl = calcPnl(pos);
+            const q = liveQuotes[pos.symbol];
+            const spread = q.close * TRADE_SPREAD_PCT;
+            const closePrice = pos.side === 'buy' ? q.close - spread / 2 : q.close + spread / 2;
+            try {
+                await db.runTransaction(async t => {
+                    const userRef = db.collection('users').doc(currentUser.uid);
+                    const snap = await t.get(userRef);
+                    const newBalance = Math.max(0, (snap.data().balance || 0) + pnl);
+                    t.update(userRef, { balance: newBalance });
+                    t.update(db.collection('positions').doc(id), {
+                        status: 'closed', closePrice: closePrice,
+                        closeTime: firebase.firestore.FieldValue.serverTimestamp(), pnl: pnl
+                    });
+                });
+                showNairaToast('Position closed: ' + (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(2));
+            } catch (e) { alert('Failed to close position: ' + e.message); }
+        }
+
+        function renderTradeHistory() {
+            const box = document.getElementById('tt-history-list');
+            if (!box) return;
+            if (closedPositions.length === 0) { box.innerHTML = '<p class="tt-empty">No closed trades yet.</p>'; return; }
+            box.innerHTML = closedPositions.map(p => {
+                const pnl = p.pnl || 0;
+                const cls = pnl >= 0 ? 'tt-up' : 'tt-down';
+                const sideColor = p.side === 'buy' ? '#16a34a' : '#dc2626';
+                const date = p.closeTime ? p.closeTime.toDate().toLocaleString() : '';
+                return '<div class="tt-position-row">' +
+                    '<div><p class="tt-quote-sym">' + p.symbol + ' <span style="color:' + sideColor + ';font-size:10px;text-transform:uppercase;">' + p.side + ' ' + p.lots + '</span></p>' +
+                    '<p class="tt-quote-name">' + date + '</p></div>' +
+                    '<p class="tt-quote-price ' + cls + '">' + (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(2) + '</p></div>';
+            }).join('');
+        }
+
+        window.switchTradeView = switchTradeView;
+        window.openTradeModal = openTradeModal;
+        window.closeTradeModal = closeTradeModal;
+        window.placeTrade = placeTrade;
+        window.closePosition = closePosition;
+
+        fetchQuotes();
+        setInterval(fetchQuotes, 20000);
+
         // ── AUTO LOAD TAB FROM URL HASH ──
         function loadTabFromHash() {
             const hash = window.location.hash.replace('#', '');
-            const validTabs = ['home', 'payments', 'trade', 'withdrawal', 'analyzer', 'kyc', 'history'];
+            const validTabs = ['home', 'payments', 'kyc', 'history'];
             if (hash && validTabs.includes(hash)) {
                 switchTab(hash);
             }
@@ -4895,7 +5091,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         // Listen for back/forward browser navigation
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.replace('#', '');
-            const validTabs = ['home', 'payments', 'trade', 'withdrawal', 'analyzer', 'kyc', 'history'];
+            const validTabs = ['home', 'payments', 'kyc', 'history'];
             if (hash && validTabs.includes(hash)) {
                 const target = document.getElementById(hash);
                 if (target) {
@@ -7683,7 +7879,7 @@ window.openImageFullscreen = openImageFullscreen;
             <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
         </button>
 
-        <button onclick="closeDrawer(); switchTab('withdrawal')" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
+        <button onclick="closeDrawer(); switchTab('payments'); switchPaymentsView('withdraw')" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
             <div style="width:38px; height:38px; background:#fef2f2; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-money-bill-transfer" style="color:#ef4444; font-size:16px;"></i></div>
             <div><p style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">Withdraw</p><p style="font-size:10px; color:#94a3b8; font-weight:600; margin:0;">Cash out your profit</p></div>
             <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
@@ -7692,12 +7888,6 @@ window.openImageFullscreen = openImageFullscreen;
         <button onclick="closeDrawer(); switchTab('trade')" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
             <div style="width:38px; height:38px; background:#eff6ff; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-chart-line" style="color:#3b82f6; font-size:16px;"></i></div>
             <div><p style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">Trade</p><p style="font-size:10px; color:#94a3b8; font-weight:600; margin:0;">MT5 terminal & credentials</p></div>
-            <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
-        </button>
-
-        <button onclick="closeDrawer(); switchTab('analyzer')" class="drawer-menu-item" style="width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; background:none; border:none; border-radius:16px; cursor:pointer; text-align:left; margin-bottom:4px;">
-            <div style="width:38px; height:38px; background:linear-gradient(135deg,#fef9c3,#fde68a); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><i class="fa-solid fa-crown" style="color:#D4AF37; font-size:16px;"></i></div>
-            <div><p style="font-size:14px; font-weight:800; color:#0f172a; margin:0;">Cyrus AI</p><p style="font-size:10px; color:#94a3b8; font-weight:600; margin:0;">Chart screenshot analyzer</p></div>
             <i class="fa-solid fa-chevron-right" style="color:#cbd5e1; font-size:12px; margin-left:auto;"></i>
         </button>
 
