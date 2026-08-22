@@ -1756,6 +1756,50 @@ try {
         .mt-home-section-label { padding:22px 20px 6px; font-size:10px; font-weight:900; color:#94a3b8; text-transform:uppercase; letter-spacing:0.14em; display:flex; justify-content:space-between; align-items:center; }
         .mt-home-total { font-size:12px; font-weight:900; font-variant-numeric:tabular-nums; letter-spacing:0; }
 
+        /* ── HOME v2: wallet-style dashboard ── */
+        .home2-header { display:flex; align-items:flex-start; justify-content:space-between; padding:6px 20px 4px; gap:10px; }
+        .home2-greet h1 { font-size:22px; font-weight:900; color:#0f172a; margin:0 0 4px; }
+        .home2-greet p { font-size:12.5px; font-weight:600; color:#94a3b8; margin:0; }
+        .home2-header-icons { display:flex; gap:8px; flex-shrink:0; padding-top:2px; }
+        .home2-icon-btn { width:36px; height:36px; border-radius:11px; background:#fef9c3; border:none; display:flex; align-items:center; justify-content:center; color:#B8860B; font-size:14px; cursor:pointer; flex-shrink:0; }
+
+        .home2-balance-card { position:relative; overflow:hidden; margin:16px 20px 0; padding:22px; border-radius:26px; background:linear-gradient(180deg,#fffdf6 0%,#ffffff 100%); border:1px solid #f3e6bb; box-shadow:0 14px 32px rgba(212,175,55,0.12); }
+        .home2-balance-illustration { position:absolute; top:6px; right:2px; width:112px; height:112px; opacity:0.95; pointer-events:none; }
+        .home2-balance-label { display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; color:#94a3b8; margin:0 0 8px; position:relative; z-index:1; }
+        .home2-balance-label button { background:none; border:none; color:#94a3b8; cursor:pointer; font-size:13px; padding:0; }
+        .home2-balance-figure { font-size:32px; font-weight:900; color:#0f172a; margin:0 0 4px; letter-spacing:-0.02em; position:relative; z-index:1; }
+        .home2-balance-ngn { font-size:12.5px; font-weight:700; color:#94a3b8; margin:0 0 18px; position:relative; z-index:1; }
+        .home2-balance-actions { display:flex; gap:10px; position:relative; z-index:1; }
+        .home2-btn { flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:14px; border-radius:16px; font-size:13.5px; font-weight:800; border:none; cursor:pointer; }
+        .home2-btn-primary { background:linear-gradient(135deg,#f5c542,#D4AF37); color:#1a1400; }
+        .home2-btn-secondary { background:#f1f5f9; color:#0f172a; }
+
+        .home2-section-title { padding:26px 20px 10px; font-size:15px; font-weight:900; color:#0f172a; }
+        .home2-quick-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:0 20px; }
+        .home2-quick-card { background:#fff; border:1px solid #f1f5f9; border-radius:20px; padding:16px 6px; display:flex; flex-direction:column; align-items:center; gap:9px; cursor:pointer; text-align:center; }
+        .home2-quick-card i { font-size:17px; color:#D4AF37; }
+        .home2-quick-card span { font-size:11px; font-weight:800; color:#0f172a; line-height:1.3; }
+
+        .home2-promo { position:relative; overflow:hidden; margin:22px 20px 0; padding:24px; border-radius:26px; background:linear-gradient(135deg,#fdf6e3,#f9ecc9); display:flex; align-items:center; justify-content:space-between; gap:10px; }
+        .home2-promo h3 { font-size:18px; font-weight:900; color:#0f172a; margin:0 0 8px; line-height:1.25; }
+        .home2-promo p { font-size:11.5px; font-weight:600; color:#78716c; margin:0 0 14px; max-width:170px; }
+        .home2-promo button { background:linear-gradient(135deg,#f5c542,#D4AF37); border:none; padding:12px 20px; border-radius:14px; font-size:12.5px; font-weight:800; color:#1a1400; cursor:pointer; }
+        .home2-promo-illustration { width:96px; height:96px; flex-shrink:0; }
+
+        .home2-activity-header { display:flex; justify-content:space-between; align-items:center; padding:26px 20px 8px; }
+        .home2-activity-header h3 { font-size:15px; font-weight:900; color:#0f172a; margin:0; }
+        .home2-activity-header button { background:none; border:none; color:#D4AF37; font-size:12px; font-weight:800; cursor:pointer; }
+        .home2-activity-card { display:flex; align-items:center; gap:12px; margin:0 20px 10px; padding:13px; background:#fff; border:1px solid #f8fafc; border-radius:20px; }
+        .home2-activity-body { flex:1; min-width:0; }
+        .home2-activity-body p.title { font-size:13.5px; font-weight:800; color:#0f172a; margin:0; }
+        .home2-activity-body p.date { font-size:11px; font-weight:600; color:#94a3b8; margin:2px 0 0; }
+        .home2-activity-amount { text-align:right; flex-shrink:0; }
+        .home2-activity-amount .val { font-size:13.5px; font-weight:900; display:block; }
+        .home2-activity-amount .val.pos { color:#16a34a; }
+        .home2-activity-amount .val.neg { color:#ef4444; }
+        .home2-activity-amount .status { font-size:10px; font-weight:700; color:#94a3b8; display:block; margin-top:2px; }
+        .home2-empty { text-align:center; color:#94a3b8; font-size:12px; font-weight:600; padding:30px 20px; }
+
         /* ── TIMEFRAME BAR ── */
         .mt-tf-bar { display:flex; gap:2px; padding:8px 16px; overflow-x:auto; scrollbar-width:none; border-bottom:1px solid #f1f5f9; }
         .mt-tf-bar::-webkit-scrollbar { display:none; }
@@ -2550,34 +2594,90 @@ try {
     </div>
 </header>
 
-<div class="mt-balance-list">
-    <div class="mt-balance-row">
-        <span class="mt-balance-label">Balance:</span>
-        <span class="mt-balance-dots"></span>
-        <span id="mt-home-balance" class="mt-balance-value">$0.00</span>
+<div class="home2-header">
+    <div class="home2-greet">
+        <h1>Hello, <span id="home2-name">User</span></h1>
+        <p>Welcome to Cyrus Capital</p>
     </div>
-    <div class="mt-balance-row">
-        <span class="mt-balance-label">Equity:</span>
-        <span class="mt-balance-dots"></span>
-        <span id="mt-home-equity" class="mt-balance-value">$0.00</span>
-    </div>
-    <div class="mt-balance-row">
-        <span class="mt-balance-label">Free margin:</span>
-        <span class="mt-balance-dots"></span>
-        <span id="mt-home-margin" class="mt-balance-value">$0.00</span>
+    <div class="home2-header-icons">
+        <button class="home2-icon-btn" onclick="openReferralHistory()" title="Refer &amp; Earn"><i class="fa-solid fa-handshake"></i></button>
+        <button class="home2-icon-btn" onclick="switchTab('kyc')" title="Profile"><i class="fa-solid fa-user"></i></button>
+        <button class="home2-icon-btn" onclick="openDashboardSupportModal()" title="Support"><i class="fa-solid fa-comment-dots"></i></button>
     </div>
 </div>
 
-<div class="mt-home-section-label">
-    <span>Open positions <span id="mt-home-pos-count" class="mt-badge hidden">0</span></span>
-    <span id="mt-home-pos-total" class="mt-home-total"></span>
+<div class="home2-balance-card">
+    <svg class="home2-balance-illustration" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="16" y="30" width="92" height="68" rx="17" fill="#D4AF37" opacity="0.14"/>
+        <rect x="28" y="42" width="92" height="60" rx="15" fill="url(#h2wallet)"/>
+        <rect x="28" y="42" width="92" height="20" rx="10" fill="#B8860B" opacity="0.35"/>
+        <circle cx="96" cy="74" r="13" fill="#fff" opacity="0.92"/>
+        <path d="M96 65L89 71V79L96 74.6L103 79V71L96 65Z" fill="#B8860B"/>
+        <path d="M96 56L85 65L91 67L96 62L101 67L107 65L96 56Z" fill="#B8860B"/>
+        <defs>
+            <linearGradient id="h2wallet" x1="28" y1="42" x2="120" y2="102" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#F7D774"/>
+                <stop offset="1" stop-color="#D4AF37"/>
+            </linearGradient>
+        </defs>
+    </svg>
+    <p class="home2-balance-label">Total Wallet Balance
+        <button onclick="toggleHomeBalanceVisibility()"><i id="home2-eye-icon" class="fa-solid fa-eye"></i></button>
+    </p>
+    <h2 class="home2-balance-figure" id="home2-balance-usd">$0.00</h2>
+    <p class="home2-balance-ngn">≈ ₦<span id="home2-balance-ngn">0.00</span></p>
+    <div class="home2-balance-actions">
+        <button class="home2-btn home2-btn-primary" onclick="switchTab('payments'); switchPaymentsView('deposit');"><i class="fa-solid fa-arrow-down"></i> Deposit</button>
+        <button class="home2-btn home2-btn-secondary" onclick="switchTab('payments'); switchPaymentsView('withdraw');"><i class="fa-solid fa-arrow-up"></i> Withdraw</button>
+    </div>
 </div>
-<div id="mt-home-positions"><p class="mt-empty" style="padding:26px 20px;">No open positions.</p></div>
 
-<div class="mt-home-section-label" id="mt-home-pending-label" style="display:none;">
-    <span>Pending orders <span id="mt-home-pend-count" class="mt-badge">0</span></span>
+<h3 class="home2-section-title">Quick actions</h3>
+<div class="home2-quick-grid">
+    <button class="home2-quick-card" onclick="switchTab('payments'); switchPaymentsView('deposit');"><i class="fa-solid fa-arrow-down"></i><span>Deposit</span></button>
+    <button class="home2-quick-card" onclick="switchTab('payments'); switchPaymentsView('withdraw');"><i class="fa-solid fa-arrow-up"></i><span>Withdraw</span></button>
+    <button class="home2-quick-card" onclick="switchTab('txhistory')"><i class="fa-solid fa-clock-rotate-left"></i><span>Transaction<br>History</span></button>
 </div>
-<div id="mt-home-pending"></div>
+
+<div class="home2-promo">
+    <div>
+        <h3>Trade Smarter.<br>Invest Better.</h3>
+        <p>Simple, secure and built for your growth.</p>
+        <button onclick="switchTab('trade')">Start Trading</button>
+    </div>
+    <svg class="home2-promo-illustration" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="12" width="46" height="96" rx="10" fill="#fff" stroke="#D4AF37" stroke-width="2"/>
+        <path d="M31 25L23 37V53L31 45L39 53V37L31 25Z" fill="#D4AF37"/>
+        <path d="M31 13L19 25L26 28L31 22L36 28L43 25L31 13Z" fill="#D4AF37"/>
+        <rect x="60" y="72" width="14" height="34" rx="3" fill="#D4AF37" opacity="0.5"/>
+        <rect x="80" y="56" width="14" height="50" rx="3" fill="#D4AF37" opacity="0.75"/>
+        <rect x="100" y="40" width="14" height="66" rx="3" fill="#D4AF37"/>
+        <path d="M62 62L82 48L100 32" stroke="#B8860B" stroke-width="3" stroke-linecap="round"/>
+        <path d="M92 32H100V40" stroke="#B8860B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+</div>
+
+<div class="home2-activity-header">
+    <h3>Recent Activity</h3>
+    <button onclick="switchTab('txhistory')">View all</button>
+</div>
+<div id="home2-recent-activity"><p class="home2-empty">No recent activity yet.</p></div>
+</section>
+
+<!-- ═══ TRANSACTION HISTORY (wallet activity — deposits/withdrawals/bonuses) ═══ -->
+<section id="txhistory" class="page-section mt-dark-section">
+<header class="mt-topbar">
+    <button onclick="switchTab('home')" class="mt-icon-btn"><i class="fa-solid fa-arrow-left"></i></button>
+    <h1 class="mt-topbar-title">Transaction History</h1>
+</header>
+<div style="display:flex; gap:8px; padding:0 20px 14px; overflow-x:auto; scrollbar-width:none;">
+    <button class="filter-tab active" onclick="filterHistory('all', this)">All</button>
+    <button class="filter-tab" onclick="filterHistory('Deposit', this)">Deposit</button>
+    <button class="filter-tab" onclick="filterHistory('Withdrawal', this)">Withdrawal</button>
+    <button class="filter-tab" onclick="filterHistory('Naira Deposit', this)">Naira</button>
+    <button class="filter-tab" onclick="filterHistory('Referral Bonus', this)">Referral</button>
+</div>
+<div id="history-list" style="padding:0 20px;"></div>
 </section>
 
 <div id="wallet-sheet-backdrop" class="wallet-sheet-backdrop" onclick="closeWalletSheet()"></div>
@@ -4302,6 +4402,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                 .onSnapshot(snap => {
                     allTransactions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderHistory(currentFilter);
+                    renderHomeRecentActivity();
                 }, err => {
                     console.warn("transactions collection query failed:", err.message);
                     syncLegacyHistory();
@@ -4327,6 +4428,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                         };
                     });
                     renderHistory(currentFilter);
+                    renderHomeRecentActivity();
                 }, err => { console.error("Legacy history query error:", err.message); });
         }
 
@@ -4682,6 +4784,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             if (tabId === 'trade' && typeof renderTradeTab === 'function') renderTradeTab();
             if (tabId === 'quote' && typeof renderQuoteTab === 'function') renderQuoteTab();
             if (tabId === 'history' && typeof renderPositions === 'function') { renderPositions(); renderDeals(); }
+            if (tabId === 'txhistory' && typeof renderHistory === 'function') renderHistory(currentFilter);
         }
 
         function switchPaymentsView(view) {
@@ -5361,7 +5464,51 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             if (marEl) marEl.innerText = '$' + freeMargin.toFixed(2);
             const drawerBal = document.getElementById('drawer-balance');
             if (drawerBal) drawerBal.innerText = '$' + balance.toFixed(2);
+
+            const nameEl = document.getElementById('home2-name');
+            if (nameEl) nameEl.innerText = (userData && userData.firstName) || 'User';
+            const usdEl = document.getElementById('home2-balance-usd');
+            const ngnEl = document.getElementById('home2-balance-ngn');
+            if (usdEl) usdEl.innerText = homeBalanceHidden ? '••••••' : '$' + balance.toFixed(2);
+            if (ngnEl) ngnEl.innerText = homeBalanceHidden ? '••••••' : (balance * 1400).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            renderHomeRecentActivity();
         }
+
+        let homeBalanceHidden = false;
+        function toggleHomeBalanceVisibility() {
+            homeBalanceHidden = !homeBalanceHidden;
+            const icon = document.getElementById('home2-eye-icon');
+            if (icon) icon.className = homeBalanceHidden ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+            updateHomeBalances();
+        }
+        window.toggleHomeBalanceVisibility = toggleHomeBalanceVisibility;
+
+        const HOME_DEBIT_TYPES = ['Withdrawal', 'Account Purchase'];
+        function renderHomeRecentActivity() {
+            const box = document.getElementById('home2-recent-activity');
+            if (!box) return;
+            const docs = (typeof allTransactions !== 'undefined' ? allTransactions : []).slice(0, 5);
+            if (!docs.length) { box.innerHTML = '<p class="home2-empty">No recent activity yet.</p>'; return; }
+            box.innerHTML = docs.map(d => {
+                const meta = getTxMeta(d.type);
+                const status = (d.status || 'pending').toLowerCase();
+                const date = d.timestamp ? d.timestamp.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) + ' · ' + d.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now';
+                const amount = Number(d.amount || d.rewardValue || 0);
+                const isDebit = HOME_DEBIT_TYPES.includes(d.type);
+                return `<div class="home2-activity-card">
+                    <div class="h-9 w-9 rounded-xl flex items-center justify-center flex-shrink-0 ${meta.cls}"><i class="fa-solid ${meta.icon} text-sm"></i></div>
+                    <div class="home2-activity-body">
+                        <p class="title">${meta.label}</p>
+                        <p class="date">${date}</p>
+                    </div>
+                    <div class="home2-activity-amount">
+                        <span class="val ${isDebit ? 'neg' : 'pos'}">${isDebit ? '-' : '+'}$${amount.toFixed(2)}</span>
+                        <span class="status">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        window.renderHomeRecentActivity = renderHomeRecentActivity;
 
         window.selectSymbolForTrade = selectSymbolForTrade;
         window.placeTrade = placeTrade;
@@ -5380,7 +5527,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         // ── AUTO LOAD TAB FROM URL HASH ──
         function loadTabFromHash() {
             const hash = window.location.hash.replace('#', '');
-            const validTabs = ['home', 'trade', 'history', 'quote', 'payments'];
+            const validTabs = ['home', 'trade', 'history', 'quote', 'payments', 'txhistory'];
             if (hash && validTabs.includes(hash)) {
                 switchTab(hash);
             }
@@ -5389,7 +5536,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         // Listen for back/forward browser navigation
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.replace('#', '');
-            const validTabs = ['home', 'trade', 'history', 'quote', 'payments'];
+            const validTabs = ['home', 'trade', 'history', 'quote', 'payments', 'txhistory'];
             if (hash && validTabs.includes(hash)) {
                 const target = document.getElementById(hash);
                 if (target) {
