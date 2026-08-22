@@ -1752,6 +1752,12 @@ try {
         .mt-close-btn { margin-top:6px; padding:6px 14px; background:#0f172a; border:none; color:#fff; border-radius:100px; font-size:10px; font-weight:800; text-transform:uppercase; cursor:pointer; }
         .mt-empty { text-align:center; color:#94a3b8; font-size:12px; font-weight:700; padding:60px 20px; }
 
+        .mt-trade-paused { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; height:280px; padding:24px; gap:8px; background:#fffaf0; border:1px solid #fde68a; border-radius:16px; margin:0 16px; }
+        .mt-trade-paused i { font-size:26px; color:#d97706; margin-bottom:2px; }
+        .mt-trade-paused .title { font-size:14px; font-weight:900; color:#92400e; margin:0; }
+        .mt-trade-paused .sub { font-size:11.5px; font-weight:600; color:#b45309; margin:0; max-width:280px; line-height:1.5; }
+        .mt-buy-btn:disabled, .mt-sell-btn:disabled, .mt-otype-btn:disabled { opacity:0.45; cursor:not-allowed; }
+
         /* ── OPEN POSITIONS ON HOME ── */
         .mt-home-section-label { padding:22px 20px 6px; font-size:10px; font-weight:900; color:#94a3b8; text-transform:uppercase; letter-spacing:0.14em; display:flex; justify-content:space-between; align-items:center; }
         .mt-home-total { font-size:12px; font-weight:900; font-variant-numeric:tabular-nums; letter-spacing:0; }
@@ -2880,6 +2886,11 @@ try {
 
 <div class="mt-chart-wrap">
     <div id="mt-trade-chart" style="height:280px;"></div>
+    <div id="mt-trade-paused-notice" class="mt-trade-paused" style="display:none;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p class="title">Live Charts &amp; Trading Paused</p>
+        <p class="sub">This account's market-data subscription needs to be renewed to resume live pricing and trading. Contact Cyrus Capital to reactivate.</p>
+    </div>
 </div>
 
 <div class="mt-otype-bar" id="mt-otype-bar">
@@ -4815,13 +4826,38 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             { sym: 'USDCHF', api: 'USD/CHF', name: 'US Dollar vs Swiss Franc' },
             { sym: 'USDJPY', api: 'USD/JPY', name: 'US Dollar vs Japanese Yen' },
             { sym: 'USDCAD', api: 'USD/CAD', name: 'US Dollar vs Canadian Dollar' },
+            { sym: 'NZDUSD', api: 'NZD/USD', name: 'New Zealand Dollar vs US Dollar' },
             { sym: 'AUDUSD', api: 'AUD/USD', name: 'Australian Dollar vs US Dollar' },
             { sym: 'AUDNZD', api: 'AUD/NZD', name: 'Australian Dollar vs New Zealand Dollar' },
             { sym: 'AUDCAD', api: 'AUD/CAD', name: 'Australian Dollar vs Canadian Dollar' },
             { sym: 'AUDCHF', api: 'AUD/CHF', name: 'Australian Dollar vs Swiss Franc' },
             { sym: 'AUDJPY', api: 'AUD/JPY', name: 'Australian Dollar vs Japanese Yen' },
-            { sym: 'XAUUSD', api: 'XAU/USD', name: 'Gold vs US Dollar' }
+            { sym: 'EURGBP', api: 'EUR/GBP', name: 'Euro vs British Pound' },
+            { sym: 'EURJPY', api: 'EUR/JPY', name: 'Euro vs Japanese Yen' },
+            { sym: 'EURCHF', api: 'EUR/CHF', name: 'Euro vs Swiss Franc' },
+            { sym: 'EURCAD', api: 'EUR/CAD', name: 'Euro vs Canadian Dollar' },
+            { sym: 'EURAUD', api: 'EUR/AUD', name: 'Euro vs Australian Dollar' },
+            { sym: 'EURNZD', api: 'EUR/NZD', name: 'Euro vs New Zealand Dollar' },
+            { sym: 'GBPJPY', api: 'GBP/JPY', name: 'British Pound vs Japanese Yen' },
+            { sym: 'GBPCHF', api: 'GBP/CHF', name: 'British Pound vs Swiss Franc' },
+            { sym: 'GBPCAD', api: 'GBP/CAD', name: 'British Pound vs Canadian Dollar' },
+            { sym: 'GBPAUD', api: 'GBP/AUD', name: 'British Pound vs Australian Dollar' },
+            { sym: 'GBPNZD', api: 'GBP/NZD', name: 'British Pound vs New Zealand Dollar' },
+            { sym: 'CADJPY', api: 'CAD/JPY', name: 'Canadian Dollar vs Japanese Yen' },
+            { sym: 'CADCHF', api: 'CAD/CHF', name: 'Canadian Dollar vs Swiss Franc' },
+            { sym: 'CHFJPY', api: 'CHF/JPY', name: 'Swiss Franc vs Japanese Yen' },
+            { sym: 'NZDJPY', api: 'NZD/JPY', name: 'New Zealand Dollar vs Japanese Yen' },
+            { sym: 'NZDCAD', api: 'NZD/CAD', name: 'New Zealand Dollar vs Canadian Dollar' },
+            { sym: 'NZDCHF', api: 'NZD/CHF', name: 'New Zealand Dollar vs Swiss Franc' },
+            { sym: 'XAUUSD', api: 'XAU/USD', name: 'Gold vs US Dollar' },
+            { sym: 'XAGUSD', api: 'XAG/USD', name: 'Silver vs US Dollar' }
         ];
+
+        // Manual switch: flip to false once the client's paid market-data plan is
+        // active again. While true, the Trade tab shows a notice in place of the
+        // chart and blocks new positions — quotes/browsing still work fine off the
+        // free Yahoo provider, this only gates opening trades.
+        const TRADING_PAUSED = true;
         const TIMEFRAMES = [
             { label: 'M1', api: '1min' }, { label: 'M5', api: '5min' }, { label: 'M15', api: '15min' },
             { label: 'M30', api: '30min' }, { label: 'H1', api: '1h' }, { label: 'H4', api: '4h' },
@@ -4978,7 +5014,20 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             document.getElementById('mt-trade-sym').innerText = meta.sym;
             document.getElementById('mt-trade-name').innerText = meta.name;
             updateTradePrices();
+            applyTradingPausedUI();
+            if (TRADING_PAUSED) return;
             await loadTradeChart(meta.api);
+        }
+
+        function applyTradingPausedUI() {
+            const chartEl = document.getElementById('mt-trade-chart');
+            const noticeEl = document.getElementById('mt-trade-paused-notice');
+            if (chartEl) chartEl.style.display = TRADING_PAUSED ? 'none' : '';
+            if (noticeEl) noticeEl.style.display = TRADING_PAUSED ? 'flex' : 'none';
+            if (!TRADING_PAUSED) return;
+            document.querySelectorAll('.mt-sell-btn, .mt-buy-btn, .mt-otype-btn').forEach(b => b.disabled = true);
+            const lots = document.getElementById('mt-trade-lots');
+            if (lots) lots.disabled = true;
         }
 
         function updateTradePrices() {
@@ -5044,6 +5093,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         }
 
         async function placeTrade(side) {
+            if (TRADING_PAUSED) { alert("Trading is paused — this account's market-data subscription needs to be renewed. Contact Cyrus Capital to reactivate."); return; }
             if (!currentUser) { alert('Please login first.'); return; }
             const lots = parseFloat(document.getElementById('mt-trade-lots').value) || 0.01;
             if (lots < 0.01) { alert('Minimum volume is 0.01 lots.'); return; }
