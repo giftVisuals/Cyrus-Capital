@@ -4998,7 +4998,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         // active again. While true, the Trade tab shows a notice in place of the
         // chart and blocks new positions — quotes/browsing still work fine off the
         // free Deriv provider and Yahoo forex, this only gates opening trades.
-        const TRADING_PAUSED = false;
+        const TRADING_PAUSED = true;
         const TIMEFRAMES = [
             { label: 'M1', api: '1min' }, { label: 'M5', api: '5min' }, { label: 'M15', api: '15min' },
             { label: 'M30', api: '30min' }, { label: 'H1', api: '1h' }, { label: 'H4', api: '4h' },
