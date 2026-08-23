@@ -2884,52 +2884,77 @@ try {
     <p class="name" id="mt-trade-name">Euro vs US Dollar</p>
 </div>
 
-<div class="mt-chart-wrap">
-    <div id="mt-trade-chart" style="height:280px;"></div>
+<div class="mt-chart-wrap" style="height:calc(100vh - 360px); position:relative; display:flex; flex-direction:column;">
+    <div id="mt-trade-chart" style="flex:1; min-height:300px;"></div>
     <div id="mt-trade-paused-notice" class="mt-trade-paused" style="display:none;">
         <i class="fa-solid fa-triangle-exclamation"></i>
         <p class="title">Live Charts &amp; Trading Paused</p>
         <p class="sub">This account's market-data subscription needs to be renewed to resume live pricing and trading. Contact Cyrus Capital to reactivate.</p>
     </div>
-</div>
 
-<div class="mt-otype-bar" id="mt-otype-bar">
-    <button class="mt-otype-btn active" onclick="selectOrderType('market', this)">Execution</button>
-    <button class="mt-otype-btn" onclick="selectOrderType('buy_limit', this)">Buy Limit</button>
-    <button class="mt-otype-btn" onclick="selectOrderType('sell_limit', this)">Sell Limit</button>
-    <button class="mt-otype-btn" onclick="selectOrderType('buy_stop', this)">Buy Stop</button>
-    <button class="mt-otype-btn" onclick="selectOrderType('sell_stop', this)">Sell Stop</button>
-</div>
+    <!-- Spread Display -->
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:#f8fafc; border-top:1px solid #e2e8f0;">
+        <span style="font-size:12px; color:#64748b; font-weight:600;">SELL</span>
+        <span id="mt-spread-sell" style="font-size:16px; font-weight:700; color:#ef4444;">--</span>
+        <span id="mt-spread-value" style="font-size:12px; color:#94a3b8; font-weight:600;">--</span>
+        <span id="mt-spread-buy" style="font-size:16px; font-weight:700; color:#3b82f6;">--</span>
+        <span style="font-size:12px; color:#64748b; font-weight:600;">BUY</span>
+    </div>
 
-<div class="mt-field-grid">
-    <div class="mt-field" id="mt-field-limit" style="display:none;">
-        <label>Price</label>
-        <input type="number" id="mt-order-price" step="0.00001" placeholder="0.00000">
-    </div>
-    <div class="mt-field sl">
-        <label>Stop loss</label>
-        <input type="number" id="mt-order-sl" step="0.00001" placeholder="none">
-    </div>
-    <div class="mt-field tp">
-        <label>Take profit</label>
-        <input type="number" id="mt-order-tp" step="0.00001" placeholder="none">
-    </div>
-</div>
-<p class="mt-field-hint" id="mt-order-hint">Leave stop loss and take profit blank to trade without them.</p>
-
-<div class="mt-order-bar">
-    <button class="mt-sell-btn" onclick="placeTrade('sell')">
-        <span class="lbl" id="mt-sell-label">Sell</span>
-        <span class="px" id="mt-trade-sell-price">--</span>
+    <!-- Collapsible Panel Toggle -->
+    <button id="mt-panel-toggle" onclick="toggleTradePanel()" style="position:absolute; top:12px; right:12px; width:44px; height:44px; background:linear-gradient(135deg, #ef4444, #3b82f6); border:none; border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2); z-index:100; transition:all 0.3s ease;">
+        <i class="fa-solid fa-chevron-left" style="color:white; font-size:18px;"></i>
     </button>
-    <div class="mt-lots-box">
-        <label>Lots</label>
-        <input type="number" id="mt-trade-lots" value="0.01" step="0.01" min="0.01">
+</div>
+
+<!-- Collapsible Trading Panel (slides up from bottom) -->
+<div id="mt-trade-panel" style="position:fixed; bottom:0; left:0; right:0; height:0; background:white; border-top:1px solid #e2e8f0; overflow-y:auto; transition:height 0.3s ease; z-index:90; max-height:85vh; display:flex; flex-direction:column;">
+    <div style="padding:16px; border-bottom:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
+        <h3 style="margin:0; font-size:16px; font-weight:700;">Execution Options</h3>
+        <button onclick="toggleTradePanel()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#64748b;">×</button>
     </div>
-    <button class="mt-buy-btn" onclick="placeTrade('buy')">
-        <span class="lbl" id="mt-buy-label">Buy</span>
-        <span class="px" id="mt-trade-buy-price">--</span>
-    </button>
+
+    <div style="padding:16px; overflow-y:auto; flex:1;">
+        <div class="mt-otype-bar" id="mt-otype-bar" style="margin-bottom:20px;">
+            <button class="mt-otype-btn active" onclick="selectOrderType('market', this)">Execution</button>
+            <button class="mt-otype-btn" onclick="selectOrderType('buy_limit', this)">Buy Limit</button>
+            <button class="mt-otype-btn" onclick="selectOrderType('sell_limit', this)">Sell Limit</button>
+            <button class="mt-otype-btn" onclick="selectOrderType('buy_stop', this)">Buy Stop</button>
+            <button class="mt-otype-btn" onclick="selectOrderType('sell_stop', this)">Sell Stop</button>
+        </div>
+
+        <div class="mt-field-grid">
+            <div class="mt-field" id="mt-field-limit" style="display:none;">
+                <label>Price</label>
+                <input type="number" id="mt-order-price" step="0.00001" placeholder="0.00000">
+            </div>
+            <div class="mt-field sl">
+                <label>Stop loss</label>
+                <input type="number" id="mt-order-sl" step="0.00001" placeholder="none">
+            </div>
+            <div class="mt-field tp">
+                <label>Take profit</label>
+                <input type="number" id="mt-order-tp" step="0.00001" placeholder="none">
+            </div>
+        </div>
+        <p class="mt-field-hint" id="mt-order-hint">Leave stop loss and take profit blank to trade without them.</p>
+
+        <div style="margin-bottom:16px;">
+            <label style="display:block; font-size:12px; font-weight:600; color:#64748b; margin-bottom:8px;">Volume (Lots)</label>
+            <input type="number" id="mt-trade-lots" value="0.01" step="0.01" min="0.01" style="width:100%; padding:10px; border:1px solid #e2e8f0; border-radius:8px; font-size:14px;">
+        </div>
+    </div>
+
+    <div style="padding:16px; border-top:1px solid #e2e8f0; display:grid; grid-template-columns:1fr 1fr; gap:12px; flex-shrink:0;">
+        <button class="mt-sell-btn" onclick="placeTrade('sell')" style="padding:14px; font-size:14px;">
+            <span class="lbl" id="mt-sell-label">Sell</span>
+            <span class="px" id="mt-trade-sell-price" style="display:block; font-size:12px; margin-top:4px;">--</span>
+        </button>
+        <button class="mt-buy-btn" onclick="placeTrade('buy')" style="padding:14px; font-size:14px;">
+            <span class="lbl" id="mt-buy-label">Buy</span>
+            <span class="px" id="mt-trade-buy-price" style="display:block; font-size:12px; margin-top:4px;">--</span>
+        </button>
+    </div>
 </div>
 <p class="mt-order-note">Simulated trading against live market prices. P&amp;L settles to your balance on close.</p>
 </section>
@@ -5104,6 +5129,35 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             await loadTradeChart(symbolMeta(currentTradeSymbol).api);
         }
 
+        let tradePanelOpen = false;
+
+        function toggleTradePanel() {
+            const panel = document.getElementById('mt-trade-panel');
+            const toggle = document.getElementById('mt-panel-toggle');
+            if (!panel) return;
+
+            tradePanelOpen = !tradePanelOpen;
+            panel.style.height = tradePanelOpen ? '400px' : '0';
+
+            if (toggle) {
+                toggle.style.transform = tradePanelOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+            }
+        }
+
+        function updateSpreadDisplay() {
+            const ba = bidAsk(currentTradeSymbol);
+            const sellEl = document.getElementById('mt-spread-sell');
+            const buyEl = document.getElementById('mt-spread-buy');
+            const spreadEl = document.getElementById('mt-spread-value');
+
+            if (ba && sellEl && buyEl && spreadEl) {
+                const dec = priceDecimals(ba.price);
+                sellEl.textContent = ba.bid.toFixed(dec);
+                buyEl.textContent = ba.ask.toFixed(dec);
+                spreadEl.textContent = ((ba.ask - ba.bid) * 10000).toFixed(1) + ' pips';
+            }
+        }
+
         function selectOrderType(type, btn) {
             currentOrderType = type;
             document.querySelectorAll('#mt-otype-bar .mt-otype-btn').forEach(b => b.classList.remove('active'));
@@ -5172,6 +5226,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             const isDown = tickDirection[currentTradeSymbol] === 'down';
             sellEl.closest('.mt-sell-btn').classList.toggle('tick-down', isDown);
             buyEl.closest('.mt-buy-btn').classList.toggle('tick-down', isDown);
+            updateSpreadDisplay();
         }
 
         async function loadTradeChart(apiSym) {
@@ -5185,7 +5240,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
                 timeScale: { timeVisible: true, borderColor: '#f1f5f9' },
                 rightPriceScale: { borderColor: '#f1f5f9' }
             });
-            tmSeries = tmChart.addCandlestickSeries({ upColor: '#3b82f6', downColor: '#ef4444', borderVisible: false, wickUpColor: '#3b82f6', wickDownColor: '#ef4444' });
+            tmSeries = tmChart.addCandlestickSeries({ upColor: '#22c55e', downColor: '#ef4444', borderVisible: false, wickUpColor: '#22c55e', wickDownColor: '#ef4444' });
             try {
                 const res = await fetch('/api/candles?symbol=' + encodeURIComponent(apiSym) + '&interval=' + encodeURIComponent(currentTimeframe));
                 const data = await res.json();
