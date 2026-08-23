@@ -4821,34 +4821,108 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         //  TRADING TERMINAL — live quotes, chart, buy/sell positions
         // ════════════════════════════════════════════════════════
         const TRADE_SYMBOLS = [
+            // Major pairs
             { sym: 'EURUSD', api: 'EUR/USD', name: 'Euro vs US Dollar' },
             { sym: 'GBPUSD', api: 'GBP/USD', name: 'British Pound vs US Dollar' },
-            { sym: 'USDCHF', api: 'USD/CHF', name: 'US Dollar vs Swiss Franc' },
             { sym: 'USDJPY', api: 'USD/JPY', name: 'US Dollar vs Japanese Yen' },
+            { sym: 'USDCHF', api: 'USD/CHF', name: 'US Dollar vs Swiss Franc' },
+            { sym: 'AUDUSD', api: 'AUD/USD', name: 'Australian Dollar vs US Dollar' },
             { sym: 'USDCAD', api: 'USD/CAD', name: 'US Dollar vs Canadian Dollar' },
             { sym: 'NZDUSD', api: 'NZD/USD', name: 'New Zealand Dollar vs US Dollar' },
-            { sym: 'AUDUSD', api: 'AUD/USD', name: 'Australian Dollar vs US Dollar' },
-            { sym: 'AUDNZD', api: 'AUD/NZD', name: 'Australian Dollar vs New Zealand Dollar' },
-            { sym: 'AUDCAD', api: 'AUD/CAD', name: 'Australian Dollar vs Canadian Dollar' },
-            { sym: 'AUDCHF', api: 'AUD/CHF', name: 'Australian Dollar vs Swiss Franc' },
-            { sym: 'AUDJPY', api: 'AUD/JPY', name: 'Australian Dollar vs Japanese Yen' },
+
+            // EUR crosses
             { sym: 'EURGBP', api: 'EUR/GBP', name: 'Euro vs British Pound' },
             { sym: 'EURJPY', api: 'EUR/JPY', name: 'Euro vs Japanese Yen' },
             { sym: 'EURCHF', api: 'EUR/CHF', name: 'Euro vs Swiss Franc' },
-            { sym: 'EURCAD', api: 'EUR/CAD', name: 'Euro vs Canadian Dollar' },
             { sym: 'EURAUD', api: 'EUR/AUD', name: 'Euro vs Australian Dollar' },
+            { sym: 'EURCAD', api: 'EUR/CAD', name: 'Euro vs Canadian Dollar' },
             { sym: 'EURNZD', api: 'EUR/NZD', name: 'Euro vs New Zealand Dollar' },
+
+            // GBP crosses
             { sym: 'GBPJPY', api: 'GBP/JPY', name: 'British Pound vs Japanese Yen' },
             { sym: 'GBPCHF', api: 'GBP/CHF', name: 'British Pound vs Swiss Franc' },
-            { sym: 'GBPCAD', api: 'GBP/CAD', name: 'British Pound vs Canadian Dollar' },
             { sym: 'GBPAUD', api: 'GBP/AUD', name: 'British Pound vs Australian Dollar' },
+            { sym: 'GBPCAD', api: 'GBP/CAD', name: 'British Pound vs Canadian Dollar' },
             { sym: 'GBPNZD', api: 'GBP/NZD', name: 'British Pound vs New Zealand Dollar' },
+
+            // AUD crosses
+            { sym: 'AUDJPY', api: 'AUD/JPY', name: 'Australian Dollar vs Japanese Yen' },
+            { sym: 'AUDCHF', api: 'AUD/CHF', name: 'Australian Dollar vs Swiss Franc' },
+            { sym: 'AUDCAD', api: 'AUD/CAD', name: 'Australian Dollar vs Canadian Dollar' },
+            { sym: 'AUDNZD', api: 'AUD/NZD', name: 'Australian Dollar vs New Zealand Dollar' },
+
+            // NZD crosses
+            { sym: 'NZDJPY', api: 'NZD/JPY', name: 'New Zealand Dollar vs Japanese Yen' },
+            { sym: 'NZDCHF', api: 'NZD/CHF', name: 'New Zealand Dollar vs Swiss Franc' },
+            { sym: 'NZDCAD', api: 'NZD/CAD', name: 'New Zealand Dollar vs Canadian Dollar' },
+
+            // CAD, CHF crosses
             { sym: 'CADJPY', api: 'CAD/JPY', name: 'Canadian Dollar vs Japanese Yen' },
             { sym: 'CADCHF', api: 'CAD/CHF', name: 'Canadian Dollar vs Swiss Franc' },
             { sym: 'CHFJPY', api: 'CHF/JPY', name: 'Swiss Franc vs Japanese Yen' },
-            { sym: 'NZDJPY', api: 'NZD/JPY', name: 'New Zealand Dollar vs Japanese Yen' },
-            { sym: 'NZDCAD', api: 'NZD/CAD', name: 'New Zealand Dollar vs Canadian Dollar' },
-            { sym: 'NZDCHF', api: 'NZD/CHF', name: 'New Zealand Dollar vs Swiss Franc' },
+
+            // Emerging market pairs (USD base)
+            { sym: 'USDTRY', api: 'USD/TRY', name: 'US Dollar vs Turkish Lira' },
+            { sym: 'USDZAR', api: 'USD/ZAR', name: 'US Dollar vs South African Rand' },
+            { sym: 'USDMXN', api: 'USD/MXN', name: 'US Dollar vs Mexican Peso' },
+            { sym: 'USDBRL', api: 'USD/BRL', name: 'US Dollar vs Brazilian Real' },
+            { sym: 'USDSGD', api: 'USD/SGD', name: 'US Dollar vs Singapore Dollar' },
+            { sym: 'USDHKD', api: 'USD/HKD', name: 'US Dollar vs Hong Kong Dollar' },
+            { sym: 'USDSEK', api: 'USD/SEK', name: 'US Dollar vs Swedish Krona' },
+            { sym: 'USDNOK', api: 'USD/NOK', name: 'US Dollar vs Norwegian Krone' },
+            { sym: 'USDDKK', api: 'USD/DKK', name: 'US Dollar vs Danish Krone' },
+            { sym: 'USDPLN', api: 'USD/PLN', name: 'US Dollar vs Polish Zloty' },
+            { sym: 'USDCZK', api: 'USD/CZK', name: 'US Dollar vs Czech Koruna' },
+            { sym: 'USDHUF', api: 'USD/HUF', name: 'US Dollar vs Hungarian Forint' },
+            { sym: 'USDRON', api: 'USD/RON', name: 'US Dollar vs Romanian Leu' },
+            { sym: 'USDILS', api: 'USD/ILS', name: 'US Dollar vs Israeli Shekel' },
+            { sym: 'USDTHB', api: 'USD/THB', name: 'US Dollar vs Thai Baht' },
+            { sym: 'USDCNH', api: 'USD/CNH', name: 'US Dollar vs Chinese Yuan' },
+            { sym: 'USDINR', api: 'USD/INR', name: 'US Dollar vs Indian Rupee' },
+            { sym: 'USDKRW', api: 'USD/KRW', name: 'US Dollar vs South Korean Won' },
+
+            // EUR emerging
+            { sym: 'EURTRY', api: 'EUR/TRY', name: 'Euro vs Turkish Lira' },
+            { sym: 'EURZAR', api: 'EUR/ZAR', name: 'Euro vs South African Rand' },
+            { sym: 'EURPLN', api: 'EUR/PLN', name: 'Euro vs Polish Zloty' },
+            { sym: 'EURSEK', api: 'EUR/SEK', name: 'Euro vs Swedish Krona' },
+            { sym: 'EURNOK', api: 'EUR/NOK', name: 'Euro vs Norwegian Krone' },
+            { sym: 'EURDKK', api: 'EUR/DKK', name: 'Euro vs Danish Krone' },
+            { sym: 'EURCZK', api: 'EUR/CZK', name: 'Euro vs Czech Koruna' },
+            { sym: 'EURHUF', api: 'EUR/HUF', name: 'Euro vs Hungarian Forint' },
+            { sym: 'EURRON', api: 'EUR/RON', name: 'Euro vs Romanian Leu' },
+            { sym: 'EURSGD', api: 'EUR/SGD', name: 'Euro vs Singapore Dollar' },
+            { sym: 'EURHKD', api: 'EUR/HKD', name: 'Euro vs Hong Kong Dollar' },
+
+            // GBP emerging
+            { sym: 'GBPTRY', api: 'GBP/TRY', name: 'British Pound vs Turkish Lira' },
+            { sym: 'GBPZAR', api: 'GBP/ZAR', name: 'British Pound vs South African Rand' },
+            { sym: 'GBPPLN', api: 'GBP/PLN', name: 'British Pound vs Polish Zloty' },
+            { sym: 'GBPSEK', api: 'GBP/SEK', name: 'British Pound vs Swedish Krona' },
+            { sym: 'GBPNOK', api: 'GBP/NOK', name: 'British Pound vs Norwegian Krone' },
+            { sym: 'GBPSGD', api: 'GBP/SGD', name: 'British Pound vs Singapore Dollar' },
+            { sym: 'GBPHKD', api: 'GBP/HKD', name: 'British Pound vs Hong Kong Dollar' },
+
+            // CHF emerging
+            { sym: 'CHFSGD', api: 'CHF/SGD', name: 'Swiss Franc vs Singapore Dollar' },
+            { sym: 'CHFPLN', api: 'CHF/PLN', name: 'Swiss Franc vs Polish Zloty' },
+            { sym: 'CHFSEK', api: 'CHF/SEK', name: 'Swiss Franc vs Swedish Krona' },
+            { sym: 'CHFNOK', api: 'CHF/NOK', name: 'Swiss Franc vs Norwegian Krone' },
+
+            // JPY emerging
+            { sym: 'SEKJPY', api: 'SEK/JPY', name: 'Swedish Krona vs Japanese Yen' },
+            { sym: 'NOKJPY', api: 'NOK/JPY', name: 'Norwegian Krone vs Japanese Yen' },
+            { sym: 'SGDJPY', api: 'SGD/JPY', name: 'Singapore Dollar vs Japanese Yen' },
+            { sym: 'HKDJPY', api: 'HKD/JPY', name: 'Hong Kong Dollar vs Japanese Yen' },
+            { sym: 'CNHJPY', api: 'CNH/JPY', name: 'Chinese Yuan vs Japanese Yen' },
+            { sym: 'ZARJPY', api: 'ZAR/JPY', name: 'South African Rand vs Japanese Yen' },
+            { sym: 'TRYJPY', api: 'TRY/JPY', name: 'Turkish Lira vs Japanese Yen' },
+            { sym: 'MXNJPY', api: 'MXN/JPY', name: 'Mexican Peso vs Japanese Yen' },
+            { sym: 'PLNJPY', api: 'PLN/JPY', name: 'Polish Zloty vs Japanese Yen' },
+            { sym: 'CZKJPY', api: 'CZK/JPY', name: 'Czech Koruna vs Japanese Yen' },
+            { sym: 'HUFJPY', api: 'HUF/JPY', name: 'Hungarian Forint vs Japanese Yen' },
+
+            // Commodities
             { sym: 'XAUUSD', api: 'XAU/USD', name: 'Gold vs US Dollar' },
             { sym: 'XAGUSD', api: 'XAG/USD', name: 'Silver vs US Dollar' }
         ];
