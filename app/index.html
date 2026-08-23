@@ -1716,6 +1716,7 @@ try {
         .mt-price-header { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; padding:2px 16px 14px; }
         .mt-price-header .sym { font-size:15px; font-weight:900; color:#0f172a; letter-spacing:-0.01em; }
         .mt-price-header .name { font-size:11.5px; color:#94a3b8; font-weight:600; margin-top:2px; }
+        .mt-market-closed { align-items:center; gap:4px; margin-top:6px; font-size:9.5px; font-weight:800; color:#b91c1c; background:#fef2f2; border:1px solid #fecaca; padding:3px 9px; border-radius:100px; width:fit-content; }
         .mt-price-live { text-align:right; flex-shrink:0; }
         .mt-price-live .amt { font-size:20px; font-weight:900; color:#0f172a; font-variant-numeric:tabular-nums; letter-spacing:-0.01em; line-height:1.1; transition:color 0.25s; }
         .mt-price-live .amt.up { color:#16a34a; }
@@ -2903,6 +2904,7 @@ try {
     <div>
         <p class="sym" id="mt-trade-sym">EURUSD</p>
         <p class="name" id="mt-trade-name">Euro vs US Dollar</p>
+        <span id="mt-market-closed-badge" class="mt-market-closed" style="display:none;">Market closed</span>
     </div>
     <div class="mt-price-live">
         <span class="amt" id="mt-trade-live-price">--</span>
@@ -5077,6 +5079,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
 
                 renderQuoteTab();
                 updateTradePrices();
+                applyMarketClosedUI();
                 recomputeOpenPositionsPnL();
                 updateHomeBalances();
                 triggerPendingOrders();
@@ -5172,6 +5175,36 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             if (q) el.value = q.price.toFixed(priceDecimals(q.price));
         }
 
+        // Forex and metals (everything in TRADE_SYMBOLS) follow the standard FX
+        // week: closed from Friday 22:00 UTC to Sunday 22:00 UTC. Deriv's
+        // synthetic indices are simulated, not tied to a real exchange, so they
+        // trade around the clock including weekends.
+        function isForexMarketOpen(date) {
+            date = date || new Date();
+            const day = date.getUTCDay(); // 0 Sun .. 6 Sat
+            const hour = date.getUTCHours();
+            if (day === 6) return false;
+            if (day === 0 && hour < 22) return false;
+            if (day === 5 && hour >= 22) return false;
+            return true;
+        }
+
+        function isMarketOpenForSymbol(sym) {
+            if (SYNTHETICS_SYMBOLS.some(s => s.sym === sym)) return true;
+            return isForexMarketOpen();
+        }
+
+        // Independent of the TRADING_PAUSED (unpaid API) gate: this blocks new
+        // positions purely on real-world market hours, so a closed forex
+        // weekend doesn't let anyone trade against Friday's stale close.
+        function applyMarketClosedUI() {
+            const badge = document.getElementById('mt-market-closed-badge');
+            const open = isMarketOpenForSymbol(currentTradeSymbol);
+            if (badge) badge.style.display = (open || TRADING_PAUSED) ? 'none' : 'inline-flex';
+            if (TRADING_PAUSED) return; // already fully disabled by the paused notice
+            document.querySelectorAll('.mt-sell-btn, .mt-buy-btn, #mt-otype-bar .mt-otype-btn').forEach(b => b.disabled = !open);
+        }
+
         async function renderTradeTab() {
             const meta = symbolMeta(currentTradeSymbol);
             currentTradeSymbol = meta.sym;
@@ -5181,6 +5214,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             document.getElementById('mt-trade-name').innerText = meta.name;
             updateTradePrices();
             applyTradingPausedUI();
+            applyMarketClosedUI();
             if (TRADING_PAUSED) return;
             await loadTradeChart(meta.api);
         }
@@ -5292,6 +5326,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
 
         async function placeTrade(side) {
             if (TRADING_PAUSED) { alert("Trading is paused — this account's market-data subscription needs to be renewed. Contact Cyrus Capital to reactivate."); return; }
+            if (!isMarketOpenForSymbol(currentTradeSymbol)) { alert('The market for this symbol is closed. Forex and metals trade Sunday 22:00 UTC through Friday 22:00 UTC.'); return; }
             if (!currentUser) { alert('Please login first.'); return; }
             const lots = parseFloat(document.getElementById('mt-trade-lots').value) || 0.01;
             if (lots < 0.01) { alert('Minimum volume is 0.01 lots.'); return; }
