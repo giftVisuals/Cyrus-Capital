@@ -4927,10 +4927,37 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             { sym: 'XAGUSD', api: 'XAG/USD', name: 'Silver vs US Dollar' }
         ];
 
+        const SYNTHETICS_SYMBOLS = [
+            // Volatility Indices
+            { sym: 'VOL5', api: 'Volatility 5 Index', name: 'Volatility 5 Index' },
+            { sym: 'VOL10', api: 'Volatility 10 Index', name: 'Volatility 10 Index' },
+            { sym: 'VOL25', api: 'Volatility 25 Index', name: 'Volatility 25 Index' },
+            { sym: 'VOL50', api: 'Volatility 50 Index', name: 'Volatility 50 Index' },
+            { sym: 'VOL100', api: 'Volatility 100 Index', name: 'Volatility 100 Index' },
+
+            // Boom Indices
+            { sym: 'BOOM100', api: 'Boom 100 Index', name: 'Boom 100 Index' },
+            { sym: 'BOOM500', api: 'Boom 500 Index', name: 'Boom 500 Index' },
+            { sym: 'BOOM1000', api: 'Boom 1000 Index', name: 'Boom 1000 Index' },
+
+            // Crash Indices
+            { sym: 'CRASH100', api: 'Crash 100 Index', name: 'Crash 100 Index' },
+            { sym: 'CRASH500', api: 'Crash 500 Index', name: 'Crash 500 Index' },
+            { sym: 'CRASH1000', api: 'Crash 1000 Index', name: 'Crash 1000 Index' },
+
+            // Jump Indices
+            { sym: 'JUMP50', api: 'Jump 50 Index', name: 'Jump 50 Index' },
+            { sym: 'JUMP100', api: 'Jump 100 Index', name: 'Jump 100 Index' },
+
+            // Range Break Indices
+            { sym: 'RB100', api: 'Range Break 100 Index', name: 'Range Break 100 Index' },
+            { sym: 'RB200', api: 'Range Break 200 Index', name: 'Range Break 200 Index' }
+        ];
+
         // Manual switch: flip to false once the client's paid market-data plan is
         // active again. While true, the Trade tab shows a notice in place of the
         // chart and blocks new positions — quotes/browsing still work fine off the
-        // free Yahoo provider, this only gates opening trades.
+        // free Deriv provider and Yahoo forex, this only gates opening trades.
         const TRADING_PAUSED = true;
         const TIMEFRAMES = [
             { label: 'M1', api: '1min' }, { label: 'M5', api: '5min' }, { label: 'M15', api: '15min' },
@@ -4954,7 +4981,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         let sheetPositionId = null;
 
         function priceDecimals(price) { return price < 20 ? 5 : 2; }
-        function symbolMeta(sym) { return TRADE_SYMBOLS.find(s => s.sym === sym) || TRADE_SYMBOLS[0]; }
+        function symbolMeta(sym) { return TRADE_SYMBOLS.find(s => s.sym === sym) || SYNTHETICS_SYMBOLS.find(s => s.sym === sym) || TRADE_SYMBOLS[0]; }
 
         // Every symbol costs an upstream request, so only ask for the ones on
         // screen or carrying money: the chart's symbol, anything with an open
@@ -4963,7 +4990,7 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         function symbolsToQuote() {
             const quoteTabOpen = document.getElementById('quote') &&
                 document.getElementById('quote').classList.contains('active');
-            if (quoteTabOpen) return TRADE_SYMBOLS.map(s => s.api);
+            if (quoteTabOpen) return TRADE_SYMBOLS.map(s => s.api).concat(SYNTHETICS_SYMBOLS.map(s => s.api));
             const needed = new Set([symbolMeta(currentTradeSymbol).api]);
             openPositions.forEach(p => needed.add(symbolMeta(p.symbol).api));
             pendingOrders.forEach(o => needed.add(symbolMeta(o.symbol).api));
@@ -4973,18 +5000,43 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         async function fetchQuotes() {
             try {
                 const wanted = symbolsToQuote();
-                const res = await fetch('/api/quotes?symbols=' + encodeURIComponent(wanted.join(',')));
-                const data = await res.json();
-                TRADE_SYMBOLS.forEach(s => {
-                    if (data[s.api] && !data[s.api].code) {
-                        liveQuotes[s.sym] = data[s.api];
-                        const price = parseFloat(data[s.api].close);
-                        if (prevTickPrices[s.sym] !== undefined && price !== prevTickPrices[s.sym]) {
-                            tickDirection[s.sym] = price > prevTickPrices[s.sym] ? 'up' : 'down';
+                const forexSymbols = wanted.filter(s => TRADE_SYMBOLS.find(t => t.api === s));
+                const syntheticSymbols = wanted.filter(s => SYNTHETICS_SYMBOLS.find(t => t.api === s));
+
+                // Fetch forex quotes
+                if (forexSymbols.length > 0) {
+                    const res = await fetch('/api/quotes?symbols=' + encodeURIComponent(forexSymbols.join(',')));
+                    const data = await res.json();
+                    TRADE_SYMBOLS.forEach(s => {
+                        if (data[s.api] && !data[s.api].code) {
+                            liveQuotes[s.sym] = data[s.api];
+                            const price = parseFloat(data[s.api].close);
+                            if (prevTickPrices[s.sym] !== undefined && price !== prevTickPrices[s.sym]) {
+                                tickDirection[s.sym] = price > prevTickPrices[s.sym] ? 'up' : 'down';
+                            }
+                            prevTickPrices[s.sym] = price;
                         }
-                        prevTickPrices[s.sym] = price;
-                    }
-                });
+                    });
+                }
+
+                // Fetch synthetic quotes
+                if (syntheticSymbols.length > 0) {
+                    try {
+                        const res = await fetch('/api/synthetics?symbols=' + encodeURIComponent(syntheticSymbols.join(',')));
+                        const data = await res.json();
+                        SYNTHETICS_SYMBOLS.forEach(s => {
+                            if (data[s.api] && !data[s.api].code) {
+                                liveQuotes[s.sym] = data[s.api];
+                                const price = parseFloat(data[s.api].close);
+                                if (prevTickPrices[s.sym] !== undefined && price !== prevTickPrices[s.sym]) {
+                                    tickDirection[s.sym] = price > prevTickPrices[s.sym] ? 'up' : 'down';
+                                }
+                                prevTickPrices[s.sym] = price;
+                            }
+                        });
+                    } catch (e) { console.warn('Synthetics fetch failed (not critical)', e.message); }
+                }
+
                 renderQuoteTab();
                 updateTradePrices();
                 recomputeOpenPositionsPnL();
@@ -5006,7 +5058,8 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         function renderQuoteTab() {
             const box = document.getElementById('mt-quotes-list');
             if (!box) return;
-            const rows = TRADE_SYMBOLS.map(s => {
+            const allSymbols = TRADE_SYMBOLS.concat(SYNTHETICS_SYMBOLS);
+            const rows = allSymbols.map(s => {
                 const q = liveQuotes[s.sym];
                 if (!q || !q.close) return '';
                 const price = parseFloat(q.close);
@@ -5025,7 +5078,8 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
         function renderSymbolScroller() {
             const box = document.getElementById('mt-symbol-scroller');
             if (!box) return;
-            box.innerHTML = TRADE_SYMBOLS.map(s =>
+            const allSymbols = TRADE_SYMBOLS.concat(SYNTHETICS_SYMBOLS);
+            box.innerHTML = allSymbols.map(s =>
                 '<button class="mt-symbol-chip' + (s.sym === currentTradeSymbol ? ' active' : '') + '" onclick="selectSymbolForTrade(\'' + s.sym + '\')">' + s.sym + '</button>'
             ).join('');
         }

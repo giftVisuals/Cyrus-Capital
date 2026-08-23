@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { getQuotes, getCandles } from './lib/forex.js';
+import { getSynthetics } from './lib/deriv.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -36,6 +37,17 @@ app.get('/api/candles', async (req, res) => {
   if (!symbol) return res.status(400).json({ error: 'symbol query param required' });
   try {
     res.json(await getCandles(symbol, req.query.interval || '5min'));
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
+});
+
+// Live synthetic index quotes from Deriv, e.g. /api/synthetics?symbols=Volatility 5 Index,Boom 100 Index
+app.get('/api/synthetics', async (req, res) => {
+  const symbols = (req.query.symbols || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (!symbols.length) return res.status(400).json({ error: 'symbols query param required' });
+  try {
+    res.json(await getSynthetics(symbols));
   } catch (err) {
     res.status(502).json({ error: err.message });
   }
