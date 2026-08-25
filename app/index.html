@@ -1885,7 +1885,9 @@ try {
         .home2-balance-label { display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; color:#94a3b8; margin:0 0 8px; position:relative; z-index:1; }
         .home2-balance-label button { background:none; border:none; color:#94a3b8; cursor:pointer; font-size:13px; padding:0; }
         .home2-real-tag { font-size:9px; font-weight:900; color:#16a34a; background:#f0fdf4; border:1px solid #bbf7d0; padding:2px 7px; border-radius:100px; letter-spacing:0.06em; }
-        .home2-balance-figure { font-size:32px; font-weight:900; color:#0f172a; margin:0 0 4px; letter-spacing:-0.02em; position:relative; z-index:1; }
+        .home2-balance-figure { font-size:32px; font-weight:900; color:#0f172a; margin:0 0 4px; letter-spacing:-0.02em; position:relative; z-index:1; min-height:38px; display:flex; align-items:center; }
+        .home2-balance-spinner { width:24px; height:24px; border-radius:50%; border:3px solid rgba(212,175,55,0.2); border-top-color:#D4AF37; animation:home2-spin 0.7s linear infinite; }
+        @keyframes home2-spin { to { transform:rotate(360deg); } }
         .home2-balance-ngn { font-size:12.5px; font-weight:700; color:#94a3b8; margin:0 0 18px; position:relative; z-index:1; }
         .home2-balance-actions { display:flex; gap:10px; position:relative; z-index:1; }
         .home2-btn { flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:14px; border-radius:16px; font-size:13.5px; font-weight:800; border:none; cursor:pointer; }
@@ -2745,8 +2747,8 @@ try {
         <span class="home2-real-tag">REAL</span>
         <button onclick="toggleHomeBalanceVisibility()"><i id="home2-eye-icon" class="fa-solid fa-eye"></i></button>
     </p>
-    <h2 class="home2-balance-figure" id="home2-balance-usd">$0.00</h2>
-    <p class="home2-balance-ngn">≈ ₦<span id="home2-balance-ngn">0.00</span></p>
+    <h2 class="home2-balance-figure" id="home2-balance-usd"><span class="home2-balance-spinner"></span></h2>
+    <p class="home2-balance-ngn">≈ ₦<span id="home2-balance-ngn">···</span></p>
     <div class="home2-balance-actions">
         <button class="home2-btn home2-btn-primary" onclick="switchTab('payments'); switchPaymentsView('deposit');"><i class="fa-solid fa-arrow-down"></i> Deposit</button>
         <button class="home2-btn home2-btn-secondary" onclick="switchTab('payments'); switchPaymentsView('withdraw');"><i class="fa-solid fa-arrow-up"></i> Withdraw</button>
@@ -4360,6 +4362,10 @@ try {
 
         let currentUser = null;
         let userData = {};
+        // False until the first real Firestore snapshot lands, so the wallet
+        // card can show a spinner instead of "$0.00" — a fresh {} would
+        // otherwise read as a zero balance and needlessly alarm depositors.
+        let userDataLoaded = false;
         let isVerified = false;
         let currentProfitBalance = 0;
         let currentDepositBalance = 0;
@@ -4433,6 +4439,7 @@ try {
                 db.collection("users").doc(user.uid).onSnapshot((snap) => {
                     if (!snap.exists) return;
                     userData = snap.data();
+                    userDataLoaded = true;
                     if (userData.status === 'banned') { window.location.reload(); return; }
                     document.getElementById('user-greeting').innerText =
                         `Hello, ${userData.firstName || 'User'}`;
@@ -5844,8 +5851,11 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
             if (nameEl) nameEl.innerText = (userData && userData.firstName) || 'User';
             const usdEl = document.getElementById('home2-balance-usd');
             const ngnEl = document.getElementById('home2-balance-ngn');
-            if (usdEl) usdEl.innerText = homeBalanceHidden ? '••••••' : '$' + balance.toFixed(2);
-            if (ngnEl) ngnEl.innerText = homeBalanceHidden ? '••••••' : (balance * 1400).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            if (usdEl) {
+                usdEl.innerHTML = !userDataLoaded ? '<span class="home2-balance-spinner"></span>'
+                    : homeBalanceHidden ? '••••••' : '$' + balance.toFixed(2);
+            }
+            if (ngnEl) ngnEl.innerText = !userDataLoaded ? '···' : homeBalanceHidden ? '••••••' : (balance * 1400).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             renderHomeRecentActivity();
         }
 
