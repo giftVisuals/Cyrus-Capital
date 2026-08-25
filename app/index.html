@@ -654,6 +654,27 @@
         document.getElementById('login-section').classList.toggle('hidden');
     }
 
+    // Firebase auth errors come as raw strings like "Firebase: Error
+    // (auth/network-request-failed)." — meaningless to a non-technical user.
+    // Map the common codes to plain language; unknown codes still fall back
+    // to Firebase's own message rather than hiding the problem.
+    function friendlyAuthError(error) {
+        switch (error.code) {
+            case 'auth/invalid-email': return 'Please enter a valid email address.';
+            case 'auth/user-not-found': return 'No account found with this email address.';
+            case 'auth/wrong-password':
+            case 'auth/invalid-credential': return 'Incorrect email or password. Please try again.';
+            case 'auth/email-already-in-use': return 'An account with this email already exists. Try logging in instead.';
+            case 'auth/weak-password': return 'Password is too weak — use at least 6 characters.';
+            case 'auth/too-many-requests': return 'Too many attempts. Please wait a moment and try again.';
+            case 'auth/network-request-failed': return "Couldn't reach the server — please check your internet connection and try again.";
+            case 'auth/missing-email': return 'Please enter your email address.';
+            case 'auth/popup-closed-by-user':
+            case 'auth/cancelled-popup-request': return null; // user closed the Google popup themselves — not an error
+            default: return error.message;
+        }
+    }
+
     window.openForgotPassword = function() {
         document.getElementById('forgot-password-modal').style.display = 'flex';
         document.getElementById('forgot-password-form-view').style.display = 'block';
@@ -693,25 +714,7 @@
             document.getElementById('forgot-password-form-view').style.display = 'none';
             document.getElementById('forgot-password-success').style.display = 'block';
         } catch (error) {
-            let errorMessage = 'Failed to send reset email. Please try again.';
-            switch (error.code) {
-                case 'auth/invalid-email':
-                    errorMessage = 'Invalid email address format.';
-                    break;
-                case 'auth/user-not-found':
-                    errorMessage = 'No account found with this email address.';
-                    break;
-                case 'auth/too-many-requests':
-                    errorMessage = 'Too many attempts. Please try again later.';
-                    break;
-                case 'auth/network-request-failed':
-                    errorMessage = 'Network error. Please check your connection.';
-                    break;
-                case 'auth/missing-email':
-                    errorMessage = 'Please enter your email address.';
-                    break;
-            }
-            errorDiv.innerText = errorMessage;
+            errorDiv.innerText = friendlyAuthError(error) || 'Failed to send reset email. Please try again.';
             errorDiv.style.display = 'block';
             btn.innerText = 'Send Reset Link';
             btn.disabled = false;
@@ -798,7 +801,8 @@ try {
             }
             window.showDashboard();
         } catch (error) {
-            alert(error.message);
+            const msg = friendlyAuthError(error);
+            if (msg) alert(msg);
             btn.innerText = "REGISTER";
             btn.disabled = false;
         }
@@ -819,7 +823,8 @@ try {
             }
             window.showDashboard();
         } catch (error) {
-            alert("Login Error: " + error.message);
+            const msg = friendlyAuthError(error);
+            if (msg) alert(msg);
             btn.innerText = "SIGN IN";
         }
     });
@@ -885,7 +890,10 @@ try {
                 return;
             }
             window.showDashboard();
-        } catch (error) { alert(error.message); }
+        } catch (error) {
+            const msg = friendlyAuthError(error);
+            if (msg) alert(msg);
+        }
     });
 </script>
 
