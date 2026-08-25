@@ -35,9 +35,91 @@
 <body>
 
     <!-- ═══════════════════════════════════════════════════════ -->
+    <!--  BOOT LOADER — first thing painted, before any CDN      -->
+    <!--  script has a chance to block rendering. Covers the gap -->
+    <!--  while Firebase checks whether the visitor is already   -->
+    <!--  signed in, so nobody sees a blank screen or a flash of -->
+    <!--  the signup form before an auto-login lands on the      -->
+    <!--  dashboard. Pure inline CSS — no CDN dependency.         -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <style>
+        #app-boot-loader {
+            position: fixed; inset: 0; z-index: 999999;
+            display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle at 30% 20%, #1e2a4a 0%, #0f172a 55%, #060a16 100%);
+            transition: opacity 0.45s ease, visibility 0.45s ease;
+        }
+        #app-boot-loader.cc-hide { opacity: 0; visibility: hidden; pointer-events: none; }
+        #app-boot-loader::before, #app-boot-loader::after {
+            content: ''; position: absolute; width: 340px; height: 340px; border-radius: 50%;
+            filter: blur(90px); opacity: 0.35; pointer-events: none;
+        }
+        #app-boot-loader::before { background: #D4AF37; top: -80px; left: -60px; }
+        #app-boot-loader::after { background: #3b5bfd; bottom: -100px; right: -60px; }
+        .cc-loader-card {
+            position: relative; z-index: 1;
+            display: flex; flex-direction: column; align-items: center; gap: 18px;
+            padding: 40px 44px; border-radius: 28px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.14);
+            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .cc-coin-stage { perspective: 800px; width: 72px; height: 72px; }
+        .cc-coin { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; animation: cc-spin 2.2s linear infinite; }
+        @keyframes cc-spin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+        .cc-coin-face {
+            position: absolute; inset: 0; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: Georgia, serif; font-weight: 900; font-size: 26px; color: #3a2c00;
+            background: linear-gradient(145deg,#fdf0b0,#D4AF37 45%,#8a6a12);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.25) inset, 0 8px 20px rgba(212,175,55,0.5);
+            backface-visibility: hidden;
+        }
+        .cc-coin-back { transform: rotateY(180deg); }
+        .cc-loader-word { font-size: 15px; font-weight: 900; letter-spacing: 0.28em; color: #f3e6bb; margin: 0; font-family: Arial, sans-serif; }
+        .cc-loader-sub { font-size: 11.5px; font-weight: 600; color: rgba(255,255,255,0.5); margin: -10px 0 0; font-family: Arial, sans-serif; }
+        .cc-loader-bar { width: 140px; height: 3px; border-radius: 100px; background: rgba(255,255,255,0.12); overflow: hidden; }
+        .cc-loader-bar span { display: block; width: 40%; height: 100%; border-radius: 100px;
+            background: linear-gradient(90deg,#D4AF37,#f5c542);
+            animation: cc-bar 1.3s ease-in-out infinite; }
+        @keyframes cc-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
+    </style>
+    <div id="app-boot-loader">
+        <div class="cc-loader-card">
+            <div class="cc-coin-stage">
+                <div class="cc-coin">
+                    <div class="cc-coin-face cc-coin-front">C</div>
+                    <div class="cc-coin-face cc-coin-back">$</div>
+                </div>
+            </div>
+            <p class="cc-loader-word">CYRUS CAPITAL</p>
+            <p class="cc-loader-sub">Securing your session…</p>
+            <div class="cc-loader-bar"><span></span></div>
+        </div>
+    </div>
+    <script>
+        // Safety net: if Firebase never resolves (offline device, blocked
+        // network, dropped CDN script) don't leave people staring at the
+        // loader forever — fall back to the login page after 20s.
+        window.__ccBootTimeoutId = setTimeout(function () {
+            if (window.__ccHideBootLoader) window.__ccHideBootLoader(true);
+        }, 20000);
+        window.__ccHideBootLoader = function (showLoginFallback) {
+            clearTimeout(window.__ccBootTimeoutId);
+            const loader = document.getElementById('app-boot-loader');
+            if (loader) loader.classList.add('cc-hide');
+            if (showLoginFallback) {
+                const login = document.getElementById('loginPage');
+                if (login && login.style.display === 'none') login.style.display = 'flex';
+            }
+        };
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
     <!--                     LOGIN PAGE                         -->
     <!-- ═══════════════════════════════════════════════════════ -->
-    <div id="loginPage">
+    <div id="loginPage" style="display:none;">
         <script src="https://cdn.tailwindcss.com">
         </script>
         <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
@@ -6839,24 +6921,32 @@ if (!last5Digits || last5Digits.length !== 5 || !/^\d{5}$/.test(last5Digits)) {
         window.scrollTo(0, 0);
         initTheme();
         loadTabFromHash();
+        if (window.__ccHideBootLoader) window.__ccHideBootLoader();
     };
 
     // ── AUTO LOGIN ON REFRESH ──
     // Only a ban keeps a signed-in user out; there is no email verification step.
+    // The boot loader (shown from first paint) stays up for all of this check —
+    // it's only once we know whether to land on the dashboard or the login
+    // page that either becomes visible, so a returning user never sees the
+    // signup form flash before being auto-logged in.
     auth.onAuthStateChanged(function(user) {
         if (user) {
             const userRef = db.collection("users").doc(user.uid);
             userRef.get().then(snap => {
                 if (snap.exists && snap.data().status === 'banned') {
                     document.getElementById('loginPage').style.display = 'flex';
+                    if (window.__ccHideBootLoader) window.__ccHideBootLoader();
                     return;
                 }
                 window.showDashboard();
             }).catch(() => {
                 document.getElementById('loginPage').style.display = 'flex';
+                if (window.__ccHideBootLoader) window.__ccHideBootLoader();
             });
         } else {
             document.getElementById('loginPage').style.display = 'flex';
+            if (window.__ccHideBootLoader) window.__ccHideBootLoader();
         }
     });
 
