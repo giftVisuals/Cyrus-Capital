@@ -46,24 +46,24 @@
         #app-boot-loader {
             position: fixed; inset: 0; z-index: 999999;
             display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(circle at 30% 20%, #1e2a4a 0%, #0f172a 55%, #060a16 100%);
+            background: radial-gradient(circle at 30% 20%, #fffdf5 0%, #fff8e6 45%, #fbecc0 100%);
             transition: opacity 0.45s ease, visibility 0.45s ease;
         }
         #app-boot-loader.cc-hide { opacity: 0; visibility: hidden; pointer-events: none; }
         #app-boot-loader::before, #app-boot-loader::after {
             content: ''; position: absolute; width: 340px; height: 340px; border-radius: 50%;
-            filter: blur(90px); opacity: 0.35; pointer-events: none;
+            filter: blur(90px); opacity: 0.4; pointer-events: none;
         }
-        #app-boot-loader::before { background: #D4AF37; top: -80px; left: -60px; }
-        #app-boot-loader::after { background: #3b5bfd; bottom: -100px; right: -60px; }
+        #app-boot-loader::before { background: #f5c542; top: -80px; left: -60px; }
+        #app-boot-loader::after { background: #D4AF37; bottom: -100px; right: -60px; }
         .cc-loader-card {
             position: relative; z-index: 1;
             display: flex; flex-direction: column; align-items: center; gap: 18px;
             padding: 40px 44px; border-radius: 28px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.55);
+            border: 1px solid rgba(212,175,55,0.35);
             backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-            box-shadow: 0 24px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.15);
+            box-shadow: 0 24px 60px rgba(184,134,11,0.18), inset 0 1px 0 rgba(255,255,255,0.8);
         }
         .cc-coin-stage { perspective: 800px; width: 72px; height: 72px; }
         .cc-coin { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; animation: cc-spin 2.2s linear infinite; }
@@ -73,13 +73,13 @@
             display: flex; align-items: center; justify-content: center;
             font-family: Georgia, serif; font-weight: 900; font-size: 26px; color: #3a2c00;
             background: linear-gradient(145deg,#fdf0b0,#D4AF37 45%,#8a6a12);
-            box-shadow: 0 0 0 3px rgba(255,255,255,0.25) inset, 0 8px 20px rgba(212,175,55,0.5);
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.6) inset, 0 8px 20px rgba(212,175,55,0.45);
             backface-visibility: hidden;
         }
         .cc-coin-back { transform: rotateY(180deg); }
-        .cc-loader-word { font-size: 15px; font-weight: 900; letter-spacing: 0.28em; color: #f3e6bb; margin: 0; font-family: Arial, sans-serif; }
-        .cc-loader-sub { font-size: 11.5px; font-weight: 600; color: rgba(255,255,255,0.5); margin: -10px 0 0; font-family: Arial, sans-serif; }
-        .cc-loader-bar { width: 140px; height: 3px; border-radius: 100px; background: rgba(255,255,255,0.12); overflow: hidden; }
+        .cc-loader-word { font-size: 15px; font-weight: 900; letter-spacing: 0.28em; color: #0f172a; margin: 0; font-family: Arial, sans-serif; }
+        .cc-loader-sub { font-size: 11.5px; font-weight: 600; color: #92702a; margin: -10px 0 0; font-family: Arial, sans-serif; }
+        .cc-loader-bar { width: 140px; height: 3px; border-radius: 100px; background: rgba(212,175,55,0.18); overflow: hidden; }
         .cc-loader-bar span { display: block; width: 40%; height: 100%; border-radius: 100px;
             background: linear-gradient(90deg,#D4AF37,#f5c542);
             animation: cc-bar 1.3s ease-in-out infinite; }
