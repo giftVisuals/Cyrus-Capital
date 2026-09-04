@@ -7774,9 +7774,20 @@ function copyPartnerRefLink() {
     });
 }
 
+function copyHomeReferralLink() {
+    if (!currentUser) return;
+    const link = `${window.location.origin}${window.location.pathname}?ref=${currentUser.uid}`;
+    navigator.clipboard.writeText(link).then(() => {
+        showNairaToast('Referral link copied!');
+    }).catch(() => {
+        showNairaToast('Copy failed — long-press the link above to copy.');
+    });
+}
+
 window.openPartnerModal = openPartnerModal;
 window.closePartnerModal = closePartnerModal;
 window.copyPartnerRefLink = copyPartnerRefLink;
+window.copyHomeReferralLink = copyHomeReferralLink;
 window.calculatePartnerLevel = calculatePartnerLevel;
 window.toggleSettings = toggleSettings;
 window.openEditProfile = openEditProfile;
