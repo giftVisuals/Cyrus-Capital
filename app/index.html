@@ -5865,6 +5865,10 @@ if (userData.country) { const el = document.getElementById('c-input'); if(el) el
 
             const nameEl = document.getElementById('home2-name');
             if (nameEl) nameEl.innerText = (userData && userData.firstName) || 'User';
+            const refLinkEl = document.getElementById('home2-ref-link');
+            if (refLinkEl && currentUser) {
+                refLinkEl.innerText = `${window.location.origin}${window.location.pathname}?ref=${currentUser.uid}`;
+            }
             const usdEl = document.getElementById('home2-balance-usd');
             const ngnEl = document.getElementById('home2-balance-ngn');
             if (usdEl) {
